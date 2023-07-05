@@ -1,2 +1,2 @@
-# LIN
-Aprendizados até agora
+# TIL
+Repositório voltado a aprendizados
