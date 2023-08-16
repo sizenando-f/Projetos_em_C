@@ -5,14 +5,95 @@
 #include <stdbool.h>
 #include <string.h>
 
+// Função para imprimir parte do número por extenso
+void imprimirParte(int num) {
+    // Possíveis escritas por extenso
+    char *unidade[] = {"", "UM", "DOIS", "TRES", "QUATRO", "CINCO", "SEIS", "SETE", "OITO", "NOVE"};
+    char *dezAteVinte[] = {"DEZ", "ONZE", "DOZE", "TREZE", "CATORZE", "QUINZE", "DEZESSEIS", "DEZESSETE", "DEZOITO", "DEZENOVE"};
+    char *dezena[] = {"", "", "VINTE", "TRINTA", "QUARENTA", "CINQUENTA", "SESENTA", "SETENTA", "OITENTA", "NOVENTA"};
+    char *centena[] = {"", "CENTO", "DUZENTOS", "TREZENTOS", "QUATROCENTOS", "QUINHENTOS", "SEISCENTOS", "SETECENTOS", "OITOCENTOS", "NOVECENTOS"};
+
+    if (num >= 100) {
+        printf("%s", centena[num / 100]);
+        num %= 100;
+        if (num == 0) {
+            return;
+        } else {
+            printf(" E ");
+        }
+    }
+
+    if (num >= 20) {
+        printf("%s", dezena[num / 10]);
+        num %= 10;
+        if (num == 0) {
+            return;
+        } else {
+            printf(" E ");
+        }
+    }
+
+    if (num >= 10) {
+        printf("%s", dezAteVinte[num - 10]);
+    } else if (num > 0) {
+        printf("%s", unidade[num]);
+    }
+}
+
+// Função para converter um número para extenso
+void numeroParaExtenso(int num) {
+    if (num < 0 || num > 180000) {
+        printf("NUMERO FORA DO INTERVALO SUPORTADO.\n");
+        return;
+    }
+
+    if (num == 0) {
+        printf("ZERO\n");
+        return;
+    }
+
+    if (num >= 1000) {
+        imprimirParte(num / 1000);
+        printf(" MIL");
+        num %= 1000;
+        if (num == 0) {
+            printf("\n");
+            return;
+        } else {
+            printf(" E ");
+        }
+    }
+
+    imprimirParte(num);
+    printf("\n");
+}
+
 // Procedimento responsável por armazenar todos os dados de clientes
-void banco_de_dados(char* cpf, char* conta_corrente, int codigo){
+void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int valor_saque){
   static int clientes = 0;
   static char cpfs[50][15];
   static char contas[50][10];
+  static int num_saques[50];
+  static int hist_saques[50][100];
 
-  // O código refere-se ao tipo de tratamento que os dados recebidos irão ter
-  if(codigo == 0){
+  // Bloco responsável por zerar os vetores
+  static int control = 0;
+  if(!control){
+    for(int i = 0; i < 50; i++){
+      num_saques[i] = -1;
+    for(int j = 0; j < 100; j ++){
+      hist_saques[i][j] = -1;
+      }
+    }
+  }
+  control = 1;
+
+  static int ced_quin = 100, ced_centEcinq = 200, ced_cinq = 400, ced_vint = 800, ced_dez = 1600, ced_cinc = 3200, ced_dois = 6400, ced_um = 12800;
+  int ced_total = ced_quin + ced_centEcinq + ced_cinq + ced_vint + ced_dez + ced_cinc + ced_dois + ced_um;
+  int valor_total = (ced_quin*500) + (ced_centEcinq*150) + (ced_cinq*50) + (ced_vint*20) + (ced_dez*10) + (ced_cinc*5) + (ced_dois*2) + (ced_um);
+
+  // O "código" refere-se ao tipo de tratamento que os dados recebidos irão ter
+  if(codigo == 0){ // 0 = Criar conta
     if(clientes != 0){
       int existe_conta = 0, existe_cpf = 0;
 
@@ -50,7 +131,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo){
       system("cls");
       printf("//// PROCESSO EFETUADO COM SUCESSO ////\n");
     }
-  } else if (codigo == 1){
+  } else if (codigo == 1){  // 1 = Mostrar Clientes
     system("cls");
     printf("--- CLIENTES CADASTRADOS (%d) ---\n", clientes);
     if(clientes){
@@ -62,14 +143,77 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo){
       printf("! NAO EXISTEM CLIENTES CADASTRADO !\n");
     }
     system("pause");
+  } else if (codigo == 2){  // 2 = Verifica se conta existe
+    for(int i = 0; i < clientes; i++){
+      if(!strcmp(conta_corrente, contas[i])){
+        *check = 1;
+      }
+    }
+  } else if (codigo == 3){ // 3 = Saque
+    if(valor_total >= valor_saque){
+      int rest = valor_saque;
+      int notas;
+      printf("----- NOTAS SACADAS -----\n");
+      if(rest >= 500 && (rest/500 < ced_quin)){
+        notas = rest/500;
+        printf("NOTAS DE 500: %d\n", notas);
+        rest %= 500;
+        ced_quin -= notas;
+      } if (rest >= 150 && (rest/150 < ced_centEcinq)){
+        notas = rest/150;
+        printf("NOTAS DE 150: %d\n", notas);
+        rest %= 150;
+        ced_centEcinq -= notas;
+      }  if (rest >= 50 && (rest/50 < ced_cinq)){
+        notas = rest/50;
+        printf("NOTAS DE 50: %d\n", notas);
+        rest %= 50;
+        ced_cinq -= notas;
+      }  if (rest >= 20 && (rest/20 < ced_vint)){
+        notas = rest/20;
+        printf("NOTAS DE 20: %d\n", notas);
+        rest %= 20;
+        ced_vint -= notas;
+      }  if (rest >= 10 && (rest/10 < ced_dez)){
+        notas = rest/10;
+        printf("NOTAS DE 10: %d\n", notas);
+        rest %= 10;
+        ced_dez -= notas;
+      }  if (rest >= 5 && (rest/5 < ced_cinc)){
+        notas = rest/5;
+        printf("NOTAS DE 5: %d\n", notas);
+        rest %= 5;
+        ced_cinc -= notas;
+      } if (rest >= 2 && (rest/2 < ced_dois)){
+        notas = rest/2;
+        printf("NOTAS DE 2: %d\n", notas);
+        rest %= 2;
+        ced_dois -= notas;
+      } if (rest >= 1 && (rest/1 < ced_um)){
+        notas = rest/1;
+        printf("NOTAS DE 1: %d\n", notas);
+        rest %= 1;
+        ced_um -= notas;
+      }
+      printf("--------------------\nSAQUE POR EXTENSO: ");
+      numeroParaExtenso(valor_saque);
+      printf("--------------------\n");
+      for(int i = 0; i < clientes; i++){
+        if(!strcmp(conta_corrente, contas[i])){
+          num_saques[i]++;
+          hist_saques[i][num_saques[i]] = valor_saque;
+        }
+      }
+    } else {
+      printf("SALDO INSUFICIENTE!");
+    }
   }
   
 }
 
 
 // Retorna uma letra maiúscula aleatória do alfabeto
-char gera_letra_aleatoria() {
-    
+char gera_letra_aleatoria() {  
     return 'A' + rand() % 26;
 }
 
@@ -165,7 +309,7 @@ void menu_cliente(){
           char* cpf = gera_cpf_valido();
           char* conta_corrente = geraContaCorrente();
           int opc;
-
+          printf("---------------------\n");
           printf("CPF GERADO: %s\n", cpf);
           printf("CONTA GERADA: %s\n", conta_corrente);
           
@@ -174,13 +318,13 @@ void menu_cliente(){
             scanf("%d", &opc);
             switch(opc){
               case 1:
-                banco_de_dados(cpf, conta_corrente, 0);
+                banco_de_dados(cpf, conta_corrente, 0, 0, 0);
                 break;
               case 2:
-                printf("OPERACAO CANCELADA\n");
+                printf("---------------------\nOPERACAO CANCELADA\n---------------------\n");
                 break;
               default:
-                printf("OPCAO INVALIDA\n");
+                printf("---------------------\nOPCAO INVALIDA\n---------------------\n");
                 break;
             }
           } while((opc < 1) || (opc > 2));
@@ -189,7 +333,7 @@ void menu_cliente(){
         system("pause");
         break;
       case 2:
-        banco_de_dados("", "", 1);
+        banco_de_dados("", "", 1, 0, 0);
         break;
       default:
         break;
@@ -212,11 +356,34 @@ void menu_principal(){
       case 1:
         menu_cliente();
         break;
+      case 2:
+        if(esc == 2){
+          int saque_valor;
+          char conta[10];
+          int check = 0;
+
+          system("cls");
+          printf("----------------------\n(formato aceito: 999.999-X)\nINSIRA SUA CONTA CORRENTE: ");
+          getchar();
+          fgets(conta, sizeof(conta), stdin);
+          banco_de_dados("", conta, 2, &check, 0);
+          if(check){
+            system("cls");
+            printf("-------------------\n  CONTA EXISTENTE\n-------------------\nINSIRA O VALOR DO SAQUE: ");
+            scanf("%d", &saque_valor);
+            banco_de_dados("", conta, 3, 0, saque_valor);
+          } else {
+            system("cls");
+            printf("-------------------\nCONTA INEXISTENTE, POR FAVOR, TENTE NOVAMENTE\n-------------------\n");
+          }
+          system("pause");
+        }
+        break;
       case 3:
         menu_relatorios();
         break;
       case 4:
-        printf("PROGRAMA ENCERRADO!");
+        printf("-------------------\n     PROGRAMA ENCERRADO!\n-------------------\n");
       default:
         break;
     }
