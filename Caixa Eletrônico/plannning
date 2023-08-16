@@ -4,3 +4,14 @@ static int hist_saques[50][100];
 1. zerar todos vetores com - 1
 2. criar conta = associar um campo dos vetores para ela
 3. quando criar saque, procurar pelo indice a qual a conta se encontra e nesse indice colocar o saque
+
+printf("HISTORICO DE SAQUES:");
+for(int i = 0; i < clientes; i++){
+  for(int j = 0; j < 100; j++){
+    if(hist_saques[i][j] != -1){
+      printf("%d\n", hist_saques[i][j]); 
+    }
+  }
+}
+
+printf("NUMERO DE SAQUES DESSA CONTA: %d\n", num_saques[i]);

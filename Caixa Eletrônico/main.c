@@ -80,10 +80,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
   static int control = 0;
   if(!control){
     for(int i = 0; i < 50; i++){
-      num_saques[i] = -1;
-    for(int j = 0; j < 100; j ++){
-      hist_saques[i][j] = -1;
-      }
+      num_saques[i] = 0;
     }
   }
   control = 1;
@@ -149,7 +146,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
         *check = 1;
       }
     }
-  } else if (codigo == 3){ // 3 = Saque
+  } else if (codigo == 3){ // 3 = Sacar
     if(valor_total >= valor_saque){
       int rest = valor_saque;
       int notas;
@@ -200,17 +197,26 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
       printf("--------------------\n");
       for(int i = 0; i < clientes; i++){
         if(!strcmp(conta_corrente, contas[i])){
-          num_saques[i]++;
           hist_saques[i][num_saques[i]] = valor_saque;
+          num_saques[i]++;
+          printf("VALOR INSERIDO: %d\n", hist_saques[i][num_saques[i]]);
         }
-      }
+      }  
     } else {
       printf("SALDO INSUFICIENTE!");
     }
+  } else if (codigo == 4){  // 4 = Ver valores sacados
+    system("cls");
+    printf("--------- RELATORIOS - VALORES SACADOS ---------\n");
+    for(int i = 0; i < clientes; i++){
+      printf("%s - %s\n", contas[i], cpfs[i]);
+      for(int j = 0; j < num_saques[i]; j++){
+        printf("                           R$%d\n", hist_saques[i][j]);
+      }
+      printf("\n");
+    }
   }
-  
 }
-
 
 // Retorna uma letra maiúscula aleatória do alfabeto
 char gera_letra_aleatoria() {  
@@ -238,6 +244,14 @@ void menu_relatorios(){
     printf("--------------------------\n");
     printf("INSIRA SUA ESCOLHA: ");
     scanf("%d", &esc);
+    switch(esc){
+      case 1:
+        banco_de_dados("", "", 4, 0, 0);
+        system("pause");
+        break;
+      default:
+        break;
+    }
   }while((esc < 1 && esc > 4) || esc != 4);
 }
 
