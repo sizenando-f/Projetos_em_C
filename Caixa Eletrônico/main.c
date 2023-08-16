@@ -199,7 +199,6 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
         if(!strcmp(conta_corrente, contas[i])){
           hist_saques[i][num_saques[i]] = valor_saque;
           num_saques[i]++;
-          printf("VALOR INSERIDO: %d\n", hist_saques[i][num_saques[i]]);
         }
       }  
     } else {
@@ -208,12 +207,23 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
   } else if (codigo == 4){  // 4 = Ver valores sacados
     system("cls");
     printf("--------- RELATORIOS - VALORES SACADOS ---------\n");
+    int soma_geral = 0;
     for(int i = 0; i < clientes; i++){
+      int soma = 0;
       printf("%s - %s\n", contas[i], cpfs[i]);
       for(int j = 0; j < num_saques[i]; j++){
-        printf("                           R$%d\n", hist_saques[i][j]);
+        printf("                           R$%d,00\n", hist_saques[i][j]);
       }
+      for(int l = 0; l < num_saques[i]; l++){
+          soma += hist_saques[i][l];
+        }
+      soma_geral += soma;
+      printf("                                       R$%d,00\n", soma);
       printf("\n");
+      printf("--------------------------------------------------------\n");
+      printf("R$ ");
+      numeroParaExtenso(soma_geral);
+      printf("--------------------------------------------------------\n");
     }
   }
 }
