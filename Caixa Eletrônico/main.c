@@ -385,8 +385,33 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
     printf("------------------------------\n");
     numeroParaExtenso(valor_total);
     printf("------------------------------\n");
-  } else if (codigo == 8){
-    
+  } else if (codigo == 8){ // 8 = Notas existentes
+    system("cls");
+    printf("CEDULA DE 500: %d -> ", ced_quin);
+    numeroParaExtenso(ced_quin);
+    printf("\n");
+    printf("CEDULA DE 150: %d -> ", ced_centEcinq);
+    numeroParaExtenso(ced_centEcinq);
+    printf("\n");
+    printf("CEDULA DE 50: %d -> ", ced_cinq);
+    numeroParaExtenso(ced_cinq);
+    printf("\n");
+    printf("CEDULA DE 20: %d -> ", ced_vint);
+    numeroParaExtenso(ced_vint);
+    printf("\n");
+    printf("CEDULA DE 10: %d -> ", ced_dez);
+    numeroParaExtenso(ced_dez);
+    printf("\n");
+    printf("CEDULA DE 5: %d -> ", ced_cinc);
+    numeroParaExtenso(ced_cinc);
+    printf("\n");
+    printf("CEDULA DE 2: %d -> ", ced_dois);
+    numeroParaExtenso(ced_dois);
+    printf("\n");
+    printf("CEDULA DE 1: %d -> ", ced_um);
+    numeroParaExtenso(ced_um);
+    printf("\n");
+    system("pause");
   }
 }
 
@@ -412,7 +437,7 @@ void menu_relatorios(){
   do{
     system("cls");
     printf("----- MENU RELATORIOS -----\n");
-    printf("1. VALORES SACADOS\n2. VALOR DO SALDO EXISTENTE\n3. QUANTIDADE DE CÉDULAS EXISTENTES\n4. VOLTAR AO MENU PRINCIPAL\n");
+    printf("1. VALORES SACADOS\n2. VALOR DO SALDO EXISTENTE\n3. QUANTIDADE DE CEDULAS EXISTENTES\n4. VOLTAR AO MENU PRINCIPAL\n");
     printf("--------------------------\n");
     printf("INSIRA SUA ESCOLHA: ");
     scanf("%d", &esc);
