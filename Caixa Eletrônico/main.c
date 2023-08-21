@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+char* geraContaCorrente();
+char* gera_cpf_valido();
+
 // Função para imprimir parte do número por extenso
 void imprimirParte(int num) {
     // Possíveis escritas por extenso
@@ -225,6 +228,45 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
       numeroParaExtenso(soma_geral);
       printf("--------------------------------------------------------\n");
     }
+  } else if (codigo == 5){  // 5 = Alterar cpf ou conta
+    for(int i = 0; i < clientes; i++){
+      if(!strcmp(conta_corrente, contas[i])){
+        if(num_saques[i] == 0){
+          int esc = 0;
+          printf("VOCE DESEJA ALTERAR CPF OU CONTA?\n1. CPF\n2. CONTA\n-> ");
+          scanf("%d", &esc);
+          printf("--------------------------\n");
+          if(esc == 1){
+            char* cpf = gera_cpf_valido();
+            printf("SEU NOVO CPF EH: %s\n", cpf);
+            if(strcmp(cpf, cpfs[i])){
+              for(int j = 0; j < 15; j++){
+                cpfs[i][j] = cpf[j];
+              }
+            } else {
+              printf("CPF JA EXISTENTE, POR FAVOR, TENTE NOVAMENTE\n");
+            }
+          } else if (esc == 2){
+            char* conta = geraContaCorrente();
+            printf("SUA NOTA CONTA EH: %s\n", conta);
+            if(strcmp(conta, contas[i])){
+              for(int j = 0; j < 10; j++){
+                contas[i][j] = conta[j];
+              }
+            } else {
+              printf("CONTA JA EXISTENTE, POR FAVOR, TENTE NOVAMENTE\n");
+            }
+          } else {
+            printf("ENTRADA INCORRETA\n");
+          }
+        } else {
+          printf("--------------------------\n");
+          printf("NAO FOI POSSIVEL ALTERAR CONTA, SAQUE JA REALIZADO");
+          printf("--------------------------\n");
+        }
+      }
+    }
+    system("pause");
   }
 }
 
@@ -358,6 +400,25 @@ void menu_cliente(){
         break;
       case 2:
         banco_de_dados("", "", 1, 0, 0);
+        break;
+      case 3:
+        if(esc == 3){
+          system("cls");
+          char conta[10];
+          int check;
+          printf("--------------------------\n");
+          printf("INSIRA A SUA CONTA: ");
+          getchar();
+          fgets(conta, sizeof(conta), stdin);
+          printf("--------------------------\n");
+          banco_de_dados("", conta, 2, &check, 0);
+          if(check){
+            banco_de_dados("", conta, 5, 0, 0);
+          } else {
+            printf("CONTA INEXISTENTE");
+          }
+          system("pause");
+        }
         break;
       default:
         break;

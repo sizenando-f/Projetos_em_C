@@ -15,3 +15,9 @@ for(int i = 0; i < clientes; i++){
 }
 
 printf("NUMERO DE SAQUES DESSA CONTA: %d\n", num_saques[i]);
+
+valor do saldo existente em valor e por extenso
+quantidade de cédulas existentes, em valor e por extenso
+
+excluir cliente precisa verificar se esse cliente já fez algum saque
+para alterar a verificação também deve ocorrer, caso não haja nenhum saque, um novo cpf ou conta é gerada
