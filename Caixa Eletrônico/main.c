@@ -170,47 +170,102 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
       int notas;
       printf("-------------------------\n");
       printf("----- NOTAS SACADAS -----\n");
-      if(rest >= 500 && (rest/500 < ced_quin)){
-        notas = rest/500;
-        printf("NOTAS DE 500: %d\n", notas);
-        rest %= 500;
-        ced_quin -= notas;
-      } if (rest >= 150 && (rest/150 < ced_centEcinq)){
-        notas = rest/150;
-        printf("NOTAS DE 150: %d\n", notas);
-        rest %= 150;
-        ced_centEcinq -= notas;
-      }  if (rest >= 50 && (rest/50 < ced_cinq)){
-        notas = rest/50;
-        printf("NOTAS DE 50: %d\n", notas);
-        rest %= 50;
-        ced_cinq -= notas;
-      }  if (rest >= 20 && (rest/20 < ced_vint)){
-        notas = rest/20;
-        printf("NOTAS DE 20: %d\n", notas);
-        rest %= 20;
-        ced_vint -= notas;
-      }  if (rest >= 10 && (rest/10 < ced_dez)){
-        notas = rest/10;
-        printf("NOTAS DE 10: %d\n", notas);
-        rest %= 10;
-        ced_dez -= notas;
-      }  if (rest >= 5 && (rest/5 < ced_cinc)){
-        notas = rest/5;
-        printf("NOTAS DE 5: %d\n", notas);
-        rest %= 5;
-        ced_cinc -= notas;
-      } if (rest >= 2 && (rest/2 < ced_dois)){
-        notas = rest/2;
-        printf("NOTAS DE 2: %d\n", notas);
-        rest %= 2;
-        ced_dois -= notas;
-      } if (rest >= 1 && (rest/1 < ced_um)){
-        notas = rest/1;
-        printf("NOTAS DE 1: %d\n", notas);
-        rest %= 1;
-        ced_um -= notas;
+      if(rest >= 500){
+        if(rest/500 < ced_quin){
+          notas = rest/500;
+          rest %= 500;
+          ced_quin -= notas;
+        } else {
+          notas = ced_quin;
+          rest -= 500*notas;
+          ced_quin -= ced_quin;
+        }
+        printf("NOTAS DE 500: %d\n", notas);     
+      } 
+      if(rest >= 150){
+        if(rest/150 < ced_centEcinq){
+          notas = rest/150;
+          rest %= 150;
+          ced_centEcinq -= notas;
+        } else {
+          notas = ced_centEcinq;
+          rest -= 150*notas;
+          ced_centEcinq -= ced_centEcinq;
+        }
+        printf("NOTAS DE 150: %d\n", notas);     
       }
+      if(rest >= 50){
+        if(rest/50 < ced_cinq){
+          notas = rest/50;
+          rest %= 50;
+          ced_cinq -= notas;
+        } else {
+          notas = ced_cinq;
+          rest -= 50*notas;
+          ced_cinq -= ced_cinq;
+        }
+        printf("NOTAS DE 50: %d\n", notas);     
+      }
+      if(rest >= 20){
+        if(rest/20 < ced_vint){
+          notas = rest/20;
+          rest %= 20;
+          ced_vint -= notas;
+        } else {
+          notas = ced_vint;
+          rest -= 20*notas;
+          ced_vint -= ced_vint;
+        }
+        printf("NOTAS DE 20: %d\n", notas);     
+      }
+      if(rest >= 10){
+        if(rest/10 < ced_dez){
+          notas = rest/10;
+          rest %= 10;
+          ced_dez -= notas;
+        } else {
+          notas = ced_dez;
+          rest -= 10*notas;
+          ced_dez -= ced_dez;
+        }
+        printf("NOTAS DE 10: %d\n", notas);     
+      } 
+      if(rest >= 5){
+        if(rest/5 < ced_cinc){
+          notas = rest/5;
+          rest %= 5;
+          ced_cinc -= notas;
+        } else {
+          notas = ced_cinc;
+          rest -= 5*notas;
+          ced_cinc -= ced_cinc;
+        }
+        printf("NOTAS DE 5: %d\n", notas);     
+      } 
+      if(rest >= 2){
+        if(rest/2 < ced_dois){
+          notas = rest/2;
+          rest %= 2;
+          ced_dois -= notas;
+        } else {
+          notas = ced_dois;
+          rest -= 2*notas;
+          ced_dois -= ced_dois;
+        }
+        printf("NOTAS DE 2: %d\n", notas);     
+      } 
+      if(rest >= 1){
+        if(rest/1 < ced_um){
+          notas = rest/1;
+          rest %= 1;
+          ced_um -= notas;
+        } else {
+          notas = ced_um;
+          rest -= 1*notas;
+          ced_um -= ced_um;
+        }
+        printf("NOTAS DE 1: %d\n", notas);     
+      } 
       printf("--------------------\nSAQUE POR EXTENSO: ");
       numeroParaExtenso(valor_saque);
       printf("--------------------\n");
@@ -221,7 +276,9 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
         }
       }  
     } else {
-      printf("SALDO INSUFICIENTE!");
+      printf("------------------------------\n");
+      printf("SALDO INSUFICIENTE!\n");
+      printf("------------------------------\n");
     }
   } else if (codigo == 4){  // 4 = Ver valores sacados
     system("cls");
@@ -321,6 +378,15 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
         }
       }
     }
+  } else if (codigo == 7){ // 7 = Saldo existente
+    system("cls");
+    printf("------------------------------\n");
+    printf("R$%d,00\n", valor_total);
+    printf("------------------------------\n");
+    numeroParaExtenso(valor_total);
+    printf("------------------------------\n");
+  } else if (codigo == 8){
+    
   }
 }
 
@@ -355,6 +421,12 @@ void menu_relatorios(){
         banco_de_dados("", "", 4, 0, 0);
         system("pause");
         break;
+      case 2:
+        banco_de_dados("", "", 7, 0, 0);
+        system("pause");
+        break;
+      case 3:
+        banco_de_dados("", "", 8, 0, 0);
       default:
         break;
     }
@@ -538,7 +610,7 @@ void menu_principal(){
         menu_relatorios();
         break;
       case 4:
-        printf("-------------------\n     PROGRAMA ENCERRADO!\n-------------------\n");
+        printf("-------------------\nPROGRAMA ENCERRADO!\n-------------------\n");
       default:
         break;
     }
