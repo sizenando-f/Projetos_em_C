@@ -85,6 +85,21 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
     for(int i = 0; i < 50; i++){
       num_saques[i] = 0;
     }
+    for(int i = 0; i < 50; i++){
+      for(int j = 0; j < 10; j++){
+        contas[i][j] = '-';
+      }
+    }
+    for(int i = 0; i < 50; i++){
+      for(int j = 0; j < 15; j++){
+        cpfs[i][j] = '-';
+      }
+    }
+    for(int i = 0; i < 50; i++){
+      for(int j = 0; j < 100; j++){
+        hist_saques[i][j] = 0;
+      }
+    }
   }
   control = 1;
 
@@ -153,6 +168,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
     if(valor_total >= valor_saque){
       int rest = valor_saque;
       int notas;
+      printf("-------------------------\n");
       printf("----- NOTAS SACADAS -----\n");
       if(rest >= 500 && (rest/500 < ced_quin)){
         notas = rest/500;
@@ -223,11 +239,11 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
       soma_geral += soma;
       printf("                                       R$%d,00\n", soma);
       printf("\n");
-      printf("--------------------------------------------------------\n");
-      printf("R$ ");
-      numeroParaExtenso(soma_geral);
-      printf("--------------------------------------------------------\n");
     }
+    printf("--------------------------------------------------------\n");
+    printf("R$ ");
+    numeroParaExtenso(soma_geral);
+    printf("--------------------------------------------------------\n");
   } else if (codigo == 5){  // 5 = Alterar cpf ou conta
     for(int i = 0; i < clientes; i++){
       if(!strcmp(conta_corrente, contas[i])){
@@ -260,13 +276,43 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
             printf("ENTRADA INCORRETA\n");
           }
         } else {
+          system("cls");
           printf("--------------------------\n");
-          printf("NAO FOI POSSIVEL ALTERAR CONTA, SAQUE JA REALIZADO");
+          printf("NAO FOI POSSIVEL ALTERAR CONTA, SAQUE JA REALIZADO\n");
           printf("--------------------------\n");
         }
       }
     }
     system("pause");
+  } else if (codigo == 6){ // 6 = Remove cliente
+    for(int i = 0; i < clientes; i++){
+      if(!strcmp(conta_corrente, contas[i])){ // Descobre qual indice a conta se encontra
+        if(num_saques[i] == 0){ // Se não houver saques
+          for(int j = i; j < clientes; j++){ // Varre todos os clientes a partir da conta atual
+            strcpy(cpfs[j], cpfs[j+1]);
+            strcpy(contas[j], contas[j+1]);
+            num_saques[j] = num_saques[j+1];
+            for (int k = 0; k < num_saques[i+1]; k++) { // Move todos valores para esquerda
+                hist_saques[j][k] = hist_saques[j+1][k];
+            }
+          }
+          // Zera último indice de clientes
+          memset(cpfs[clientes - 1], '-', sizeof(cpfs[0]));
+          memset(contas[clientes - 1], '-', sizeof(contas[0]));
+          num_saques[clientes - 1] = 0;
+          memset(hist_saques[clientes - 1], 0, sizeof(hist_saques[0]));
+
+          clientes--;
+
+          system("cls");
+          printf("///////\n REMOCAO REALIDA COM SUCESSO\n///////\n");
+          system("pause");
+        } else {
+          system("cls");
+          printf("--------- REMOCAO CANCELADA, SAQUE JA REALIZADO ---------\n");
+        }
+      }
+    }
   }
 }
 
@@ -417,9 +463,25 @@ void menu_cliente(){
           } else {
             printf("CONTA INEXISTENTE");
           }
-          system("pause");
         }
         break;
+      case 4:
+        system("cls");
+        char conta[10];
+        int check;
+        printf("--------------------------\n");
+        printf("INSIRA A SUA CONTA: ");
+        getchar();
+        fgets(conta, sizeof(conta), stdin);
+        printf("--------------------------\n");
+        banco_de_dados("", conta, 2, &check, 0);
+        if(check){
+          banco_de_dados("", conta, 6, 0, 0);
+        } else {
+          printf("CONTA INEXISTENTE");
+        }
+        break;
+      
       default:
         break;
     }
