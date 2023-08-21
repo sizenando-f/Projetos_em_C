@@ -245,6 +245,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
     numeroParaExtenso(soma_geral);
     printf("--------------------------------------------------------\n");
   } else if (codigo == 5){  // 5 = Alterar cpf ou conta
+    int control = 0;
     for(int i = 0; i < clientes; i++){
       if(!strcmp(conta_corrente, contas[i])){
         if(num_saques[i] == 0){
@@ -281,8 +282,15 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
           printf("NAO FOI POSSIVEL ALTERAR CONTA, SAQUE JA REALIZADO\n");
           printf("--------------------------\n");
         }
+      } else {
+        control++;
       }
     }
+
+    if(control == clientes){
+      printf("CONTA INEXISTENTE\n");
+    }
+
     system("pause");
   } else if (codigo == 6){ // 6 = Remove cliente
     for(int i = 0; i < clientes; i++){
