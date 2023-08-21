@@ -104,7 +104,7 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
   control = 1;
 
   static int ced_quin = 100, ced_centEcinq = 200, ced_cinq = 400, ced_vint = 800, ced_dez = 1600, ced_cinc = 3200, ced_dois = 6400, ced_um = 12800;
-  int ced_total = ced_quin + ced_centEcinq + ced_cinq + ced_vint + ced_dez + ced_cinc + ced_dois + ced_um;
+  // int ced_total = ced_quin + ced_centEcinq + ced_cinq + ced_vint + ced_dez + ced_cinc + ced_dois + ced_um;
   int valor_total = (ced_quin*500) + (ced_centEcinq*150) + (ced_cinq*50) + (ced_vint*20) + (ced_dez*10) + (ced_cinc*5) + (ced_dois*2) + (ced_um);
 
   // O "código" refere-se ao tipo de tratamento que os dados recebidos irão ter
@@ -453,6 +453,9 @@ void menu_relatorios(){
       case 3:
         banco_de_dados("", "", 8, 0, 0);
       default:
+        system("cls");
+        printf("ESCOLHA INVALIDA!\n");
+        system("pause");
         break;
     }
   }while((esc < 1 && esc > 4) || esc != 4);
@@ -588,6 +591,9 @@ void menu_cliente(){
         break;
       
       default:
+        system("cls");
+        printf("ESCOLHA INVALIDA!\n");
+        system("pause");
         break;
     }
   }while((esc < 1 && esc > 5) || esc != 5);
@@ -636,7 +642,11 @@ void menu_principal(){
         break;
       case 4:
         printf("-------------------\nPROGRAMA ENCERRADO!\n-------------------\n");
+        break;
       default:
+        system("cls");
+        printf("ESCOLHA INVALIDA!\n");
+        system("pause");
         break;
     }
   }while((esc < 1 && esc > 4) || esc != 4);
