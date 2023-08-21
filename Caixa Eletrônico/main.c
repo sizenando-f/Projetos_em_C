@@ -1,3 +1,8 @@
+// T3 de AED - G13
+// Sizenando Souza França
+// Felipe Natan de Oliveira Lima
+// Weliton Fernandes Alves
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -350,8 +355,10 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
 
     system("pause");
   } else if (codigo == 6){ // 6 = Remove cliente
+    int control = 0;
     for(int i = 0; i < clientes; i++){
       if(!strcmp(conta_corrente, contas[i])){ // Descobre qual indice a conta se encontra
+        control--;
         if(num_saques[i] == 0){ // Se não houver saques
           for(int j = i; j < clientes; j++){ // Varre todos os clientes a partir da conta atual
             strcpy(cpfs[j], cpfs[j+1]);
@@ -371,12 +378,17 @@ void banco_de_dados(char* cpf, char* conta_corrente, int codigo, int *check, int
 
           system("cls");
           printf("///////\n REMOCAO REALIDA COM SUCESSO\n///////\n");
-          system("pause");
         } else {
           system("cls");
           printf("--------- REMOCAO CANCELADA, SAQUE JA REALIZADO ---------\n");
         }
+      } else {
+        control++;
       }
+    }
+
+    if(control == clientes){
+      printf("CONTA INEXISTENTE\n");
     }
   } else if (codigo == 7){ // 7 = Saldo existente
     system("cls");
@@ -452,6 +464,7 @@ void menu_relatorios(){
         break;
       case 3:
         banco_de_dados("", "", 8, 0, 0);
+        break;
       default:
         system("cls");
         printf("ESCOLHA INVALIDA!\n");
@@ -588,8 +601,10 @@ void menu_cliente(){
         } else {
           printf("CONTA INEXISTENTE");
         }
+        system("pause");
         break;
-      
+      case 5:
+        break;
       default:
         system("cls");
         printf("ESCOLHA INVALIDA!\n");
