@@ -1,0 +1,23 @@
+static int num_saques[50];
+static int hist_saques[50][100];
+
+1. zerar todos vetores com - 1
+2. criar conta = associar um campo dos vetores para ela
+3. quando criar saque, procurar pelo indice a qual a conta se encontra e nesse indice colocar o saque
+
+printf("HISTORICO DE SAQUES:");
+for(int i = 0; i < clientes; i++){
+  for(int j = 0; j < 100; j++){
+    if(hist_saques[i][j] != -1){
+      printf("%d\n", hist_saques[i][j]); 
+    }
+  }
+}
+
+printf("NUMERO DE SAQUES DESSA CONTA: %d\n", num_saques[i]);
+
+valor do saldo existente em valor e por extenso
+quantidade de cédulas existentes, em valor e por extenso
+
+excluir cliente precisa verificar se esse cliente já fez algum saque
+para alterar a verificação também deve ocorrer, caso não haja nenhum saque, um novo cpf ou conta é gerada
