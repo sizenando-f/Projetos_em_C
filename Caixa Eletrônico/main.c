@@ -465,6 +465,8 @@ void menu_relatorios(){
       case 3:
         banco_de_dados("", "", 8, 0, 0);
         break;
+      case 4:
+        break;
       default:
         system("cls");
         printf("ESCOLHA INVALIDA!\n");
