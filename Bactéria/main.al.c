@@ -96,29 +96,44 @@ int main (int argc, char *argv[]){
     char BACTERIAS[LIMITE_BACTERIAS][COMPR_BACTERIAS];
     char VIRUS[COMPR_VIRUS];
     char dnaResult[COMPR_BACTERIAS];
+    int validaBacteria = 0;
 
     nBacterias = atoi(argv[1]);
     if(nBacterias >= 1 && nBacterias <= 10){
-        for(size_t i = 2; i < argc - 1){
-            if((strlen(argc[i]) >= 1) && (strlen(argc[i]) <= 1000)){
-                
+        if((argc - 3) == nBacterias){
+            for(int j = 2; j < argc - 1; j++){
+                if((strlen(argv[j]) >= 1) && (strlen(argv[j]) <= 1000)){
+                    validaBacteria++;
+                }
             }
+            if(validaBacteria == nBacterias){
+                if((strlen(argv[argc-1]) >= 1) && (strlen(argv[argc-1]) <= 1000)){
+                    printf(SAIDA_2,nBacterias);
+                    for(int i=2;i<argc-1;i++) {
+                        strcpy(BACTERIAS[i-2],argv[i]);
+                        printf(SAIDA_3,BACTERIAS[i-2]);
+                    }
+                    strcpy(VIRUS,argv[argc-1]);
+                    printf(SAIDA_4,VIRUS);
+                    
+                    destroiDNA(BACTERIAS, nBacterias, VIRUS);
+                    for(int i = 0; i < nBacterias; i++){
+                        printf(SAIDA_5, BACTERIAS[i]);
+                    }
+                    
+                    dnaResultante(BACTERIAS, nBacterias, dnaResult);
+                    printf(SAIDA_6, dnaResult); 
+                } else {
+                    printf("O RNA DO VIRUS POSSUI O TAMANHO INCORRETO\n");
+                }
+            } else {
+                printf("UMA DAS BACTERIAS NAO POSSUI A QUANTIDADE CORRETA DE PROTEINA\n");
+            }
+        } else {
+            printf("QUANTIDADE INCORRETA DA BACTERIAS INFORMADA\n");
         }
-        printf(SAIDA_2,nBacterias);
-        for(int i=2;i<argc-1;i++) {
-            strcpy(BACTERIAS[i-2],argv[i]);
-            printf(SAIDA_3,BACTERIAS[i-2]);
-        }
-        strcpy(VIRUS,argv[argc-1]);
-        printf(SAIDA_4,VIRUS);
-        
-        destroiDNA(BACTERIAS, nBacterias, VIRUS);
-        for(int i = 0; i < nBacterias; i++){
-            printf(SAIDA_5, BACTERIAS[i]);
-        }
-        
-        dnaResultante(BACTERIAS, nBacterias, dnaResult);
-        printf(SAIDA_6, dnaResult);  
+    } else {
+        printf("NUMERO INVALIDO DE BACTERIAS, PRECISA SER >= 1 E <= 10\n");
     }
     
 
