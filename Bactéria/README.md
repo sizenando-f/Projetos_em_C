@@ -40,10 +40,9 @@ será o DNA da bactéria que Dr. Henrique tanto procura:</p>
 DNA resultante: GCT
 </details>
 
-_O programa é chamado por CMD no seguinte padrão: app <numerodebacterias> <bacterias> <virus>_
+_O programa é chamado por CMD no seguinte padrão: app 'numerodebacterias' 'bacterias' 'virus'_
 <br> Exemplo: <br>
 
 <li>app 5 AGCT TGC CGCAA TGTC ATGTTC T</li>
 <li>app 2 CGTACGTA AGTA GCGTA</li>
 <li>app 3 AACGT AGTCG TCGTA GAC</li>
-_
