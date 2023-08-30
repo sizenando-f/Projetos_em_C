@@ -99,15 +99,15 @@ int main (int argc, char *argv[]){
     int validaBacteria = 0;
 
     nBacterias = atoi(argv[1]);
-    if(nBacterias >= 1 && nBacterias <= 10){
-        if((argc - 3) == nBacterias){
-            for(int j = 2; j < argc - 1; j++){
+    if(nBacterias >= 1 && nBacterias <= 10){ // Valida a quantidade de bacterias está no intervalo
+        if((argc - 3) == nBacterias){   // Valida se existe a quantidade correta de bacterias informada pelo usuario
+            for(int j = 2; j < argc - 1; j++){  // Verifica se todas bacterias estão no intervalo correto
                 if((strlen(argv[j]) >= 1) && (strlen(argv[j]) <= 1000)){
                     validaBacteria++;
                 }
             }
-            if(validaBacteria == nBacterias){
-                if((strlen(argv[argc-1]) >= 1) && (strlen(argv[argc-1]) <= 1000)){
+            if(validaBacteria == nBacterias){ 
+                if((strlen(argv[argc-1]) >= 1) && (strlen(argv[argc-1]) <= 1000)){  // Verifica se o RNA do virus está no intervalo correto
                     printf(SAIDA_2,nBacterias);
                     for(int i=2;i<argc-1;i++) {
                         strcpy(BACTERIAS[i-2],argv[i]);
@@ -122,7 +122,11 @@ int main (int argc, char *argv[]){
                     }
                     
                     dnaResultante(BACTERIAS, nBacterias, dnaResult);
-                    printf(SAIDA_6, dnaResult); 
+                    if(!strcmp(dnaResult, "")){
+                        printf(SAIDA_6, "DNA COMUM INEXISTENTE");
+                    } else {
+                        printf(SAIDA_6, dnaResult); 
+                    }
                 } else {
                     printf("O RNA DO VIRUS POSSUI O TAMANHO INCORRETO\n");
                 }
