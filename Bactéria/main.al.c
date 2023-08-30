@@ -50,33 +50,33 @@
 #define SAIDA_5 "\nSAIDA_5 = Bacteria infectada: %s"
 #define SAIDA_6 "\nSAIDA_6 = DNA resultante: %s"
 
-// void dnaResultante(char bacterias[][COMPR_BACTERIAS], int nBacterias, char** resultado){
-//     size_t tamBac = strlen(bacterias[0]);
-//     char controle[tamBac];
-//     char bacteriaPrinc[tamBac];
+void dnaResultante(char bacterias[][COMPR_BACTERIAS], int nBacterias, char resultado[]){
+    size_t tamBac = strlen(bacterias[0]);
+    char bacteriaPrinc[tamBac];
+    char resultadoFinal[COMPR_BACTERIAS] = "";
 
-//     strcpy(bacteriaPrinc, bacterias[0]);
-//     strcpy(controle, bacterias[0]);
+    strcpy(bacteriaPrinc, bacterias[0]);
 
-//     for(size_t i = 0; i < tamBac; i++){
-//         for(size_t j = 1; j < strlen(controle); j++){
-//             int cont = 0;    
-//             for(int k = 1; k < nBacterias; k++){
-//                 if(strstr(bacterias[k], controle)){
-//                     cont++;
-//                 }
-//             }
-//             if(cont == nBacterias){
-//                 *resultado = controle;
-//                 break;
-//             }
-//             memmove(controle + strlen(controle) - j, " ", 1);
-//         }
-//         memmove(bacteriaPrinc, bacteriaPrinc + 1, strlen(bacteriaPrinc) + 1);
-//         strcpy(controle, bacteriaPrinc);
-//     }
+    for(size_t tam = tamBac; tam >= 1; tam--){
+        for(size_t i = 0; i <= tamBac - tam; i++){
+            char temp[tam + 1];
+            strncpy(temp, bacteriaPrinc + i, tam);
+            temp[tam] = '\0';
 
-// }
+            int cont = 0;
+            for(int k = 0; k < nBacterias; k++){
+                if(strstr(bacterias[k], temp)){
+                    cont++;
+                }
+            }
+
+            if(cont == nBacterias && strlen(temp) > strlen(resultadoFinal)){
+                strcpy(resultadoFinal, temp);
+            }
+        }
+    }
+    strcpy(resultado, resultadoFinal);
+}
 
 // Função que remove o RNA do virus do DNA da bacteria
 void destroiDNA(char bacterias[][COMPR_BACTERIAS], int nBacterias, char virus[COMPR_VIRUS]){
@@ -94,7 +94,7 @@ int main (int argc, char *argv[]){
     int nBacterias;
     char BACTERIAS[LIMITE_BACTERIAS][COMPR_BACTERIAS];
     char VIRUS[COMPR_VIRUS];
-    // char *dnaResult = NULL;
+    char dnaResult[COMPR_BACTERIAS];
 
     nBacterias = atoi(argv[1]);
     printf(SAIDA_2,nBacterias);
@@ -110,9 +110,8 @@ int main (int argc, char *argv[]){
         printf(SAIDA_5, BACTERIAS[i]);
     }
     
-    // dnaResultante(BACTERIAS, nBacterias, &dnaResult);
-    // printf(SAIDA_6, dnaResult);
-
+    dnaResultante(BACTERIAS, nBacterias, dnaResult);
+    printf(SAIDA_6, dnaResult);
 
     return 0;
 }
