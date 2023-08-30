@@ -50,35 +50,36 @@
 #define SAIDA_5 "\nSAIDA_5 = Bacteria infectada: %s"
 #define SAIDA_6 "\nSAIDA_6 = DNA resultante: %s"
 
+// rrocedimento que descobre a maior substring comum
 void dnaResultante(char bacterias[][COMPR_BACTERIAS], int nBacterias, char resultado[]){
     size_t tamBac = strlen(bacterias[0]);
-    char bacteriaPrinc[tamBac];
+    char bacteriaPrinc[tamBac]; // Recebe primeira bacteria como base
     char resultadoFinal[COMPR_BACTERIAS] = "";
 
     strcpy(bacteriaPrinc, bacterias[0]);
 
     for(size_t tam = tamBac; tam >= 1; tam--){
         for(size_t i = 0; i <= tamBac - tam; i++){
-            char temp[tam + 1];
+            char temp[tam + 1]; // Armazena parte da string
             strncpy(temp, bacteriaPrinc + i, tam);
-            temp[tam] = '\0';
+            temp[tam] = '\0';   // Insere o finalizador de strings no final do vetor
 
             int cont = 0;
             for(int k = 0; k < nBacterias; k++){
-                if(strstr(bacterias[k], temp)){
+                if(strstr(bacterias[k], temp)){ // Verifica se a substring criada existe nas outras bacterias
                     cont++;
                 }
             }
 
             if(cont == nBacterias && strlen(temp) > strlen(resultadoFinal)){
-                strcpy(resultadoFinal, temp);
+                strcpy(resultadoFinal, temp);   // Armazena maior substring
             }
         }
     }
     strcpy(resultado, resultadoFinal);
 }
 
-// Função que remove o RNA do virus do DNA da bacteria
+// Procedimento que remove o RNA do virus do DNA da bacteria
 void destroiDNA(char bacterias[][COMPR_BACTERIAS], int nBacterias, char virus[COMPR_VIRUS]){
     for(int i = 0; i < nBacterias; i++){
         char *resultado = strstr(bacterias[i], virus);  // Descobre primeira posição do RNA no DNA
@@ -97,21 +98,29 @@ int main (int argc, char *argv[]){
     char dnaResult[COMPR_BACTERIAS];
 
     nBacterias = atoi(argv[1]);
-    printf(SAIDA_2,nBacterias);
-    for(int i=2;i<argc-1;i++) {
-        strcpy(BACTERIAS[i-2],argv[i]);
-        printf(SAIDA_3,BACTERIAS[i-2]);
+    if(nBacterias >= 1 && nBacterias <= 10){
+        for(size_t i = 2; i < argc - 1){
+            if((strlen(argc[i]) >= 1) && (strlen(argc[i]) <= 1000)){
+                
+            }
+        }
+        printf(SAIDA_2,nBacterias);
+        for(int i=2;i<argc-1;i++) {
+            strcpy(BACTERIAS[i-2],argv[i]);
+            printf(SAIDA_3,BACTERIAS[i-2]);
+        }
+        strcpy(VIRUS,argv[argc-1]);
+        printf(SAIDA_4,VIRUS);
+        
+        destroiDNA(BACTERIAS, nBacterias, VIRUS);
+        for(int i = 0; i < nBacterias; i++){
+            printf(SAIDA_5, BACTERIAS[i]);
+        }
+        
+        dnaResultante(BACTERIAS, nBacterias, dnaResult);
+        printf(SAIDA_6, dnaResult);  
     }
-    strcpy(VIRUS,argv[argc-1]);
-    printf(SAIDA_4,VIRUS);
     
-    destroiDNA(BACTERIAS, nBacterias, VIRUS);
-    for(int i = 0; i < nBacterias; i++){
-        printf(SAIDA_5, BACTERIAS[i]);
-    }
-    
-    dnaResultante(BACTERIAS, nBacterias, dnaResult);
-    printf(SAIDA_6, dnaResult);
 
     return 0;
 }
