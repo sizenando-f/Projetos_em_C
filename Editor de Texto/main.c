@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 void pegaTexto(char frase[], char texto[][82]){
   int fraseTam = strlen(frase)/75;
+  for (int i = 0; i < fraseTam; i++){
+    strcpy(texto[i], "");
+  }
+
   char * palavra = strtok(frase, " ");
   strcpy(texto[0], palavra);
   strcat(texto[0], " ");
@@ -30,8 +35,7 @@ void pegaTexto(char frase[], char texto[][82]){
       palavra = strtok(NULL, " ");
     }
   }
-  }
-
+}
 
 void imprimeTexto(char texto[][82], int fraseTam){
     for (int i = 0; i < fraseTam; i++)
@@ -40,17 +44,91 @@ void imprimeTexto(char texto[][82], int fraseTam){
     }
 }
 
-void menuPrincipal(char frase[], char texto[][82], int fraseTam){
+void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
+  char temp[50][82];
+  int cont = 0;
+  for(int i = 0; i < fraseTam; i++){
+    strcpy(temp[i], texto[i]);
+  }
+
+  for (int i = 0; i < fraseTam; i++) {
+    char *linha = strdup(temp[i]); // Copia a linha para uma variável temporária
+    char *palavraAtual = strtok(linha, " ,().-");
+    int coluna = 0;
+
+    while (palavraAtual != NULL) {
+        if (strcmp(palavraAtual, palavra) == 0) {
+            printf("Palavra encontrada na linha %d\n", i + 1);
+            printf("Na coluna %d\n", coluna);
+            cont++;
+        }
+        coluna += strlen(palavraAtual) + 1; // Avança a coluna para o início da próxima palavra
+        palavraAtual = strtok(NULL, " ,().-");
+    }
+
+    free(linha); // Libera a memória alocada pela strdup
+  }
+  if(!cont){
+    printf("PALAVRA NAO EXISTE!\n");
+  }
+}
+
+void transformaEmFrase(char texto[][82], char frase[], int fraseTam){
+  strcpy(frase, "");
+
+  for (int i = 0; i < fraseTam; i++){
+    strcat(frase, texto[i]);
+  }
+}
+
+void trocaPalavra(char texto[][82], char palavraAntiga[], char palavraNova[], int fraseTam, int codigo){
+  char frase[3000] = "";
+  transformaEmFrase(texto, frase, fraseTam);
+  
+}
+
+void menuSubstituir(char texto[][82], int fraseTam){
   int esc;
+  char palavraAntiga[30], palavraNova[30];
+  while((esc < 1 || esc > 3) || (esc != 3)){
+    printf("------------ # SUBSTITUIR PALAVRA # ------------\n");
+    printf("1) SUBSTITUIR PRIMEIRA OCORRENCIA \n");
+    printf("2) SUBSTITUIR TODAS OCORRENCIAS \n");
+    printf("3) VOLTAR \n");
+    printf("---------------------------------------------\n");
+    printf("SUA ESCOLHA: ");
+    scanf("%d", &esc);
+    switch (esc){
+      case 1:
+        printf("PALAVRA QUE DESEJA SUBSTITUIR: ");
+        scanf("%s", palavraAntiga);
+        printf("PALAVRA NOVA: ");
+        scanf("%s", palavraNova);
+        trocaPalavra(texto, palavraAntiga, palavraNova, fraseTam, 0);
+      break;
+      case 2:
+
+      break;
+      default:
+      
+      break;
+    }
+  }
+
+}
+
+void menuPrincipal(char texto[][82], int fraseTam){
+  int esc;
+  char palavra[20];
   while((esc < 1 || esc > 6) || (esc != 6)){
-    printf("---------------- # EDITOR DE TEXTO # ----------------\n");
+    printf("-------- # EDITOR DE TEXTO # --------\n");
     printf("1) IMPRIMIR TEXTO FORMATADO \n");
     printf("2) ENCONTRAR PALAVRA \n");
     printf("3) OPCOES DE SUBSTITUICAO \n");
     printf("4) OPCOES DE CAIXA \n");
     printf("5) OPCOES DE ALINHAMENTO \n");
     printf("6) ENCERRAR PROGRAMA\n");
-    printf("-----------------------------------------------------\n");
+    printf("-------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
     switch(esc){
@@ -58,11 +136,13 @@ void menuPrincipal(char frase[], char texto[][82], int fraseTam){
         imprimeTexto(texto, fraseTam);
         break;
       case 2:
+        printf("QUAL PALAVRA DESEJA ENCONTRAR? -> ");
+        scanf("%s", palavra);
+        encontraPalavra(texto, palavra, fraseTam);
         break;
-
       case 3:
+        menuSubstituir(texto, fraseTam);
         break;
-
       case 4:
         break;
 
@@ -85,6 +165,7 @@ int main(){
   char texto[50][82];
   int fraseTam = strlen(frase)/75;
   pegaTexto(frase, texto);
-  menuPrincipal(frase, texto, fraseTam);
+
+  menuPrincipal(texto, fraseTam);
   return 0;
 }
