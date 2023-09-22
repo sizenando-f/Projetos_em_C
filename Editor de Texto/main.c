@@ -83,15 +83,60 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
         palavra = strtok(NULL, " ");
       }
     }
+  } else if(codigo == 2){
+    char * palavra = strtok(frase, " ");
+
+    if(strcmp(palavraAntiga, palavra) == 0){
+      strcpy(texto[0], palavraNova);
+    } else {
+      strcpy(texto[0], palavra);
+    }
+
+    strcat(texto[0], " ");
+
+    palavra = strtok(NULL, " ");
+
+    for (int i = 0; i < fraseTam+2; i++){
+      int check = 0;
+      while(check == 0 && palavra != NULL){
+        if((strcmp(palavraAntiga, palavra) == 0)){
+          strcat(texto[i], palavraNova);
+        } else {
+          strcat(texto[i], palavra);
+        }
+        
+        if(strlen(texto[i]) > 80){
+          check = 1;
+          char * ponteiro = strrchr(texto[i], ' ');
+          *ponteiro = '\0';
+          if((strcmp(palavraAntiga, palavra) == 0)){
+            strcpy(texto[i + 1], palavraNova);
+          } else {
+            strcpy(texto[i + 1], palavra);
+          }
+        }
+
+        if(check){
+          strcat(texto[i+1], " ");
+        } else {
+          strcat(texto[i], " ");
+        }
+
+        palavra = strtok(NULL, " ");
+      }
+    }
   }
   
 }
 
 void imprimeTexto(char texto[][82], int fraseTam){
+    system("cls");
+    printf("\n\n");
     for (int i = 0; i < fraseTam; i++)
     {
       printf("%s\n", texto[i]);
     }
+    system("pause");
 }
 
 void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
@@ -121,6 +166,7 @@ void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
   if(!cont){
     printf("PALAVRA NAO EXISTE!\n");
   }
+  system("pause");
 }
 
 void transformaEmFrase(char texto[][82], char frase[], int fraseTam){
@@ -142,6 +188,7 @@ void menuSubstituir(char texto[][82], int fraseTam){
   char palavraAntiga[30], palavraNova[30];
   char frase[4000];
   while((esc < 1 || esc > 3) || (esc != 3)){
+    system("cls");
     printf("------------ # SUBSTITUIR PALAVRA # ------------\n");
     printf("1) SUBSTITUIR PRIMEIRA OCORRENCIA \n");
     printf("2) SUBSTITUIR TODAS OCORRENCIAS \n");
@@ -151,6 +198,7 @@ void menuSubstituir(char texto[][82], int fraseTam){
     scanf("%d", &esc);
     switch (esc){
       case 1:
+        printf("# SUBSTITUIR PRIMEIRA OCORRENCIA #\n");
         printf("PALAVRA QUE DESEJA SUBSTITUIR: ");
         scanf("%s", palavraAntiga);
         printf("PALAVRA NOVA: ");
@@ -159,7 +207,13 @@ void menuSubstituir(char texto[][82], int fraseTam){
         pegaTexto(frase, texto, 1, palavraAntiga, palavraNova);
       break;
       case 2:
-
+        printf("# SUBSTITUIR TODAS OCORRENCIAS #\n");
+        printf("PALAVRA QUE DESEJA SUBSTITUIR: ");
+        scanf("%s", palavraAntiga);
+        printf("PALAVRA NOVA: ");
+        scanf("%s", palavraNova);
+        transformaEmFrase(texto, frase, fraseTam);
+        pegaTexto(frase, texto, 2, palavraAntiga, palavraNova);
       break;
       default:
       
@@ -173,6 +227,7 @@ void menuPrincipal(char texto[][82], int fraseTam){
   int esc;
   char palavra[20];
   while((esc < 1 || esc > 6) || (esc != 6)){
+    system("cls");
     printf("-------- # EDITOR DE TEXTO # --------\n");
     printf("1) IMPRIMIR TEXTO FORMATADO \n");
     printf("2) ENCONTRAR PALAVRA \n");
