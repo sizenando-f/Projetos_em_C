@@ -7,10 +7,11 @@
 void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraAntiga[], char palavraNova[]){
   char * frase = strdup(fraseOriginal);
   int fraseTam = strlen(frase)/75;
+  int existePalavra = 0;
   for (int i = 0; i < fraseTam; i++){
     strcpy(texto[i], "");
   }
-
+  system("cls");
   if(codigo == 0){
     char * palavra = strtok(frase, " ");
     strcpy(texto[0], palavra);
@@ -46,6 +47,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
     if(strcmp(palavraAntiga, palavra) == 0){
       strcpy(texto[0], palavraNova);
       control = 1;
+      existePalavra = 1;
     } else {
       strcpy(texto[0], palavra);
     }
@@ -60,6 +62,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
         if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){
           strcat(texto[i], palavraNova);
           control = 1;
+          existePalavra = 1;
         } else {
           strcat(texto[i], palavra);
         }
@@ -71,6 +74,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
           if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){
             strcpy(texto[i + 1], palavraNova);
             control = 1;
+            existePalavra = 1;
           } else {
             strcpy(texto[i + 1], palavra);
           }
@@ -85,11 +89,18 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
         palavra = strtok(NULL, " ");
       }
     }
+    if(existePalavra){
+        printf("ACAO REALIZADA COM SUCESSO!\n");
+      } else {
+        printf("A PALAVRA NAO EXISTE!\n");
+      }
+      system("pause");
   } else if(codigo == 2){
     char * palavra = strtok(frase, " ");
 
     if(strcmp(palavraAntiga, palavra) == 0){
       strcpy(texto[0], palavraNova);
+      existePalavra = 1;
     } else {
       strcpy(texto[0], palavra);
     }
@@ -103,6 +114,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
       while(check == 0 && palavra != NULL){
         if((strcmp(palavraAntiga, palavra) == 0)){
           strcat(texto[i], palavraNova);
+          existePalavra = 1;
         } else {
           strcat(texto[i], palavra);
         }
@@ -113,6 +125,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
           *ponteiro = '\0';
           if((strcmp(palavraAntiga, palavra) == 0)){
             strcpy(texto[i + 1], palavraNova);
+            existePalavra = 1;
           } else {
             strcpy(texto[i + 1], palavra);
           }
@@ -127,6 +140,12 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
         palavra = strtok(NULL, " ");
       }
     }
+    if(existePalavra){
+        printf("ACAO REALIZADA COM SUCESSO!\n");
+      } else {
+        printf("A PALAVRA NAO EXISTE!\n");
+      }
+      system("pause");
   }
   
 }
