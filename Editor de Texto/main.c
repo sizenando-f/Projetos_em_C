@@ -247,6 +247,67 @@ void menuSubstituir(char texto[][82], int fraseTam){
 
 }
 
+void paraMaiusculo(char texto[][82], int fraseTam){
+  for (int i = 0; i < fraseTam; i++){
+    for (int j = 0; j < 82; j++){
+      texto[i][j] = toupper(texto[i][j]);
+    }
+  }
+}
+
+void paraMinusculo(char texto[][82], int fraseTam){
+  for (int i = 0; i < fraseTam; i++){
+    for (int j = 0; j < 82; j++){
+      texto[i][j] = tolower(texto[i][j]);
+    }
+  }
+}
+
+void primeiraParaMaiusculo(char texto[][82], int fraseTam){
+  for (int i = 0; i < fraseTam; i++){
+    texto[i][0] = toupper(texto[i][0]);
+  }
+}
+
+void menuCaixa(char texto[][82], int fraseTam){
+  int esc;
+  while((esc < 1 || esc > 4) || (esc != 4)){
+    system("cls");
+    printf("------------ # MODIFICAR CAIXA # ------------\n");
+    printf("1) TODOS CARACACTERES EM MAIUSCULO \n");
+    printf("2) TODOS OS CARACTERES EM MINUSCULO \n");
+    printf("3) CARACTERES INICIAL DAS FRASES EM MAIUSCULO \n");
+    printf("4) VOLTAR\n");
+    printf("---------------------------------------------\n");
+    printf("SUA ESCOLHA: ");
+    scanf("%d", &esc);
+    system("cls");
+    switch (esc){
+      case 1:
+        paraMaiusculo(texto, fraseTam);
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      case 2:
+        paraMinusculo(texto, fraseTam);
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      case 3:
+        primeiraParaMaiusculo(texto, fraseTam);
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      case 4:
+      break;
+      default:
+        printf("OPCAO INVALIDA!\n");
+        system("pause");
+        break;
+    }
+  }
+}
+
 void menuPrincipal(char texto[][82], int fraseTam){
   int esc;
   char palavra[20];
@@ -275,8 +336,8 @@ void menuPrincipal(char texto[][82], int fraseTam){
         menuSubstituir(texto, fraseTam);
         break;
       case 4:
+        menuCaixa(texto, fraseTam);
         break;
-
       case 5:
         break;
 
