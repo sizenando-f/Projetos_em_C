@@ -150,12 +150,29 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
   
 }
 
-void imprimeTexto(char texto[][82], int fraseTam){
+void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
+    int espaco = 80;
     system("cls");
-    printf("\n\n");
-    for (int i = 0; i < fraseTam; i++)
-    {
-      printf("%s\n", texto[i]);
+    switch (*alinhamento){
+      case 0:
+        for (int i = 0; i < fraseTam; i++){
+          printf("%s\n", texto[i]);
+        }
+        break;
+      case 1:
+        for (int i = 0; i < fraseTam; i++){
+          printf("%*s\n", espaco, texto[i]);
+        }
+        break;
+      case 2: {
+        for (int i = 0; i < fraseTam; i++){
+          int espacosLaterais = (espaco - strlen(texto[i])) / 2;
+          printf("%*s%s%*s\n", espacosLaterais, "", texto[i], espacosLaterais, "");
+        }
+        break;
+      }
+      default:
+        break;
     }
     system("pause");
 }
@@ -308,8 +325,46 @@ void menuCaixa(char texto[][82], int fraseTam){
   }
 }
 
+void menuAlinhamento(char texto[][82], int fraseTam, int *alinhamento){
+  int esc;
+  while((esc < 1 || esc > 5) || (esc != 5)){
+    system("cls");
+    printf("------------ # MODIFICAR CAIXA # ------------\n");
+    printf("1) ALINHAR TEXTO À ESQUERDA \n");
+    printf("2) ALINHAR TEXTO À DIREITA \n");
+    printf("3) CENTRALIZAR TEXTO \n");
+    printf("4) JUSTIFICAR TEXTO \n");
+    printf("5) VOLTAR \n");
+    printf("---------------------------------------------\n");
+    printf("SUA ESCOLHA: ");
+    scanf("%d", &esc);
+    system("cls");
+    switch (esc){
+      case 1:
+        *alinhamento = 0;
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      case 2:
+        *alinhamento = 1;
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      case 3:
+        *alinhamento = 2;
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+        break;
+      default:
+        break;
+    }
+    
+  }
+}
+
 void menuPrincipal(char texto[][82], int fraseTam){
   int esc;
+  static int alinhamento = 0;
   char palavra[20];
   while((esc < 1 || esc > 6) || (esc != 6)){
     system("cls");
@@ -325,7 +380,7 @@ void menuPrincipal(char texto[][82], int fraseTam){
     scanf("%d", &esc);
     switch(esc){
       case 1:
-        imprimeTexto(texto, fraseTam);
+        imprimeTexto(texto, fraseTam, &alinhamento);
         break;
       case 2:
         printf("QUAL PALAVRA DESEJA ENCONTRAR? -> ");
@@ -339,11 +394,10 @@ void menuPrincipal(char texto[][82], int fraseTam){
         menuCaixa(texto, fraseTam);
         break;
       case 5:
+        menuAlinhamento(texto, fraseTam, &alinhamento);
         break;
-
       case 6:
         break;
-
       default:
         break;
     }
