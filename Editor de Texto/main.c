@@ -346,16 +346,16 @@ void menuCaixa(char texto[][82], int fraseTam){
   }
 }
 
-void menuAlinhamento(char texto[][82], int fraseTam, int *alinhamento){
+void menuAlinhamento(int *alinhamento){
   int esc;
   while((esc < 1 || esc > 5) || (esc != 5)){
     system("cls");
     printf("------------ # MODIFICAR CAIXA # ------------\n");
-    printf("1) ALINHAR TEXTO À ESQUERDA \n");
-    printf("2) ALINHAR TEXTO À DIREITA \n");
-    printf("3) CENTRALIZAR TEXTO \n");
-    printf("4) JUSTIFICAR TEXTO \n");
-    printf("5) VOLTAR \n");
+    printf("|1) ALINHAR TEXTO À ESQUERDA                |\n");
+    printf("|2) ALINHAR TEXTO À DIREITA                 |\n");
+    printf("|3) CENTRALIZAR TEXTO                       |\n");
+    printf("|4) JUSTIFICAR TEXTO                        |\n");
+    printf("|5) VOLTAR                                  |\n");
     printf("---------------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
@@ -398,12 +398,12 @@ void menuPrincipal(char texto[][82], int fraseTam){
   while((esc < 1 || esc > 6) || (esc != 6)){
     system("cls");
     printf("-------- # EDITOR DE TEXTO # --------\n");
-    printf("1) IMPRIMIR TEXTO FORMATADO \n");
-    printf("2) ENCONTRAR PALAVRA \n");
-    printf("3) OPCOES DE SUBSTITUICAO \n");
-    printf("4) OPCOES DE CAIXA \n");
-    printf("5) OPCOES DE ALINHAMENTO \n");
-    printf("6) ENCERRAR PROGRAMA\n");
+    printf("|1) IMPRIMIR TEXTO FORMATADO        |\n");
+    printf("|2) ENCONTRAR PALAVRA               |\n");
+    printf("|3) OPCOES DE SUBSTITUICAO          |\n");
+    printf("|4) OPCOES DE CAIXA                 |\n");
+    printf("|5) OPCOES DE ALINHAMENTO           |\n");
+    printf("|6) ENCERRAR PROGRAMA               |\n");
     printf("-------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
@@ -423,7 +423,7 @@ void menuPrincipal(char texto[][82], int fraseTam){
         menuCaixa(texto, fraseTam);
         break;
       case 5:
-        menuAlinhamento(texto, fraseTam, &alinhamento);
+        menuAlinhamento(&alinhamento);
         break;
       case 6:
         break;
