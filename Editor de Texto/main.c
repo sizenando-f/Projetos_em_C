@@ -171,6 +171,27 @@ void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
         }
         break;
       }
+      case 3: {
+        for (int i = 0; i < fraseTam; i++){
+          char * frase = strdup(texto[i]);
+          char * palavra = strtok(frase, " ");
+          int espacosLaterais = (espaco - strlen(texto[i]));
+
+          fputs(palavra, stdout);
+          fputs(" ", stdout);
+          while(palavra != NULL){
+            if(espacosLaterais > 0){
+              fputs(" ", stdout);
+              espacosLaterais--;
+            }
+            palavra = strtok(NULL, " ");
+            fputs(palavra, stdout);
+            fputs(" ", stdout);
+          }
+          printf("\n");
+        }
+      }
+        break;
       default:
         break;
     }
@@ -355,7 +376,15 @@ void menuAlinhamento(char texto[][82], int fraseTam, int *alinhamento){
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
         system("pause");
         break;
+      case 4:
+        *alinhamento = 3;
+        printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        system("pause");
+      case 5:
+        break;
       default:
+        printf("OPCAO INVALIDA!\n");
+        system("pause");
         break;
     }
     
@@ -399,6 +428,8 @@ void menuPrincipal(char texto[][82], int fraseTam){
       case 6:
         break;
       default:
+        printf("OPCAO INVALIDA!\n");
+        system("pause");
         break;
     }
 
