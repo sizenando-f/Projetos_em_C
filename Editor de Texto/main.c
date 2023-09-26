@@ -3,68 +3,74 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-
+// Procedimento que organiza o texto
 void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraAntiga[], char palavraNova[]){
-  char * frase = strdup(fraseOriginal);
-  int fraseTam = strlen(frase)/75;
-  int existePalavra = 0;
-  for (int i = 0; i < fraseTam; i++){
+  char * frase = strdup(fraseOriginal); // Duplica frase
+  int fraseTam = strlen(frase)/75;  // Descobre quantas linhas terá o texto
+  int existePalavra = 0;  // Variável controle para verificar se palavra a ser alterada existe
+
+  // Inicializa matriz do texto
+  for (int i = 0; i < fraseTam; i++){ 
     strcpy(texto[i], "");
   }
+
   system("cls");
-  if(codigo == 0){
-    char * palavra = strtok(frase, " ");
-    strcpy(texto[0], palavra);
-    strcat(texto[0], " ");
 
-    palavra = strtok(NULL, " ");
+  if(codigo == 0){  // 0 = Procedimento padrão de inserção de palavras no texto
+    char * palavra = strtok(frase, " ");  // Pega primeira palavra da frase
+    strcpy(texto[0], palavra);  // Insere na primeria linha do texto
+    strcat(texto[0], " ");  // Concatena um espaço
 
+    palavra = strtok(NULL, " ");  // Prossegue para próxima palavra
+
+    // Itera por todas as linhas
     for (int i = 0; i < fraseTam+2; i++){
-      int check = 0;
-      while(check == 0 && palavra != NULL){
-        strcat(texto[i], palavra);
+      int check = 0;  // Variável controle para descobrir se a linha já possui 80 caracteres
+      while(check == 0 && palavra != NULL){ // Repete enquanto houver palavra na frase e a linha não tiver 80 caracteres
+        strcat(texto[i], palavra);  // Concatena palavra no texto
         
-        if(strlen(texto[i]) > 80){
-          check = 1;
-          char * ponteiro = strrchr(texto[i], ' ');
-          *ponteiro = '\0';
-          strcpy(texto[i + 1], palavra);
+        if(strlen(texto[i]) > 80){  // Verifica se linha possui mais de 80 caracteres
+          check = 1;  // Variável controla se torna verdadeira
+          char * ponteiro = strrchr(texto[i], ' '); // Ponteiro para o último espaço da linha
+          *ponteiro = '\0'; // Inserção de um finalizador de string no espaço
+          strcpy(texto[i + 1], palavra);  // Insere palavra na próxima linha
         }
 
+        // Concatena espaço de acordo com a linha disponível 
         if(check){
           strcat(texto[i+1], " ");
         } else {
           strcat(texto[i], " ");
         }
 
-        palavra = strtok(NULL, " ");
+        palavra = strtok(NULL, " ");  // Passa para próxima palavra
       }
     }
-  } else if(codigo == 1){
-    int control = 0;
-    char * palavra = strtok(frase, " ");
+  } else if(codigo == 1){ // 1 = Procedimento de inserção de palavras no texto alterando uma palavra
+    int control = 0;  // Variável controle para saber se palavra já foi alterada
+    char * palavra = strtok(frase, " ");  // Primeira palavra da frase
 
-    if(strcmp(palavraAntiga, palavra) == 0){
-      strcpy(texto[0], palavraNova);
-      control = 1;
-      existePalavra = 1;
+    if(strcmp(palavraAntiga, palavra) == 0){  // Verifica se palavra a ser alterada é igual a palavra atual
+      strcpy(texto[0], palavraNova);  // Insere para palavra nova
+      control = 1;  // Palavra alterada se torna verdadeiro
+      existePalavra = 1;  // Palavra existe
     } else {
-      strcpy(texto[0], palavra);
+      strcpy(texto[0], palavra);  // Se a palavra não for igual, continua normalmente a inserção de palavras
     }
 
-    strcat(texto[0], " ");
+    strcat(texto[0], " ");  // Concatena espaço
 
-    palavra = strtok(NULL, " ");
+    palavra = strtok(NULL, " ");  // Passa para próxima palavra
 
     for (int i = 0; i < fraseTam+2; i++){
-      int check = 0;
-      while(check == 0 && palavra != NULL){
-        if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){
-          strcat(texto[i], palavraNova);
-          control = 1;
-          existePalavra = 1;
+      int check = 0; // Variável controle para descobrir se a linha já possui 80 caracteres
+      while(check == 0 && palavra != NULL){ // Repete enquanto houver palavra na frase e a linha não tiver 80 caracteres
+        if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){  // Verifica se palavra a ser alterada é igual a palavra atual
+          strcat(texto[i], palavraNova);  // Insere para palavra nova
+          control = 1;  // Palavra alterada se torna verdadeiro
+          existePalavra = 1;  // Palavra existe
         } else {
-          strcat(texto[i], palavra);
+          strcat(texto[i], palavra);   // Se a palavra não for igual, continua normalmente a inserção de palavras
         }
         
         if(strlen(texto[i]) > 80){
@@ -471,7 +477,7 @@ void menuPrincipal(char texto[][82], int fraseTam){
 int main(){
   char frase[] = "William Henry Gates III KBE GCIH (Seattle, 28 de outubro de 1955) mais conhecido como Bill Gates, e um magnata, empresario, diretor executivo, investidor, filantropo e autor americano, que ficou conhecido por fundar junto com Paul Allen a Microsoft a maior e mais conhecida empresa de software do mundo em termos de valor de mercado. Gates ocupa atualmente o cargo de presidente nao-executivo da Microsoft alem de ser classificado regularmente como a pessoa mais rica do mundo, posicao ocupada por ele de 1995 a 2007, 2009, e de 2014 a 2017. E um dos pioneiros na revolucao do computador pessoal. Gates nasceu em uma familia de classe media de Seattle. Seu pai, William H. Gates, era advogado de grandes empresas, e sua mae, Mary Maxwell Gates, foi professora da Universidade de Washington e diretora de bancos. Bill Gates e as suas duas irmas, Kristanne e Libby, frequentaram as melhores escolas particulares de sua cidade natal, e Bill tambem participou do Movimento Escoteiro ainda quando jovem. Bill Gates, foi admitido na prestigiosa Universidade Harvard, (conseguindo 1590 SATs dos 1600 possiveis) mas abandonou os cursos de Matematica e Direito no terceiro ano para dedicar-se a Microsoft. Trabalhou na Taito com o desenvolvimento de software basico para maquinas de jogos eletronicos (fliperamas) ate seus 16 anos. Tambem trabalhou como pesquisador visitante na University of Massachusetts at Amherst, UMASS, Estados Unidos, quando com 17 anos, desenvolveu junto com Paul Allen um software para leitura de fitas magneticas, com informacoes de trafego de veiculos, em um chip Intel 8008. Com esse produto, Gates e Allen criaram uma empresa, a Traf-o-Data, porem os clientes desistiram do negocio quando descobriram a idade dos donos. Enquanto estudavam em Harvard, os jovens desenvolveram um interpretador da linguagem BASIC para um dos primeiros computadores pessoais a serem lancado nos Estados Unidos - o Altair 8800. Apos um modesto sucesso na comercializa��o deste produto, Gates e Allen fundaram a Microsoft, uma das primeiras empresas no mundo focadas exclusivamente no mercado de programas para computadores pessoais ou PCs. Gates adquiriu ao longo dos anos uma fama de visionario (apostou no mercado de software na epoca em que o hardware era considerado muito mais valioso) e de negociador agressivo, chegando muitas vezes a ser acusado por concorrentes da Microsoft de utilizar praticas comerciais desleais. Nos anos 1980, a IBM, lider no mercado de grandes computadores, resolveu entrar no mercado da microinformatica com o PC, porem faltava o Sistema Operacional. Para isso, fechou contrato com a recem-criada Microsoft. Todavia, a Microsoft nao possuia o software ainda. O jovem Bill Gates foi a uma pequena empresa que havia desenvolvido o sistema para o processador da Intel e decidiu compra-lo, pagou cerca de US$ 50 mil, personalizou o programa e vendeu-o por US$ 8 milhoes, mantendo a licenca do produto. Este viria a ser o MS-DOS. Fonte:";
   char texto[100][82];
-  int fraseTam = strlen(frase)/75;
+  int fraseTam = strlen(frase)/75; // Descobre quantas linhas o texto terá
   pegaTexto(frase, texto, 0, "", "");
 
   menuPrincipal(texto, fraseTam);
