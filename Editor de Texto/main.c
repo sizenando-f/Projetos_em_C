@@ -153,6 +153,7 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
 void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
     int espaco = 80;
     system("cls");
+    printf("--------------------------------------------------------------------------------\n");
     switch (*alinhamento){
       case 0:
         for (int i = 0; i < fraseTam; i++){
@@ -195,6 +196,7 @@ void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
       default:
         break;
     }
+    printf("--------------------------------------------------------------------------------\n");
     system("pause");
 }
 
@@ -204,16 +206,20 @@ void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
   for(int i = 0; i < fraseTam; i++){
     strcpy(temp[i], texto[i]);
   }
+  system("cls");
+  printf("   # PALAVRA: %s #\n", palavra);
 
   for (int i = 0; i < fraseTam; i++) {
     char *linha = strdup(temp[i]); // Copia a linha para uma variável temporária
     char *palavraAtual = strtok(linha, " ,().-");
     int coluna = 0;
-
     while (palavraAtual != NULL) {
         if (strcmp(palavraAtual, palavra) == 0) {
-            printf("Palavra encontrada na linha %d\n", i + 1);
-            printf("Na coluna %d\n", coluna);
+            printf("----------------------------\n");
+            printf("|      ENCONTRADA EM:      |\n");
+            printf("----------------------------\n");
+            printf("    LINHA: %d COLUNA: %d \n", i+1, coluna+1);
+            printf("----------------------------\n\n");
             cont++;
         }
         coluna += strlen(palavraAtual) + 1; // Avança a coluna para o início da próxima palavra
@@ -223,7 +229,10 @@ void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
     free(linha); // Libera a memória alocada pela strdup
   }
   if(!cont){
-    printf("PALAVRA NAO EXISTE!\n");
+    printf("\n-------- ERRO --------\n");
+    printf("| PALAVRA NAO EXISTE |\n");
+    printf("----------------------\n\n");
+
   }
   system("pause");
 }
@@ -248,27 +257,33 @@ void menuSubstituir(char texto[][82], int fraseTam){
   char frase[4000];
   while((esc < 1 || esc > 3) || (esc != 3)){
     system("cls");
-    printf("------------ # SUBSTITUIR PALAVRA # ------------\n");
-    printf("1) SUBSTITUIR PRIMEIRA OCORRENCIA \n");
-    printf("2) SUBSTITUIR TODAS OCORRENCIAS \n");
-    printf("3) VOLTAR \n");
-    printf("---------------------------------------------\n");
+    printf("------ # SUBSTITUIR PALAVRA # ------\n");
+    printf("|1) SUBSTITUIR PRIMEIRA OCORRENCIA |\n");
+    printf("|2) SUBSTITUIR TODAS OCORRENCIAS   |\n");
+    printf("|3) VOLTAR                         |\n");
+    printf("------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
+    while(getchar() != '\n');
+    system("cls");
     switch (esc){
       case 1:
-        printf("# SUBSTITUIR PRIMEIRA OCORRENCIA #\n");
+        printf("#   SUBSTITUIR PRIMEIRA OCORRENCIA   #\n");
+        printf("--------------------------------------\n");
         printf("PALAVRA QUE DESEJA SUBSTITUIR: ");
         scanf("%s", palavraAntiga);
+        printf("--------------------------------------\n");
         printf("PALAVRA NOVA: ");
         scanf("%s", palavraNova);
         transformaEmFrase(texto, frase, fraseTam);
         pegaTexto(frase, texto, 1, palavraAntiga, palavraNova);
         break;
       case 2:
-        printf("# SUBSTITUIR TODAS OCORRENCIAS #\n");
+        printf("#   SUBSTITUIR TODAS OCORRENCIAS   #\n");
+        printf("------------------------------------\n");
         printf("PALAVRA QUE DESEJA SUBSTITUIR: ");
         scanf("%s", palavraAntiga);
+        printf("------------------------------------\n");
         printf("PALAVRA NOVA: ");
         scanf("%s", palavraNova);
         transformaEmFrase(texto, frase, fraseTam);
@@ -277,8 +292,9 @@ void menuSubstituir(char texto[][82], int fraseTam){
       case 3:
         break;
       default:
-        printf("ESCOLHA INVALIDA!\n");
-        system("pause");
+        printf("-------------------------\n");
+        printf("|ERROR: ENTRADA INVALIDA|\n");
+        printf("-------------------------\n");
         break;
     }
   }
@@ -311,35 +327,42 @@ void menuCaixa(char texto[][82], int fraseTam){
   int esc;
   while((esc < 1 || esc > 4) || (esc != 4)){
     system("cls");
-    printf("------------ # MODIFICAR CAIXA # ------------\n");
-    printf("1) TODOS CARACACTERES EM MAIUSCULO \n");
-    printf("2) TODOS OS CARACTERES EM MINUSCULO \n");
-    printf("3) CARACTERES INICIAL DAS FRASES EM MAIUSCULO \n");
-    printf("4) VOLTAR\n");
-    printf("---------------------------------------------\n");
+    printf("------------------ # MODIFICAR CAIXA # ------------------\n");
+    printf("|1) DEIXAR TODOS CARACACTERES EM MAIUSCULO              |\n");
+    printf("|2) DEIXAR TODOS OS CARACTERES EM MINUSCULO             |\n");
+    printf("|3) DEIXAR CARACTERES INICIAIS DAS FRASES EM MAIUSCULO  |\n");
+    printf("|4) VOLTAR                                              |\n");
+    printf("---------------------------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
+    while(getchar() != '\n');
     system("cls");
+    printf("  ---------------------------\n");
     switch (esc){
       case 1:
         paraMaiusculo(texto, fraseTam);
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 2:
         paraMinusculo(texto, fraseTam);
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 3:
         primeiraParaMaiusculo(texto, fraseTam);
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 4:
       break;
       default:
-        printf("OPCAO INVALIDA!\n");
+        printf("-------------------------\n");
+        printf("|ERROR: ENTRADA INVALIDA|\n");
+        printf("-------------------------\n");
         system("pause");
         break;
     }
@@ -350,44 +373,50 @@ void menuAlinhamento(int *alinhamento){
   int esc;
   while((esc < 1 || esc > 5) || (esc != 5)){
     system("cls");
-    printf("------------ # MODIFICAR CAIXA # ------------\n");
-    printf("|1) ALINHAR TEXTO À ESQUERDA                |\n");
-    printf("|2) ALINHAR TEXTO À DIREITA                 |\n");
-    printf("|3) CENTRALIZAR TEXTO                       |\n");
-    printf("|4) JUSTIFICAR TEXTO                        |\n");
-    printf("|5) VOLTAR                                  |\n");
-    printf("---------------------------------------------\n");
+    printf("------- # MODIFICAR CAIXA # -------\n");
+    printf("|1) ALINHAR TEXTO A ESQUERDA      |\n");
+    printf("|2) ALINHAR TEXTO A DIREITA       |\n");
+    printf("|3) CENTRALIZAR TEXTO             |\n");
+    printf("|4) JUSTIFICAR TEXTO              |\n");
+    printf("|5) VOLTAR                        |\n");
+    printf("-----------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
+    while(getchar() != '\n');
     system("cls");
+    printf("  ---------------------------\n");
     switch (esc){
       case 1:
         *alinhamento = 0;
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 2:
         *alinhamento = 1;
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 3:
         *alinhamento = 2;
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
         break;
       case 4:
         *alinhamento = 3;
         printf("OPERACAO REALIZADA COM SUCESSO!\n");
+        printf("  ---------------------------\n");
         system("pause");
       case 5:
         break;
       default:
-        printf("OPCAO INVALIDA!\n");
-        system("pause");
+        printf("-------------------------\n");
+        printf("|ERROR: ENTRADA INVALIDA|\n");
+        printf("-------------------------\n");
         break;
     }
-    
   }
 }
 
@@ -407,6 +436,8 @@ void menuPrincipal(char texto[][82], int fraseTam){
     printf("-------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
+    while (getchar() != '\n');
+    system("cls");
     switch(esc){
       case 1:
         imprimeTexto(texto, fraseTam, &alinhamento);
@@ -428,12 +459,12 @@ void menuPrincipal(char texto[][82], int fraseTam){
       case 6:
         break;
       default:
-        printf("OPCAO INVALIDA!\n");
+        printf("-------------------------\n");
+        printf("|ERROR: ENTRADA INVALIDA|\n");
+        printf("-------------------------\n");
         system("pause");
         break;
     }
-
-    
   }
 }
 
