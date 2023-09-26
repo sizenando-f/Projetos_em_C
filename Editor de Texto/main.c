@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-// Procedimento que organiza o texto
+// Procedimento que organiza o texto na matriz
 void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraAntiga[], char palavraNova[]){
   char * frase = strdup(fraseOriginal); // Duplica frase
   int fraseTam = strlen(frase)/75;  // Descobre quantas linhas terá o texto
@@ -74,128 +74,147 @@ void pegaTexto(char fraseOriginal[], char texto[][82], int codigo, char palavraA
         }
         
         if(strlen(texto[i]) > 80){
-          check = 1;
-          char * ponteiro = strrchr(texto[i], ' ');
-          *ponteiro = '\0';
-          if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){
-            strcpy(texto[i + 1], palavraNova);
-            control = 1;
-            existePalavra = 1;
-          } else {
-            strcpy(texto[i + 1], palavra);
+          check = 1;  // Variável controla se torna verdadeira
+          char * ponteiro = strrchr(texto[i], ' '); // Ponteiro para o último espaço da linha
+          *ponteiro = '\0'; // Inserção de um finalizador de string no espaço
+          if((strcmp(palavraAntiga, palavra) == 0) && (control == 0)){  // Verifica se palavra a ser alterada é igual a palavra atual e que a palavra ainda não foi alterada
+            strcpy(texto[i + 1], palavraNova);  // Insere para palavra nova
+            control = 1;   // Palavra alterada se torna verdadeiro
+            existePalavra = 1;  // Palavra existe
+          } else { 
+            strcpy(texto[i + 1], palavra);   // Se a palavra não for igual, continua normalmente a inserção de palavras
           }
         }
 
+        // Concatena espaço de acordo com a linha disponível
         if(check){
           strcat(texto[i+1], " ");
         } else {
           strcat(texto[i], " ");
         }
 
-        palavra = strtok(NULL, " ");
+        palavra = strtok(NULL, " ");  // Passa para próxima palavra
       }
     }
+
+    // FeedBack de se a palava foi encontrada ou não
     if(existePalavra){
+        printf("---------------------------\n");
         printf("ACAO REALIZADA COM SUCESSO!\n");
+        printf("---------------------------\n");
       } else {
+        printf("----------------------\n");
         printf("A PALAVRA NAO EXISTE!\n");
+        printf("----------------------\n");
       }
       system("pause");
-  } else if(codigo == 2){
-    char * palavra = strtok(frase, " ");
+  } else if(codigo == 2){ // 2 = Procedimento de inserção alterando todas as palavras escolhidas
+    char * palavra = strtok(frase, " ");  // Primeira palavra da frase
 
-    if(strcmp(palavraAntiga, palavra) == 0){
-      strcpy(texto[0], palavraNova);
-      existePalavra = 1;
+    if(strcmp(palavraAntiga, palavra) == 0){  // Verifica se palavra a ser alterada é igual a palavra atual
+      strcpy(texto[0], palavraNova);  // Insere palavra nova
+      existePalavra = 1;  // Variável controle de palavra existente se torna verdadeira
     } else {
-      strcpy(texto[0], palavra);
+      strcpy(texto[0], palavra);  // Se a palavra não for igual, continua normalmente a inserção de palavras
     }
 
-    strcat(texto[0], " ");
+    strcat(texto[0], " ");  // Concatena um espaço
 
-    palavra = strtok(NULL, " ");
+    palavra = strtok(NULL, " ");  // Passa para próxima palavra
 
+    // Itera por todas as linhas
     for (int i = 0; i < fraseTam+2; i++){
-      int check = 0;
-      while(check == 0 && palavra != NULL){
-        if((strcmp(palavraAntiga, palavra) == 0)){
-          strcat(texto[i], palavraNova);
-          existePalavra = 1;
+      int check = 0;  // Variável para saber se linha já possui 80 caracteres
+      while(check == 0 && palavra != NULL){ // Repete enquanto houver palavra na frase e a linha não tiver 80 caracteres
+        if((strcmp(palavraAntiga, palavra) == 0)){  // Verifica se palavra a ser alterada é igual a palavra atual
+          strcat(texto[i], palavraNova);  // Concatena palavra nova
+          existePalavra = 1;  // Variável controle de palavra existente se torna verdadeira
         } else {
-          strcat(texto[i], palavra);
+          strcat(texto[i], palavra);  // Se a palavra não for igual, continua normalmente a inserção de palavras
         }
         
-        if(strlen(texto[i]) > 80){
-          check = 1;
-          char * ponteiro = strrchr(texto[i], ' ');
-          *ponteiro = '\0';
-          if((strcmp(palavraAntiga, palavra) == 0)){
-            strcpy(texto[i + 1], palavraNova);
-            existePalavra = 1;
+        if(strlen(texto[i]) > 80){  // Verifica se linha possui mais de 80 caracteres
+          check = 1;  // Variável se torna verdadeira
+          char * ponteiro = strrchr(texto[i], ' '); // Ponteiro para úlitmo espaço da linha
+          *ponteiro = '\0'; // Insere finalizador de string no espaço
+          if((strcmp(palavraAntiga, palavra) == 0)){  // Verifica se palavra a ser alterada é igual a palavra atual
+            strcpy(texto[i + 1], palavraNova);  // Insere palavra nova na próxima linha
+            existePalavra = 1;  // Variável controle de palavra existente se torna verdadeira
           } else {
-            strcpy(texto[i + 1], palavra);
+            strcpy(texto[i + 1], palavra);   // Se a palavra não for igual, continua normalmente a inserção de palavras na próxima linha
           }
         }
 
+        // Concatena espaço de acordo com a linha disponível
         if(check){
           strcat(texto[i+1], " ");
         } else {
           strcat(texto[i], " ");
         }
 
-        palavra = strtok(NULL, " ");
+        palavra = strtok(NULL, " ");  // Passa para próxima palavra
       }
     }
+
+    // FeedBack se a palavra foi encontrada ou não
     if(existePalavra){
+        printf("---------------------------\n");
         printf("ACAO REALIZADA COM SUCESSO!\n");
+        printf("---------------------------\n");
       } else {
+        printf("----------------------\n");
         printf("A PALAVRA NAO EXISTE!\n");
+        printf("----------------------\n");
       }
       system("pause");
   }
-  
+
+  free(frase); // Libera a memória da strdup
 }
 
+// Procedimento que existe texot ao usuário
 void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
-    int espaco = 80;
+    int espaco = 80;  // Espaço de visualização do texto
     system("cls");
     printf("--------------------------------------------------------------------------------\n");
     switch (*alinhamento){
-      case 0:
+      case 0: // 0 = Visualização à esquerda 
         for (int i = 0; i < fraseTam; i++){
           printf("%s\n", texto[i]);
         }
         break;
-      case 1:
+      case 1: // 1 = Visualização à direita
         for (int i = 0; i < fraseTam; i++){
-          printf("%*s\n", espaco, texto[i]);
+          printf("%*s\n", espaco, texto[i]);  // Faz texto ocupar 80 "casas"
         }
         break;
-      case 2: {
+      case 2: { // 2 = Visualização centralizada
         for (int i = 0; i < fraseTam; i++){
-          int espacosLaterais = (espaco - strlen(texto[i])) / 2;
-          printf("%*s%s%*s\n", espacosLaterais, "", texto[i], espacosLaterais, "");
+          int espacosLaterais = (espaco - strlen(texto[i])) / 2;  // Descobre espaços laterais dividindo por 2 os espaços restantes da linha
+          printf("%*s%s%*s\n", espacosLaterais, "", texto[i], espacosLaterais, ""); // Exibe texto com os espaços laterais
         }
         break;
       }
-      case 3: {
+      case 3: { // 3 = Visualização justificada
+        // Itera por todas as linhas
         for (int i = 0; i < fraseTam; i++){
-          char * frase = strdup(texto[i]);
-          char * palavra = strtok(frase, " ");
-          int espacosLaterais = (espaco - strlen(texto[i]));
+          char * frase = strdup(texto[i]);  // Duplica linha do texto
+          char * palavra = strtok(frase, " ");  // Pega primeira palavra da linha
+          int espacosLaterais = (espaco - strlen(texto[i]));  // Descobre espaços em branco da linha
 
-          fputs(palavra, stdout);
-          fputs(" ", stdout);
-          while(palavra != NULL){
-            if(espacosLaterais > 0){
-              fputs(" ", stdout);
-              espacosLaterais--;
+          fputs(palavra, stdout); // Exibe palavra atual
+          fputs(" ", stdout); // Exibe espaço
+          while(palavra != NULL){ // Repete enquanto houver palavras na linha
+            if(espacosLaterais > 0){  // Se houver espaços vaziod
+              fputs(" ", stdout); // Insere espaço a mais
+              espacosLaterais--;  // Reduz espaços vazios
             }
-            palavra = strtok(NULL, " ");
-            fputs(palavra, stdout);
-            fputs(" ", stdout);
+            palavra = strtok(NULL, " ");  // Prossegue para próxima palavra
+            fputs(palavra, stdout); // Insere próxima palavra
+            fputs(" ", stdout); // Insere outro espaço
           }
           printf("\n");
+          free(frase); // Libera a memória da strdup
         }
       }
         break;
@@ -206,9 +225,11 @@ void imprimeTexto(char texto[][82], int fraseTam, int *alinhamento){
     system("pause");
 }
 
+// Procedimento que encontra uma palavra recebida 
 void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
   char temp[50][82];
   int cont = 0;
+  // Insere cada linha do texto em uma matriz temporária
   for(int i = 0; i < fraseTam; i++){
     strcpy(temp[i], texto[i]);
   }
@@ -217,23 +238,27 @@ void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
 
   for (int i = 0; i < fraseTam; i++) {
     char *linha = strdup(temp[i]); // Copia a linha para uma variável temporária
-    char *palavraAtual = strtok(linha, " ,().-");
-    int coluna = 0;
-    while (palavraAtual != NULL) {
-        if (strcmp(palavraAtual, palavra) == 0) {
-            printf("----------------------------\n");
-            printf("|      ENCONTRADA EM:      |\n");
-            printf("----------------------------\n");
-            printf("    LINHA: %d COLUNA: %d \n", i+1, coluna+1);
-            printf("----------------------------\n\n");
+    char *palavraAtual = strtok(linha, " ,().-:"); // Pega primeira palavra da linha
+    int coluna = 0; // Inicializa coluna
+    int contPalavra = 0;
+    while (palavraAtual != NULL) {  // Repete enquanto houver palavra na linha
+        contPalavra++;
+        if (strcmp(palavraAtual, palavra) == 0) { // Se a palavra atual for igual a palavra recebida
+            printf("--------------------------------------\n");
+            printf("|           ENCONTRADA EM:           |\n");
+            printf("--------------------------------------\n");
+            printf("  LINHA: %d COLUNA: %d (palavra n.%d)\n", i+1, coluna+1, contPalavra);
+            printf("--------------------------------------\n\n");
             cont++;
         }
         coluna += strlen(palavraAtual) + 1; // Avança a coluna para o início da próxima palavra
-        palavraAtual = strtok(NULL, " ,().-");
+        palavraAtual = strtok(NULL, " ,().-:");  // Avança para próxima palavra
     }
 
-    free(linha); // Libera a memória alocada pela strdup
+    free(linha); // Libera a memória da strdup
   }
+
+  // Feedback caso palavra não for encontrada
   if(!cont){
     printf("\n-------- ERRO --------\n");
     printf("| PALAVRA NAO EXISTE |\n");
@@ -243,20 +268,24 @@ void encontraPalavra(char texto[][82], char palavra[], int fraseTam){
   system("pause");
 }
 
+// Procedimento que transforma texto de várias linhas em uma frase
 void transformaEmFrase(char texto[][82], char frase[], int fraseTam){
-  strcpy(frase, "");
+  strcpy(frase, "");  // Inicializa frase vazia
 
+  // Itera por todas as linhas
   for (int i = 0; i < fraseTam; i++){
-    char * temp = strdup(texto[i]);
-    char * palavra = strtok(temp, " ");
-    while(palavra != NULL){
-      strcat(frase, palavra);
-      strcat(frase, " ");
-      palavra = strtok(NULL, " ");
+    char * temp = strdup(texto[i]); // Duplica linha do texto
+    char * palavra = strtok(temp, " "); // Pega primeira palavra da linha
+    while(palavra != NULL){ // Repete enquanto houver palavra na linha
+      strcat(frase, palavra); // Concatena palavra na frase
+      strcat(frase, " "); // Concatena um espaço
+      palavra = strtok(NULL, " ");  // Passa para próxima palavra
     }
+    free(temp); // Libera a memória da strdup
   }
 }
 
+// Menu de substituição de palavra
 void menuSubstituir(char texto[][82], int fraseTam){
   int esc;
   char palavraAntiga[30], palavraNova[30];
@@ -270,7 +299,7 @@ void menuSubstituir(char texto[][82], int fraseTam){
     printf("------------------------------------\n");
     printf("SUA ESCOLHA: ");
     scanf("%d", &esc);
-    while(getchar() != '\n');
+    while(getchar() != '\n'); // Limpa o buffer
     system("cls");
     switch (esc){
       case 1:
@@ -307,6 +336,7 @@ void menuSubstituir(char texto[][82], int fraseTam){
 
 }
 
+// Procedimento que transforma todas as letras em maiúsculo
 void paraMaiusculo(char texto[][82], int fraseTam){
   for (int i = 0; i < fraseTam; i++){
     for (int j = 0; j < 82; j++){
@@ -315,6 +345,7 @@ void paraMaiusculo(char texto[][82], int fraseTam){
   }
 }
 
+// Procedimento que transforma todas as letras em minúsculo
 void paraMinusculo(char texto[][82], int fraseTam){
   for (int i = 0; i < fraseTam; i++){
     for (int j = 0; j < 82; j++){
@@ -323,12 +354,14 @@ void paraMinusculo(char texto[][82], int fraseTam){
   }
 }
 
+// Procedimento que transforma todas as letras iniciais das linhas em maiúsculas
 void primeiraParaMaiusculo(char texto[][82], int fraseTam){
   for (int i = 0; i < fraseTam; i++){
     texto[i][0] = toupper(texto[i][0]);
   }
 }
 
+// Menu de alteração do tamanho da caixa das palavras
 void menuCaixa(char texto[][82], int fraseTam){
   int esc;
   while((esc < 1 || esc > 4) || (esc != 4)){
@@ -375,6 +408,7 @@ void menuCaixa(char texto[][82], int fraseTam){
   }
 }
 
+// Menu de alteração do alinhamento do texto
 void menuAlinhamento(int *alinhamento){
   int esc;
   while((esc < 1 || esc > 5) || (esc != 5)){
@@ -426,9 +460,10 @@ void menuAlinhamento(int *alinhamento){
   }
 }
 
+// Menu principal
 void menuPrincipal(char texto[][82], int fraseTam){
   int esc;
-  static int alinhamento = 0;
+  static int alinhamento = 0; // Variável permanente
   char palavra[20];
   while((esc < 1 || esc > 6) || (esc != 6)){
     system("cls");
@@ -479,7 +514,6 @@ int main(){
   char texto[100][82];
   int fraseTam = strlen(frase)/75; // Descobre quantas linhas o texto terá
   pegaTexto(frase, texto, 0, "", "");
-
   menuPrincipal(texto, fraseTam);
   return 0;
 }
