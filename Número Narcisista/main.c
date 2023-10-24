@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int numero_narcisista(int num, int algarismos){
 
@@ -17,10 +18,21 @@ int descobre_algarismos(int num){
 }
 
 int main(){
-  int num = 193;
-  int algarismos = descobre_algarismos(num);
-  int fim;
+  int fim, indice = 0;
   printf("Insira um valor: ");
   scanf("%d", &fim);
+  int * numeros = malloc(fim * sizeof(int));
+
+  for(int i = 10; i <= fim; i++){
+    int potencia = descobre_algarismos(i);
+    int num = numero_narcisista(i, potencia);
+    if(num == i) numeros[indice++] = i;
+  }
+
+  for(int i = 0; i < indice; i++){
+    printf("%d ", numeros[i]);
+  }
+  
+  free(numeros);
   return 0;
 }
