@@ -1,7 +1,7 @@
 // Editor de Texto
 // Descrição: Manipulação de um texto pré-definido, busca, substituição, tamanho e alinhamento de texto
 // Autor: Sizenando S. França
-// Última modificação: 26-09-23
+// Última modificação: 27-09-23
 
 #include <stdio.h>
 #include <string.h>
