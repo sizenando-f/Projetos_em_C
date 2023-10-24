@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 int numero_narcisista(int num, int algarismos){
+  int soma = 0;
+  
+  for(int i = 0; i < algarismos; i++){
+    soma += pow((num%10), algarismos);
+    num /= 10;
+  }
 
+  return soma;
 }
 
 int descobre_algarismos(int num){
@@ -32,7 +40,8 @@ int main(){
   for(int i = 0; i < indice; i++){
     printf("%d ", numeros[i]);
   }
-  
+
   free(numeros);
+
   return 0;
 }
