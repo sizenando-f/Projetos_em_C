@@ -14,7 +14,7 @@ int numero_narcisista(int num, int algarismos){
   for(int i = 0; i < algarismos; i++){
     int temp = num%10;  // Pega ultimo algarismo
     soma += pow(temp, algarismos);
-    num /= 10;  // Passa para o proximo algarismo
+    num /= 10;          // Passa para o proximo algarismo
   }
 
   return soma;
@@ -28,7 +28,7 @@ int descobre_algarismos(int num){
     if(temp != 0){      // Verifica se numero possui algarismos
       cont++;
     }
-    temp /= 10; // Diminui um algarismo do numero
+    temp /= 10;         // Diminui um algarismo do numero
   }
   return cont;
 }
@@ -48,7 +48,7 @@ int main(){
     switch (esc){
       case 1:
         do{
-          printf("INSIRA UM VALOR FINAL (INTERVALO ACEITO: 10 - 1.000.000): ");
+          printf("INSIRA UM VALOR FINAL (INTERVALO ACEITO: 10 - 1000000): ");
           scanf("%d", &fim);
           if(fim > 1000000 || fim < 10){        // Valida entrada
             printf("ENTRADA INCORRETA, TENTE NOVAMENTE!\n");
@@ -60,7 +60,7 @@ int main(){
         for(int i = 10; i <= fim; i++){
           int potencia = descobre_algarismos(i);
           int num = numero_narcisista(i, potencia);
-          if(num == i){ // Verifica se eh um numero narcisista
+          if(num == i){         // Verifica se eh um numero narcisista
             if(!busca(i)){      // Verifica se numero ja existe na lista
               insereOrdem(i);   // Insere numero na lista
               conta_n++;        // Conta quantos numeros esta na lista
@@ -72,7 +72,7 @@ int main(){
         break;
 
       case 2:
-        if(conta_n){    // Verifica se a lista possui numeros
+        if(conta_n){            // Verifica se a lista possui numeros
           printf("QUAL NUMERO DESEJA EXCLUIR? ~# ");
           scanf("%d", &excluir);
           if(busca(excluir)){   // Verifica se numero existe
@@ -103,13 +103,13 @@ int main(){
           printf("\n-----------------------------\n");
         } else {
           printf("------------------------------\n");
-          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTAS, POR FAVOR, ESCOLHA A OPCAO 1\n");
+          printf("NAO EXISTE NUMEROS NARCISISTAS NA LISTA, POR FAVOR, ESCOLHA A OPCAO 1\n");
           printf("------------------------------\n");
         }
         break;
 
       case 4:
-        printf("ENCERRANDO PROGRAMA\n");
+        printf("ENCERRANDO PROGRAMA...\n");
         esvazia();      // Encerra lista
         sleep(2);
         break;
