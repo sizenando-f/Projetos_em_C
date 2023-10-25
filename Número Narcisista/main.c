@@ -27,9 +27,10 @@ int descobre_algarismos(int num){
 }
 
 int main(){
-  int fim, indice = 0, esc, check = 0;
+  int fim = 1, indice = 0, esc, check = 0;
   int * numeros = malloc(fim * sizeof(int));
   do{
+    system("cls");
     printf("-----# NUM3R0 N4RC1S1ST4 #-----\n");
     printf(" 1. ARMAZENAR NUMEROS\n");
     printf(" 2. EXCLUIR NUMERO\n");
@@ -58,33 +59,40 @@ int main(){
         }
         check = 1; // Numeros foram criados
 
-        sleep(2);
+        break;
 
       case 2:
-      if(check){
-        printf("EXCLUIDO\n"); // usar função da biblioteca de exclusão e depois exibir
-      } else{
-        printf("E NECESSARIO DESCOBRIR OS VALORES NARCISISTA, POR FAVOR, VOLTE E ESCOLHA A OPCAO 1\n");
-      }
-      system("pause");
+        if(check){
+          printf("EXCLUIDO\n"); // usar função da biblioteca de exclusão e depois exibir
+        } else{
+          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTA, POR FAVOR, VOLTE E ESCOLHA A OPCAO 1\n");
+        }
+        system("pause");
+        break;
 
       case 3:
-        printf("---- NUMEROS DESCOBERTOS ----\n");
-        for(int i = 0; i < indice; i++){
-          printf("%d ", numeros[i]);
+        if(check){
+          printf("---- NUMEROS DESCOBERTOS ----\n");
+          for(int i = 0; i < indice; i++){
+            printf("%d ", numeros[i]);
+          }
+          printf("\n-----------------------------\n");
+        } else {
+          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTA, POR FAVOR, VOLTE E ESCOLHA A OPCAO 1\n");
         }
-        printf("\n-----------------------------\n");
         system("pause");
+        break;
+      
+      case 4:
+        printf("ENCERRANDO PROGRAMA\n");
+        Sleep(2); // Usar função que encerra vetor
+        break;
       default:
+        printf("ENTRADA INVALIDA, TENTE NOVAMENTE!\n");
+        system("pause");
         break;
     }
   }while(esc != 4);
-
-  
-
-  
-
-  
 
   free(numeros);
 
