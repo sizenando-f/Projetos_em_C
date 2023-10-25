@@ -1,36 +1,42 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <windows.h> // unistd.h - sleep() ou a usleep()
+// ADICIONAR -lm AO COMPILAR -> cc -o app main.c myList.a -lm
+// -lm eh referente a biblioteca math
 
+#include <stdio.h>      // Entrada e saida
+#include <stdlib.h>     // system()
+#include <math.h>       // pow()
+#include <unistd.h>     // sleep()
+#include <myList.h>     // Biblioteca do trabalho
+
+// Retorna o resultado do calculo da potencia dos algarismos
 int numero_narcisista(int num, int algarismos){
   int soma = 0;
 
   for(int i = 0; i < algarismos; i++){
-    soma += pow((num%10), algarismos);
-    num /= 10;
+    int temp = num%10;  // Pega ultimo algarismo
+    soma += pow(temp, algarismos);
+    num /= 10;  // Passa para o proximo algarismo
   }
 
   return soma;
 }
 
+// Retorna  quantos algarismos um numero possui
 int descobre_algarismos(int num){
   int temp = num;
   int cont = 0;
   while(temp != 0){
-    if(temp != 0){
+    if(temp != 0){      // Verifica se numero possui algarismos
       cont++;
     }
-    temp /= 10;
+    temp /= 10; // Diminui um algarismo do numero
   }
   return cont;
 }
 
 int main(){
-  int fim = 1, indice = 0, esc, check = 0;
-  int * numeros = malloc(fim * sizeof(int));
+  int fim = 1, indice = 0, esc, excluir, conta_n = 0;
+  inicializa(); // Inicializa lista
   do{
-    system("cls");
     printf("-----# NUM3R0 N4RC1S1ST4 #-----\n");
     printf(" 1. ARMAZENAR NUMEROS\n");
     printf(" 2. EXCLUIR NUMERO\n");
@@ -44,57 +50,76 @@ int main(){
         do{
           printf("INSIRA UM VALOR FINAL (INTERVALO ACEITO: 10 - 1.000.000): ");
           scanf("%d", &fim);
-          if(fim > 1000000 || fim < 10){
+          if(fim > 1000000 || fim < 10){        // Valida entrada
             printf("ENTRADA INCORRETA, TENTE NOVAMENTE!\n");
-            system("pause");
+            sleep(2);
           }
-
         }while(fim > 1000000 || fim < 10);
 
         printf("DESCOBRINDO NUMEROS NARCISISTAS ENTRE 10 E %d...\n", fim);
         for(int i = 10; i <= fim; i++){
           int potencia = descobre_algarismos(i);
           int num = numero_narcisista(i, potencia);
-          if(num == i) numeros[indice++] = i; // Armazena no vetor
+          if(num == i){ // Verifica se eh um numero narcisista
+            if(!busca(i)){      // Verifica se numero ja existe na lista
+              insereOrdem(i);   // Insere numero na lista
+              conta_n++;        // Conta quantos numeros esta na lista
+            }
+          }
         }
-        check = 1; // Numeros foram criados
-
+        sleep(3);
+        system("clear");
         break;
 
       case 2:
-        if(check){
-          printf("EXCLUIDO\n"); // usar função da biblioteca de exclusão e depois exibir
+        if(conta_n){    // Verifica se a lista possui numeros
+          printf("QUAL NUMERO DESEJA EXCLUIR? ~# ");
+          scanf("%d", &excluir);
+          if(busca(excluir)){   // Verifica se numero existe
+            retira(excluir);    // Remove numero
+            printf("EXCLUSAO BEM SUCEDIDA\n");
+            conta_n--;
+            system("clear");
+            imprime();
+          } else{
+            system("clear");
+            printf("--------------------\n");
+            printf("NUMERO INEXISTENTE!\n");
+            printf("--------------------\n");
+          }
         } else{
-          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTA, POR FAVOR, VOLTE E ESCOLHA A OPCAO 1\n");
+          system("clear");
+          printf("------------------------------\n");
+          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTAS, POR FAVOR, ESCOLHA A OPCAO 1\n");
+          printf("------------------------------\n");
         }
-        system("pause");
         break;
 
       case 3:
-        if(check){
+        system("clear");
+        if(conta_n){    // Verifica se a lista possui numeros
           printf("---- NUMEROS DESCOBERTOS ----\n");
-          for(int i = 0; i < indice; i++){
-            printf("%d ", numeros[i]);
-          }
+          imprime();
           printf("\n-----------------------------\n");
         } else {
-          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTA, POR FAVOR, VOLTE E ESCOLHA A OPCAO 1\n");
+          printf("------------------------------\n");
+          printf("EH NECESSARIO DESCOBRIR OS VALORES NARCISISTAS, POR FAVOR, ESCOLHA A OPCAO 1\n");
+          printf("------------------------------\n");
         }
-        system("pause");
         break;
-      
+
       case 4:
         printf("ENCERRANDO PROGRAMA\n");
-        Sleep(2); // Usar função que encerra vetor
+        esvazia();      // Encerra lista
+        sleep(2);
         break;
       default:
         printf("ENTRADA INVALIDA, TENTE NOVAMENTE!\n");
-        system("pause");
+        sleep(2);
+        system("clear");
         break;
     }
   }while(esc != 4);
-
-  free(numeros);
 
   return 0;
 }
