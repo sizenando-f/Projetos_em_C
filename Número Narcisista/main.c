@@ -28,6 +28,7 @@ int descobre_algarismos(int num){
 
 int main(){
   int fim, indice = 0, esc;
+  int * numeros = malloc(fim * sizeof(int));
   do{
     printf("-----# NUM3R0 N4RC1S1ST4 #-----\n");
     printf(" 1. ARMAZENAR NUMEROS\n");
@@ -39,21 +40,35 @@ int main(){
     scanf("%d", &esc);
     switch (esc){
       case 1:
-        printf("INSIRA UM VALOR LIMITE: ");
-        scanf("%d", &fim);
+        do{
+          printf("INSIRA UM VALOR FINAL (INTERVALO ACEITO: 10 - 1.000.000): ");
+          scanf("%d", &fim);
+          if(fim > 1000000 || fim < 10){}
+            printf("ENTRADA INCORRETA, TENTE NOVAMENTE!\n");
+            system("pause");
+          }
+
+        }while(fim > 1000000 || fim < 10);
+
+        for(int i = 10; i <= fim; i++){
+          int potencia = descobre_algarismos(i);
+          int num = numero_narcisista(i, potencia);
+          if(num == i) numeros[indice++] = i; // Armazena no vetor
+        }
+        
+        printf("DESCOBRINDO NUMEROS NARCISISTAS ENTRE 10 E %d...\n", fim);
+        sleep(2);
+      case 2:
+        printf("EXCLUIDO\n"); // usar função da biblioteca
+        system("pause");
       default:
         break;
     }
   }while(esc != 4);
 
   
-  int * numeros = malloc(fim * sizeof(int));
 
-  for(int i = 10; i <= fim; i++){
-    int potencia = descobre_algarismos(i);
-    int num = numero_narcisista(i, potencia);
-    if(num == i) numeros[indice++] = i;
-  }
+  
 
   for(int i = 0; i < indice; i++){
     printf("%d ", numeros[i]);
