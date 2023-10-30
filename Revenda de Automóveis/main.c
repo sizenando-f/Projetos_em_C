@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 #define TAM 50
 
 char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
@@ -52,9 +53,12 @@ struct VENDA_CARRO {
   struct DATA data_venda;
 };
 
-void geraCarroInfo(char * modelo, char * fabricante, int * ano){
+void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod, char * combustivel, char * cor, int * opcional, float * preco){
   char * modelos[] = {"onix", "s10", "celta", "strada", "palio", "corolla", "hillux", "saveiro", "voyage", "gol"};
   srand(time(NULL));
+
+  strcpy(fabricante, "");
+
   int n = rand() % 10;
   strcpy(modelo, modelos[n]);
   if(n < 3){
@@ -66,12 +70,59 @@ void geraCarroInfo(char * modelo, char * fabricante, int * ano){
   } else {
     strcpy(fabricante, "volkswagen");
   }
+
   switch (n){
     case 0:
-      ano = 2011;
+      *anoMod = 2011 + (rand() % (2023 - 2011 + 1)); 
+      *anoFab = 2011; 
+      break;
+    case 1:
+      *anoFab = 1993; 
+      *anoMod = 1993 + (rand() % (2023 - 1993 + 1)); 
+      break;
+    case 2:
+      *anoFab = 2000; 
+      *anoMod = 2000 + (rand() % (2023 - 2000 + 1)); 
+      break;
+    case 3:
+      *anoFab = 1997; 
+      *anoMod = 1997 + (rand() % (2023 - 1997 + 1)); 
+      break;
+    case 4:
+      *anoFab = 1996; 
+      *anoMod = 1996 + (rand() % (2023 - 1996 + 1)); 
+      break;
+    case 5:
+      *anoFab = 2000; 
+      *anoMod = 2000 + (rand() % (2023 - 2000 + 1)); 
+      break;
+    case 6:
+      *anoFab = 1984; 
+      *anoMod = 1984 + (rand() % (2023 - 1984 + 1)); 
+      break;
+    case 7:
+      *anoFab = 2008; 
+      *anoMod = 2008 + (rand() % (2023 - 2008 + 1)); 
+      break;
+    case 8:
+      *anoFab = 1982; 
+      *anoMod = 1982 + (rand() % (2023 - 1982 + 1)); 
+      break;
+    case 9:
+      *anoFab = 1991;
+      *anoMod = 1991 + (rand() % (2023 - 1991 + 1));
     default:
       break;
   }
+
+  char * combustiveis[] = {"flex", "gasolina", "alcool", "diesel"};
+  strcpy(combustivel, combustiveis[rand() % 4]);
+
+  char * cores[] = {"preto", "marrom", "branco", "prata", "vermelho", "amarelo", "cinza", "laranja", "verde"};
+  strcpy(cor, cores[rand() % 9]);
+
+  *opcional = rand() % 8;
+  *preco = 6000 + (rand() % (190000 - 600 + 1));
 }
 
 void geraPlaca(char * placa){
@@ -98,19 +149,50 @@ void geraPlaca(char * placa){
 }
 
 void inserirCarro(){
-  char placa[9], modelo[11], fabricante[11];
-  int ano;
+  char placa[9], modelo[11], fabricante[11], combustivel[8], cor[10], esc;
+  int anoFab, anoMod, opcional;
+  float preco;
   geraPlaca(placa);
-  printf("%s\n", placa);
-  geraCarroInfo(modelo, fabricante &ano);
-  printf("%s\n", modelo);
-  printf("%s\n", fabricante);
+  geraCarroInfo(modelo, fabricante, &anoFab, &anoMod, combustivel, cor, &opcional, &preco);
+  do{
+    system("cls");
+    printf("--- DESEJA O SEGUINTE CARRO? ---\n");
+    printf("PLACA: %s\n", placa);
+    printf("MODELO: %s\n", modelo);
+    printf("FABRICANTE: %s\n", fabricante);
+    printf("ANO DE FABRICACAO: %d\n", anoFab);
+    printf("ANO DO MODELO: %d\n", anoMod);
+    printf("COMBUSTIVEL: %s\n", combustivel);
+    printf("COR: %s\n", cor);
+    printf("OPCIONAL: %s\n", opcionais[opcional]);
+    printf("PRECO DE COMPRA: %.2f\n", preco);
+    printf("S/N -> ");
+    scanf(" %c", &esc);
+    esc = toupper(esc);
+    if(esc == 'S'){
+      struct CARRO car;
+      strcpy(car.placa, placa);
+      strcpy(car.modelo, modelo);
+      strcpy(car.fabricante, fabricante);
+      car.ano_fabricacao = anoFab;
+      car.ano_modelo = anoMod;
+      strcpy(car.combustivel, combustivel);
+      strcpy(car.cor, cor);
+      car.opcional[0] = opcional;
+      car.preco_compra = preco;
+    } else if(esc == 'N'){
+      
+    } else {
+      printf("ESCOLHA INVALIDA!\n");
+    }
+  } while(esc != 'S' && esc != 'N');
 }
 
 void menuCarro(){
   int esc;
   do{
-    printf("\n1. INSERIR UM CARRO\n");
+    system("cls");
+    printf("1. INSERIR UM CARRO\n");
     printf("2. EXCLUIR UM CARRO\n");
     printf("3. LISTAR CARROS DISPONIVEIS PARA VENDAORDENADOS POR FABRICANTE E MODELO\n");
     printf("4. LISTAR CAROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
@@ -130,7 +212,8 @@ void menuCarro(){
 int main(){
   int esc;
   do{
-    printf("\n1. CARRO\n");
+    system("cls");
+    printf("1. CARRO\n");
     printf("2. CLIENTE\n");
     printf("3. VENDA\n");
     printf("4. SAIR\n");
