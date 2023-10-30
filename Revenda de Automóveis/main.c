@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <windows.h>
 #define TAM 50
 
 char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
@@ -181,9 +182,11 @@ void inserirCarro(){
       car.opcional[0] = opcional;
       car.preco_compra = preco;
     } else if(esc == 'N'){
-      
+      printf("OPERACAO CANCELADA!\n");
+      Sleep(2);
     } else {
       printf("ESCOLHA INVALIDA!\n");
+      Sleep(2);
     }
   } while(esc != 'S' && esc != 'N');
 }
