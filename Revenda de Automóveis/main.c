@@ -52,6 +52,28 @@ struct VENDA_CARRO {
   struct DATA data_venda;
 };
 
+void geraCarroInfo(char * modelo, char * fabricante, int * ano){
+  char * modelos[] = {"onix", "s10", "celta", "strada", "palio", "corolla", "hillux", "saveiro", "voyage", "gol"};
+  srand(time(NULL));
+  int n = rand() % 10;
+  strcpy(modelo, modelos[n]);
+  if(n < 3){
+    strcpy(fabricante, "chevrolet");
+  } else if(n < 5){
+    strcpy(fabricante, "fiat");
+  }else if(n < 7){
+    strcpy(fabricante, "toyota");
+  } else {
+    strcpy(fabricante, "volkswagen");
+  }
+  switch (n){
+    case 0:
+      ano = 2011;
+    default:
+      break;
+  }
+}
+
 void geraPlaca(char * placa){
   char letras[27][2];
   char *numeros[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -76,15 +98,19 @@ void geraPlaca(char * placa){
 }
 
 void inserirCarro(){
-  char placa[9];
+  char placa[9], modelo[11], fabricante[11];
+  int ano;
   geraPlaca(placa);
-  printf("%s", placa);
+  printf("%s\n", placa);
+  geraCarroInfo(modelo, fabricante &ano);
+  printf("%s\n", modelo);
+  printf("%s\n", fabricante);
 }
 
 void menuCarro(){
   int esc;
   do{
-    printf("1. INSERIR UM CARRO\n");
+    printf("\n1. INSERIR UM CARRO\n");
     printf("2. EXCLUIR UM CARRO\n");
     printf("3. LISTAR CARROS DISPONIVEIS PARA VENDAORDENADOS POR FABRICANTE E MODELO\n");
     printf("4. LISTAR CAROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
@@ -93,6 +119,7 @@ void menuCarro(){
     scanf("%d", &esc);
     switch (esc){
       case 1:
+        inserirCarro();
         break;
       default:
         break;
@@ -103,7 +130,7 @@ void menuCarro(){
 int main(){
   int esc;
   do{
-    printf("1. CARRO\n");
+    printf("\n1. CARRO\n");
     printf("2. CLIENTE\n");
     printf("3. VENDA\n");
     printf("4. SAIR\n");
@@ -111,8 +138,7 @@ int main(){
 
     switch (esc){
       case 1:
-        // menuCarro();
-        inserirCarro();
+        menuCarro();
         break;
       default:
         break;
