@@ -287,7 +287,15 @@ char* gera_cpf_valido() {
 }
 
 void inserirCliente(){
-
+  char * nome = gera_nome();
+  char esc;
+  do{
+    printf("--- VOCE DESEJA INSERIR O SEGUINTE CLIENTE? ---\n");
+    printf("NOME: %s\n", nome);
+    printf("S/N -> ");
+    scanf(" %c", &esc);
+    esc = toupper(esc);
+  } while(esc != 'S' && esc != 'N');
 }
 
 void menuCliente(){
@@ -324,7 +332,7 @@ int main(){
         menuCarro();
         break;
       case 2:
-
+        menuCliente();
         break;
       default:
         break;
