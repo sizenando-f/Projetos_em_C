@@ -9,6 +9,11 @@
 char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
   {"banco.couro"}, {"sensor.estacionamento"}};
 
+int nAleatorio(int menor, int maior){
+  srand(time(NULL));
+  return menor + (rand() % (maior - menor + 1));
+}
+
 struct CARRO {
   char placa[9]; //AAA-1234
   char modelo[TAM]; //gol, celta, palio, ...
@@ -56,11 +61,11 @@ struct VENDA_CARRO {
 
 void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod, char * combustivel, char * cor, int * opcional, float * preco){
   char * modelos[] = {"onix", "s10", "celta", "strada", "palio", "corolla", "hillux", "saveiro", "voyage", "gol"};
-  srand(time(NULL));
+  // srand(time(NULL));
 
   strcpy(fabricante, "");
 
-  int n = rand() % 10;
+  int n = nAleatorio(0, 9);
   strcpy(modelo, modelos[n]);
   if(n < 3){
     strcpy(fabricante, "chevrolet");
@@ -117,13 +122,13 @@ void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod,
   }
 
   char * combustiveis[] = {"flex", "gasolina", "alcool", "diesel"};
-  strcpy(combustivel, combustiveis[rand() % 4]);
+  strcpy(combustivel, combustiveis[nAleatorio(0, 3)]);
 
   char * cores[] = {"preto", "marrom", "branco", "prata", "vermelho", "amarelo", "cinza", "laranja", "verde"};
-  strcpy(cor, cores[rand() % 9]);
+  strcpy(cor, cores[nAleatorio(0, 8)]);
 
-  *opcional = rand() % 8;
-  *preco = 6000 + (rand() % (190000 - 600 + 1));
+  *opcional = nAleatorio(0, 7);
+  *preco = nAleatorio(6000, 190000);
 }
 
 void geraPlaca(char * placa){
@@ -153,6 +158,8 @@ void inserirCarro(){
   char placa[9], modelo[11], fabricante[11], combustivel[8], cor[10], esc;
   int anoFab, anoMod, opcional;
   float preco;
+  struct CARRO car;
+
   geraPlaca(placa);
   geraCarroInfo(modelo, fabricante, &anoFab, &anoMod, combustivel, cor, &opcional, &preco);
   do{
@@ -169,9 +176,9 @@ void inserirCarro(){
     printf("PRECO DE COMPRA: %.2f\n", preco);
     printf("S/N -> ");
     scanf(" %c", &esc);
+
     esc = toupper(esc);
     if(esc == 'S'){
-      struct CARRO car;
       strcpy(car.placa, placa);
       strcpy(car.modelo, modelo);
       strcpy(car.fabricante, fabricante);
@@ -181,6 +188,16 @@ void inserirCarro(){
       strcpy(car.cor, cor);
       car.opcional[0] = opcional;
       car.preco_compra = preco;
+      FILE * fp = fopen("carros.bin", "ab");
+
+      if(fp == NULL){
+        printf("ERRO DE ABERTURA DE ARQUIVO!\n");
+        exit(100);
+      }
+
+      fwrite(&car, sizeof(car), 1, fp);
+      fclose(fp);
+
     } else if(esc == 'N'){
       printf("OPERACAO CANCELADA!\n");
       Sleep(2);
@@ -193,11 +210,12 @@ void inserirCarro(){
 
 void menuCarro(){
   int esc;
+  struct CARRO car;
   do{
     system("cls");
     printf("1. INSERIR UM CARRO\n");
     printf("2. EXCLUIR UM CARRO\n");
-    printf("3. LISTAR CARROS DISPONIVEIS PARA VENDAORDENADOS POR FABRICANTE E MODELO\n");
+    printf("3. LISTAR CARROS DISPONIVEIS PARA VENDA ORDENADOS POR FABRICANTE E MODELO\n");
     printf("4. LISTAR CAROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
     printf("5. LISTAR OS CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO\n");
     printf("6. SAIR\n");
@@ -206,6 +224,31 @@ void menuCarro(){
       case 1:
         inserirCarro();
         break;
+      case 2:{
+        printf("-----------------------------\n");
+        FILE * fp = fopen("carros.bin", "rb");
+        if(fp == NULL){
+          printf("ERRO AO ABRIR ARQUIVO!\n");
+          exit(100);
+        }
+        fseek(fp, 0, SEEK_SET);
+        while(!feof(fp)){
+          if(fread(&car, sizeof(car),1,fp) > 0){
+            printf("PLACA: %s\n", car.placa);
+            printf("MODELO: %s\n", car.modelo);
+            printf("FABRICANTE: %s\n", car.fabricante);
+            printf("ANO DE FABRICACAO: %d\n", car.ano_fabricacao);
+            printf("ANO MODELO: %d\n", car.ano_modelo);
+            printf("COMBUSTIVEL: %s\n", car.combustivel);
+            printf("COR: %s\n", car.cor);
+            printf("OPCIONAL: %s\n", opcionais[car.opcional[0]]);
+            printf("PRECO DE COMPRA: %.2f\n", car.preco_compra);
+            printf("------------------------------\n");
+          }
+        }
+        fclose(fp);
+        system("pause");
+        }
       default:
         break;
     }
