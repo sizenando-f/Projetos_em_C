@@ -1,0 +1,26 @@
+VER CARROS
+struct CARRO car;
+printf("-----------------------------\n");
+        FILE * fp = fopen("carros.bin", "rb");
+        if(fp == NULL){
+          printf("ERRO AO ABRIR ARQUIVO!\n");
+          exit(100);
+        }
+        fseek(fp, 0, SEEK_SET);
+        while(!feof(fp)){
+          if(fread(&car, sizeof(car),1,fp) > 0){
+            printf("PLACA: %s\n", car.placa);
+            printf("MODELO: %s\n", car.modelo);
+            printf("FABRICANTE: %s\n", car.fabricante);
+            printf("ANO DE FABRICACAO: %d\n", car.ano_fabricacao);
+            printf("ANO MODELO: %d\n", car.ano_modelo);
+            printf("COMBUSTIVEL: %s\n", car.combustivel);
+            printf("COR: %s\n", car.cor);
+            printf("OPCIONAL: %s\n", opcionais[car.opcional[0]]);
+            printf("PRECO DE COMPRA: %.2f\n", car.preco_compra);
+            printf("------------------------------\n");
+          }
+        }
+        fclose(fp);
+        system("pause");
+        }

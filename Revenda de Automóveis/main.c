@@ -210,7 +210,6 @@ void inserirCarro(){
 
 void menuCarro(){
   int esc;
-  struct CARRO car;
   do{
     system("cls");
     printf("1. INSERIR UM CARRO\n");
@@ -224,35 +223,90 @@ void menuCarro(){
       case 1:
         inserirCarro();
         break;
-      case 2:{
-        printf("-----------------------------\n");
-        FILE * fp = fopen("carros.bin", "rb");
-        if(fp == NULL){
-          printf("ERRO AO ABRIR ARQUIVO!\n");
-          exit(100);
-        }
-        fseek(fp, 0, SEEK_SET);
-        while(!feof(fp)){
-          if(fread(&car, sizeof(car),1,fp) > 0){
-            printf("PLACA: %s\n", car.placa);
-            printf("MODELO: %s\n", car.modelo);
-            printf("FABRICANTE: %s\n", car.fabricante);
-            printf("ANO DE FABRICACAO: %d\n", car.ano_fabricacao);
-            printf("ANO MODELO: %d\n", car.ano_modelo);
-            printf("COMBUSTIVEL: %s\n", car.combustivel);
-            printf("COR: %s\n", car.cor);
-            printf("OPCIONAL: %s\n", opcionais[car.opcional[0]]);
-            printf("PRECO DE COMPRA: %.2f\n", car.preco_compra);
-            printf("------------------------------\n");
-          }
-        }
-        fclose(fp);
-        system("pause");
-        }
+      case 2:
+        break;
       default:
         break;
     }
   } while(esc != 6);
+}
+
+char * gera_nome(){
+  char *nomes[20] = {"Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Hannah", "Isaac", "Jack", "Katherine", "Liam", "Mia", "Noah", "Olivia", "Peter", "Quinn", "Rachel", "Samuel", "Taylor"};
+  static char nome[20];
+
+  strcpy(nome, nomes[nAleatorio(0, 19)]);
+  return nome;
+}
+
+char* gera_cpf_valido() {
+    int soma = 0, resto = 0;
+    int multiplicador1[9] = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+    int multiplicador2[10] = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+    srand(time(NULL));
+    char semente[14];
+    // Gera valor aleatório, formata para ter 9 dígitos e insere no vetor
+    sprintf(semente, "%09d", rand() % 900000000 + 100000000);
+
+    for (int i = 0; i < 9; i++)
+        // Mulitiplica cada número do CPF pelo mulitiplicador respectivo
+        soma += (semente[i] - '0') * multiplicador1[i];
+
+    resto = soma % 11;
+    // Gera primeiro dígito verificador
+    if (resto < 2)
+        resto = 0;
+    else
+        resto = 11 - resto;
+
+    // Insere primeiro dígito verificador no vetor
+    sprintf(semente + 9, "%d", resto);
+    soma = 0;
+
+    for (int i = 0; i < 10; i++)
+        // Mulitiplica cada número do CPF pelo mulitiplicador respectivo
+        soma += (semente[i] - '0') * multiplicador2[i];
+
+    resto = soma % 11;
+    // Gera segundo dígito verificador
+    if (resto < 2)
+        resto = 0;
+    else
+        resto = 11 - resto;
+
+    // Insere primeiro dígito verificador no vetor
+    sprintf(semente + 10, "%d", resto);
+
+
+    // Formata CPF no modelo 999.999.999-99
+    static char cpf_formatado[15];
+    sprintf(cpf_formatado, "%c%c%c.%c%c%c.%c%c%c-%c%c", semente[0], semente[1], semente[2], semente[3], semente[4], semente[5], semente[6], semente[7], semente[8], semente[9], semente[10]);
+
+    return cpf_formatado;
+}
+
+void inserirCliente(){
+
+}
+
+void menuCliente(){
+  int esc;
+  do{
+    printf("1. INSERIR UM CLIENTE\n");
+    printf("2. EXCLUIR UM CLIENTE\n");
+    printf("3. LISTAR OS CLIENTES ORDENADOS POR NOME\n");
+    printf("4. LISTAR OS CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL\n");
+    printf("5. SAIR\n");
+    scanf("%d", &esc);
+    switch (esc){
+      case 1:
+        inserirCliente();
+        break;
+      default:
+        break;
+    }
+  }while(esc != 5);
 }
 
 int main(){
@@ -268,6 +322,9 @@ int main(){
     switch (esc){
       case 1:
         menuCarro();
+        break;
+      case 2:
+
         break;
       default:
         break;
