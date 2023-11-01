@@ -4,7 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <windows.h>
+#include <unistd.h>
 #define TAM 50
+
+int checa_carro(char * placa);
 
 char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
   {"banco.couro"}, {"sensor.estacionamento"}};
@@ -207,6 +210,77 @@ void inserirCarro(){
   } while(esc != 'S' && esc != 'N');
 }
 
+int checa_venda_carro(char * placa){
+  const char *teste = "vendas.bin";
+  if(access(teste, F_OK) == -1){
+    return 0;
+  }
+
+  FILE * fp = fopen("vendas.bin", "rb");
+  struct VENDA_CARRO venda;
+  int check = 0;
+
+  if(fp == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO PARA CHECAR VENDA DO CARRO!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  while(!feof(fp)){
+    if(fread(&venda, sizeof(venda), 1, fp) > 0){
+      if(strcmp(placa, venda.placa_car) == 0){
+        check = 1;
+      } 
+    }
+  }
+
+  fclose(fp);
+  return check;
+}
+
+void apaga_carro(char * placa){
+  FILE * original = fopen("carros.bin", "rb");
+  if(original == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO ORIGINAL!\n");
+    exit(100);
+  }
+
+  FILE * temporario = fopen("temp.bin", "ab");
+  if(temporario == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO TEMPORARIO!\n");
+    fclose(original);
+    exit(100);
+  }
+
+  fseek(original, 0, SEEK_SET);
+  fseek(temporario, 0, SEEK_SET);
+
+  struct CARRO carro;
+  while(!feof(original)){
+    if(fread(&carro, sizeof(carro), 1, original) > 0){
+      if(strcmp(placa, carro.placa) != 0){
+        fwrite(&carro, sizeof(carro), 1, temporario);
+      }
+    }
+  }
+
+  fclose(original);
+  fclose(temporario);
+
+  if(remove("carros.bin") != 0){
+    printf("ERRO AO DELETAR ARQUIVO!\n");
+    exit(100);
+  }
+
+  if(rename("temp.bin", "carros.bin") != 0){
+    printf("ERRO AO RENOMEAR ARQUIVO!\n");
+    exit(100);
+  }
+
+  printf("EXCLUSAO REALIZADA COM SUCESSO!");
+}
+
 void menuCarro(){
   int esc;
   do{
@@ -222,7 +296,24 @@ void menuCarro(){
       case 1:
         inserirCarro();
         break;
-      case 2:
+      case 2:{
+        char placa[9];
+        printf("INSIRA A PLACA DO CARRO: ");
+        getchar();
+        fgets(placa, sizeof(placa), stdin);
+        if(checa_carro(placa) == 2){
+          if(!checa_venda_carro(placa)){
+            apaga_carro(placa);
+          } else {
+            printf("CARRO JA FOI VENDIDO!\n");
+          }
+        } else {
+          printf("CARRO INEXISENTE!\n");
+        }
+      }
+      system("pause");
+        break;
+      case 3:
         break;
       default:
         break;
@@ -412,7 +503,7 @@ int checa_carro(char * placa){
   int check = 0;
 
   if(fp == NULL){
-    printf("ERRO AO ABRIR O ARQUIVO!\n");
+    printf("ERRO AO ABRIR O ARQUIVO PRA CHECAR CARRO!\n");
     exit(100);
   }
 
@@ -518,6 +609,7 @@ void menuVenda(){
         fgets(placa, sizeof(placa), stdin);
         check = checa_carro(placa);
         check += checa_cliente(cpf);
+
         switch (check){
           case 0:
             printf("CLIENTE E CARRO INEXISTENTE!\n");
@@ -540,19 +632,7 @@ void menuVenda(){
             break;
         }
         break;
-      case 2:{
-        struct VENDA_CARRO venda;
-        FILE * fp = fopen("vendas.bin", "rb");
-        while(!feof(fp)){
-          if(fread(&venda, sizeof(venda), 1, fp) > 0){
-            printf("%s\n", venda.placa_car);
-            printf("%s\n", venda.cpf_cli);
-            printf("%.2f\n", venda.preco_venda);
-            printf("%d/%d/%d\n", venda.data_venda.dia, venda.data_venda.mes, venda.data_venda.ano);
-          }
-        }
-        fclose(fp);
-      }
+      case 2:
         break;
       default:
         break;
