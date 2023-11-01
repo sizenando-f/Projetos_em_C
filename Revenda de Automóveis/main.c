@@ -286,12 +286,35 @@ char* gera_cpf_valido() {
     return cpf_formatado;
 }
 
+char * gera_cep(){
+  static char cep[11];
+  sprintf(cep, "%d%d.%d%d%d-%d%d%d", nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9));
+  return cep;
+}
+
+struct ENDERECO gera_endereco(){
+  char * ruas[20] = { "Rua A", "Rua B", "Rua C", "Rua D", "Rua E", "Rua F", "Rua G", "Rua H", "Rua I", "Rua J", "Rua K", "Rua L", "Rua M", "Rua N", "Rua O", "Rua P", "Rua Q", "Rua R", "Rua S", "Rua T" };
+  char * bairros[20] = { "Bairro da Amizade", "Bairro das Flores", "Bairro da Liberdade", "Bairro do Sol", "Bairro Esperança", "Bairro Felicidade", "Bairro Harmonia", "Bairro Primavera", "Bairro Recanto Verde", "Bairro Sossego", "Bairro Vila Alegre", "Bairro Vista Bela", "Bairro Novo Horizonte", "Bairro Jardim Azul", "Bairro Vale Encantado", "Bairro do Lago", "Bairro das Montanhas", "Bairro da Lua", "Bairro da Paz", "Bairro Estrela Brilhante" };
+  char * cidades[20] = { "Cidade das Maravilhas", "Cidade Encantada", "Cidade Radiante", "Cidade dos Sonhos", "Cidade Luz", "Cidade da Alegria", "Cidade da Esperança", "Cidade Mágica", "Cidade das Cores", "Cidade Bela Vista", "Cidade Serrana", "Cidade Oásis", "Cidade do Futuro", "Cidade Celestial", "Cidade Paradisíaca", "Cidade do Arco-Íris", "Cidade das Marés", "Cidade das Estrelas", "Cidade dos Ventos", "Cidade Harmoniosa" };
+  char * estados[20] = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN" };
+  static struct ENDERECO endereco;
+  strcpy(endereco.rua, ruas[nAleatorio(0, 19)]);
+  strcpy(endereco.bairro, bairros[nAleatorio(0, 19)]);
+  strcpy(endereco.cidade, cidades[nAleatorio(0, 19)]);
+  strcpy(endereco.estado, estados[nAleatorio(0, 19)]);
+  strcpy(endereco.cep, gera_cep());
+  endereco.numero = nAleatorio(100, 9999);
+  return endereco;
+}
+
 void inserirCliente(){
   char * nome = gera_nome();
+  char * cpf = gera_cpf_valido();
   char esc;
   do{
     printf("--- VOCE DESEJA INSERIR O SEGUINTE CLIENTE? ---\n");
     printf("NOME: %s\n", nome);
+    printf("CPF: %s\n", cpf);
     printf("S/N -> ");
     scanf(" %c", &esc);
     esc = toupper(esc);
