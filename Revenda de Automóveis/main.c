@@ -146,7 +146,7 @@ void geraPlaca(char * placa){
     strcat(placa, letras[nAleatorio]);
   }
   strcat(placa, "-");
-  for(int i = 0; i < 3; i++){
+  for(int i = 0; i < 4; i++){
     int nAleatorio = rand() % 9;
     strcat(placa, numeros[nAleatorio]);
   }
@@ -213,9 +213,9 @@ void menuCarro(){
     system("cls");
     printf("1. INSERIR UM CARRO\n");
     printf("2. EXCLUIR UM CARRO\n");
-    printf("3. LISTAR CARROS DISPONIVEIS PARA VENDA ORDENADOS POR FABRICANTE E MODELO\n");
-    printf("4. LISTAR CAROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
-    printf("5. LISTAR OS CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO\n");
+    printf("3. CARROS DISPONIVEIS PARA VENDA ORDENADOS POR FABRICANTE E MODELO\n");
+    printf("4. CARROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
+    printf("5. CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO\n");
     printf("6. SAIR\n");
     scanf("%d", &esc);
     switch (esc){
@@ -387,10 +387,11 @@ void inserirCliente(){
 void menuCliente(){
   int esc;
   do{
+    system("cls");
     printf("1. INSERIR UM CLIENTE\n");
     printf("2. EXCLUIR UM CLIENTE\n");
-    printf("3. LISTAR OS CLIENTES ORDENADOS POR NOME\n");
-    printf("4. LISTAR OS CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL\n");
+    printf("3. CLIENTES ORDENADOS POR NOME\n");
+    printf("4. CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL\n");
     printf("5. SAIR\n");
     scanf("%d", &esc);
     switch (esc){
@@ -403,6 +404,160 @@ void menuCliente(){
         break;
     }
   }while(esc != 5);
+}
+
+int checa_carro(char * placa){
+  FILE * fp = fopen("carros.bin", "rb");
+  struct CARRO carro;
+  int check = 0;
+
+  if(fp == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  while(!feof(fp)){
+    if(fread(&carro, sizeof(carro), 1, fp) > 0){
+      if(strcmp(placa, carro.placa) == 0){
+        check = 2;
+      }
+    }
+  }
+  fclose(fp);
+  return check;
+}
+
+int checa_cliente(char * cpf){
+  FILE * fp = fopen("clientes.bin", "rb");
+  struct CLIENTE cliente;
+  int check = 0;
+
+  if(fp == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  while(!feof(fp)){
+    if(fread(&cliente, sizeof(cliente), 1, fp) > 0){
+      if(strcmp(cpf, cliente.cpf) == 0){
+        check = 3;
+      }
+    }
+  }
+
+  fclose(fp);
+  return check;
+}
+
+struct DATA retorna_data(){
+  struct DATA data; 
+  time_t tempo;
+  struct tm * tempo_info;
+  time(&tempo);
+  tempo_info = localtime(&tempo);
+  data.dia = tempo_info->tm_mday;
+  data.mes = tempo_info->tm_mon + 1;
+  data.ano = 1900 + tempo_info->tm_year;
+  return data;
+}
+
+void realiza_venda(char * placa, char * cpf){
+  struct CARRO carro;
+  float preco_compra;
+  FILE * fp = fopen("carros.bin", "rb");
+
+  while(!feof(fp)){
+    if(fread(&carro, sizeof(carro), 1, fp) > 0){
+      if(strcmp(carro.placa, placa) == 0){
+        preco_compra = carro.preco_compra;
+      }
+    }
+  }
+  fclose(fp);
+
+  FILE * arc = fopen("vendas.bin", "ab");
+  struct VENDA_CARRO venda;
+
+  if(arc == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO!\n");
+    exit(100);
+  }
+
+  strcpy(venda.placa_car, placa);
+  strcpy(venda.cpf_cli, cpf);
+  venda.preco_venda = preco_compra;
+  venda.data_venda = retorna_data();
+  fwrite(&venda, sizeof(venda), 1, arc);
+  fclose(arc);
+}
+
+void menuVenda(){
+  int esc, check = 0;
+  char cpf[15], placa[9];
+  do{
+    system("cls");
+    printf("1. INSERIR UMA VENDA\n");
+    printf("2. EXCLUIR UMA VENDA\n");
+    printf("3. CARROS VENDIDOS DE UM DETERMINADO FABRICANTE\n");
+    printf("4. CARROS VENDIDOS DE UM DETERMINADO MODELO\n");
+    printf("5. QUANTIDADE DE CARROS VENDIDOS COM O VALOR TOTALIZADO DOS PRECOS VENDIDOS\n");
+    printf("6. LUCRO TOTAL DAS VENDAS\n");
+    printf("7. SAIR\n");
+    scanf("%d", &esc);
+    switch (esc){
+      case 1:
+        printf("INSIRA O CPF DO CLIENTE: ");
+        getchar();
+        fgets(cpf, sizeof(cpf), stdin);
+        printf("INSIRA A PLACA DO CARRO: ");
+        getchar();
+        fgets(placa, sizeof(placa), stdin);
+        check = checa_carro(placa);
+        check += checa_cliente(cpf);
+        switch (check){
+          case 0:
+            printf("CLIENTE E CARRO INEXISTENTE!\n");
+            system("pause");
+            break;
+          case 2:
+            printf("CLIENTE INEXISTENTE!\n");
+            system("pause");
+            break;
+          case 3:
+            printf("CARRO INEXISTENTE!\n");
+            system("pause");
+            break;
+          case 5:
+            realiza_venda(placa, cpf);
+            printf("OPERACAO REALIZADA COM SUCESSO!\n");
+            system("pause");
+            break;
+          default:
+            break;
+        }
+        break;
+      case 2:{
+        struct VENDA_CARRO venda;
+        FILE * fp = fopen("vendas.bin", "rb");
+        while(!feof(fp)){
+          if(fread(&venda, sizeof(venda), 1, fp) > 0){
+            printf("%s\n", venda.placa_car);
+            printf("%s\n", venda.cpf_cli);
+            printf("%.2f\n", venda.preco_venda);
+            printf("%d/%d/%d\n", venda.data_venda.dia, venda.data_venda.mes, venda.data_venda.ano);
+          }
+        }
+        fclose(fp);
+      }
+        break;
+      default:
+        break;
+    }
+  }while(esc != 7);
 }
 
 int main(){
@@ -422,6 +577,9 @@ int main(){
         break;
       case 2:
         menuCliente();
+        break;
+      case 3:
+        menuVenda();
         break;
       default:
         break;
