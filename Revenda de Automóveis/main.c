@@ -10,7 +10,6 @@ char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"
   {"banco.couro"}, {"sensor.estacionamento"}};
 
 int nAleatorio(int menor, int maior){
-  srand(time(NULL));
   return menor + (rand() % (maior - menor + 1));
 }
 
@@ -140,7 +139,7 @@ void geraPlaca(char * placa){
     letras[i][1] = '\0';
   }
 
-  srand(time(NULL));
+  // srand(time(NULL));
 
   for(int i = 0; i < 3; i++){
     int nAleatorio = rand() % 26;
@@ -244,7 +243,7 @@ char* gera_cpf_valido() {
     int multiplicador1[9] = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
     int multiplicador2[10] = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
 
-    srand(time(NULL));
+    // srand(time(NULL));
     char semente[14];
     // Gera valor aleatório, formata para ter 9 dígitos e insere no vetor
     sprintf(semente, "%09d", rand() % 900000000 + 100000000);
@@ -286,38 +285,102 @@ char* gera_cpf_valido() {
     return cpf_formatado;
 }
 
-char * gera_cep(){
+void * gera_cep() {
+  // srand(time(NULL));
   static char cep[11];
-  sprintf(cep, "%d%d.%d%d%d-%d%d%d", nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9), nAleatorio(0,9));
+  int parte1 = rand() % 100;
+  int parte2 = rand() % 1000;
+  int parte3 = rand() % 1000;
+
+  sprintf(cep, "%02d.%03d-%03d", parte1, parte2, parte3);
   return cep;
 }
 
 struct ENDERECO gera_endereco(){
+  // srand(time(NULL));
   char * ruas[20] = { "Rua A", "Rua B", "Rua C", "Rua D", "Rua E", "Rua F", "Rua G", "Rua H", "Rua I", "Rua J", "Rua K", "Rua L", "Rua M", "Rua N", "Rua O", "Rua P", "Rua Q", "Rua R", "Rua S", "Rua T" };
-  char * bairros[20] = { "Bairro da Amizade", "Bairro das Flores", "Bairro da Liberdade", "Bairro do Sol", "Bairro Esperança", "Bairro Felicidade", "Bairro Harmonia", "Bairro Primavera", "Bairro Recanto Verde", "Bairro Sossego", "Bairro Vila Alegre", "Bairro Vista Bela", "Bairro Novo Horizonte", "Bairro Jardim Azul", "Bairro Vale Encantado", "Bairro do Lago", "Bairro das Montanhas", "Bairro da Lua", "Bairro da Paz", "Bairro Estrela Brilhante" };
-  char * cidades[20] = { "Cidade das Maravilhas", "Cidade Encantada", "Cidade Radiante", "Cidade dos Sonhos", "Cidade Luz", "Cidade da Alegria", "Cidade da Esperança", "Cidade Mágica", "Cidade das Cores", "Cidade Bela Vista", "Cidade Serrana", "Cidade Oásis", "Cidade do Futuro", "Cidade Celestial", "Cidade Paradisíaca", "Cidade do Arco-Íris", "Cidade das Marés", "Cidade das Estrelas", "Cidade dos Ventos", "Cidade Harmoniosa" };
+  char * bairros[20] = { "Bairro da Amizade", "Bairro das Flores", "Bairro da Liberdade", "Bairro do Sol", "Bairro Esperanca", "Bairro Felicidade", "Bairro Harmonia", "Bairro Primavera", "Bairro Recanto Verde", "Bairro Sossego", "Bairro Vila Alegre", "Bairro Vista Bela", "Bairro Novo Horizonte", "Bairro Jardim Azul", "Bairro Vale Encantado", "Bairro do Lago", "Bairro das Montanhas", "Bairro da Lua", "Bairro da Paz", "Bairro Estrela Brilhante" };
+  char * cidades[20] = { "Cidade das Maravilhas", "Cidade Encantada", "Cidade Radiante", "Cidade dos Sonhos", "Cidade Luz", "Cidade da Alegria", "Cidade da Esperanca", "Cidade Magica", "Cidade das Cores", "Cidade Bela Vista", "Cidade Serrana", "Cidade Oasis", "Cidade do Futuro", "Cidade Celestial", "Cidade Paradisiaca", "Cidade do Arco-Iris", "Cidade das Mares", "Cidade das Estrelas", "Cidade dos Ventos", "Cidade Harmoniosa" };
   char * estados[20] = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN" };
   static struct ENDERECO endereco;
-  strcpy(endereco.rua, ruas[nAleatorio(0, 19)]);
-  strcpy(endereco.bairro, bairros[nAleatorio(0, 19)]);
-  strcpy(endereco.cidade, cidades[nAleatorio(0, 19)]);
-  strcpy(endereco.estado, estados[nAleatorio(0, 19)]);
+  strcpy(endereco.rua, ruas[rand() % 20]);
+  strcpy(endereco.bairro, bairros[rand() % 20]);
+  strcpy(endereco.cidade, cidades[rand() % 20]);
+  strcpy(endereco.estado, estados[rand() % 20]);
   strcpy(endereco.cep, gera_cep());
-  endereco.numero = nAleatorio(100, 9999);
+  endereco.numero = 100 + (rand() % 9999 - 100 + 1);
   return endereco;
+}
+
+struct TELEFONE gera_telefone(){
+  struct TELEFONE telefone;
+  int parte1 = rand() % 99;
+  int parte2 = rand() % 9999;
+  int parte3 = rand() % 9999;
+
+  sprintf(telefone.telefone, "%02d 9%04d-%04d", parte1, parte2, parte3);
+  return telefone;
 }
 
 void inserirCliente(){
   char * nome = gera_nome();
   char * cpf = gera_cpf_valido();
+  struct ENDERECO endereco = gera_endereco();
+  struct TELEFONE residencial = gera_telefone();
+  struct TELEFONE celular[5];
+  celular[0] = gera_telefone(); celular[1] = gera_telefone(); celular[2] = gera_telefone(); celular[3] = gera_telefone(); celular[4] = gera_telefone();
+  float renda_mensal = nAleatorio(1200, 10000);
   char esc;
   do{
     printf("--- VOCE DESEJA INSERIR O SEGUINTE CLIENTE? ---\n");
     printf("NOME: %s\n", nome);
     printf("CPF: %s\n", cpf);
+    printf("ENDERECO: \n");
+    printf("  RUA: %s\n", endereco.rua);
+    printf("  NUMERO: %d\n", endereco.numero);
+    printf("  BAIRRO: %s\n", endereco.bairro);
+    printf("  CIDADE: %s\n", endereco.cidade);
+    printf("  ESTADO: %s\n", endereco.estado);
+    printf("  CEP: %s\n", endereco.cep);
+    printf("TELEFONE RESIDENCIAL: %s\n", residencial.telefone);
+    printf("TELEFONE CELULAR: \n");
+    for(int i = 0; i < 5; i++){
+      printf("  %d: %s\n", i+1, celular[i].telefone);
+    }
+    printf("RENDA MENSAL: %.2f\n", renda_mensal);
     printf("S/N -> ");
     scanf(" %c", &esc);
     esc = toupper(esc);
+
+    switch (esc){
+      case 'S':{
+        struct CLIENTE cliente;
+        strcpy(cliente.nome, nome);
+        strcpy(cliente.cpf, cpf);
+        cliente.endereco = endereco;
+        cliente.residencial = residencial;
+        for(int i = 0; i < 5; i++){
+          cliente.celular[i] = celular[i];
+        }
+        cliente.renda_mensal = renda_mensal;
+        FILE * fp = fopen("clientes.bin", "ab");
+        if(fp == NULL){
+          printf("ERRO NA ABERTURA DO ARQUIVO!\n");
+          exit(100);
+        }
+        fwrite(&cliente, sizeof(cliente), 1, fp);
+        fclose(fp);
+      }
+      break;
+      case 'N':
+        printf("OPERACAO CANCELADA!\n");
+        system("pause");
+        break;
+      default:
+        printf("ENTRADA INVALIDA!\n");
+        system("pause");
+        break;
+    }
   } while(esc != 'S' && esc != 'N');
 }
 
@@ -334,6 +397,8 @@ void menuCliente(){
       case 1:
         inserirCliente();
         break;
+      case 2:
+        break;
       default:
         break;
     }
@@ -341,6 +406,7 @@ void menuCliente(){
 }
 
 int main(){
+  srand(time(NULL));
   int esc;
   do{
     system("cls");

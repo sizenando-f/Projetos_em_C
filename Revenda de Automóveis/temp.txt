@@ -24,3 +24,20 @@ printf("-----------------------------\n");
         fclose(fp);
         system("pause");
         }
+
+{
+        struct CLIENTE cliente;
+        FILE * fp = fopen("clientes.bin", "rb");
+        fseek(fp, 0, SEEK_SET);
+        while(!feof(fp)){
+          if(fread(&cliente, sizeof(cliente), 1, fp) > 0){
+            printf("%s\n", cliente.nome);
+            printf("%s\n", cliente.cpf);
+            printf("%s\n", cliente.endereco.rua);
+            printf("%s\n", cliente.residencial.telefone);
+            printf("%s\n", cliente.celular[0].telefone);
+            printf("%f\n", cliente.renda_mensal);
+          }
+        }
+        fclose(fp);
+      }
