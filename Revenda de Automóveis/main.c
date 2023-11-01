@@ -219,7 +219,6 @@ int checa_venda_carro(char * placa){
 
   FILE * fp = fopen("vendas.bin", "rb");
   struct VENDA_CARRO venda;
-  int check = 0;
 
   if(fp == NULL){
     printf("ERRO AO ABRIR O ARQUIVO PARA CHECAR VENDA DO CARRO!\n");
@@ -230,9 +229,7 @@ int checa_venda_carro(char * placa){
 
   while(!feof(fp)){
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
-      if(strcmp(placa, venda.placa_car) == 0){
-        return 1;
-      } 
+      if(strcmp(placa, venda.placa_car) == 0) return 1; 
     }
   }
 
@@ -490,6 +487,8 @@ int checa_venda_cliente(char * cpf){
     exit(100);
   }
 
+  fseek(fp, 0, SEEK_SET);
+
   while(!feof(fp)){
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
       if(strcmp(cpf, venda.cpf_cli) == 0) return 1;
@@ -498,6 +497,46 @@ int checa_venda_cliente(char * cpf){
   
   fclose(fp);
   return 0;
+}
+
+void apaga_cliente(char * cpf){
+  FILE * original = fopen("clientes.bin", "rb");
+  if(original == NULL){
+    printf("ERRO AO ABRIR ARQUIVO ORIGINAL PARA APAGAR CLIENTE!\n");
+    exit(100);
+  }
+
+  FILE * temporario = fopen("temp.bin", "ab");
+  if(temporario == NULL){
+    printf("ERRO AO ABRIR ARQUIVO TEMPORARIO PARA APAGAR CLIENTE!\n");
+    fclose(original);
+    exit(100);
+  }
+
+  struct CLIENTE cliente;
+
+  while(!feof(original)){
+    if(fread(&cliente, sizeof(cliente), 1, original) > 0){
+      if(strcmp(cpf, cliente.cpf) != 0){
+        fwrite(&cliente, sizeof(cliente), 1, temporario);
+      }
+    }
+  }
+
+  fclose(original);
+  fclose(temporario);
+
+  if(remove("clientes.bin") != 0){
+    printf("ERRO AO DELETAR ARQUIVO DE CLIENTES!\n");
+    exit(100);
+  }
+
+  if(rename("temp.bin", "clientes.bin") != 0){
+    printf("ERRO AO RENOMEAR ARQUIVO DE CLIENTES!\n");
+    exit(100);
+  }
+
+  printf("EXCLUSAO REALIZADA COM SUCESSO!");
 }
 
 void menuCliente(){
@@ -520,11 +559,16 @@ void menuCliente(){
         getchar();
         fgets(cpf, sizeof(cpf), stdin);
         if(checa_cliente(cpf) == 3){
-          
+          if(!checa_venda_cliente(cpf)){
+            apaga_cliente(cpf);
+          } else {
+            printf("CLIENTE JA REALIZOU UMA COMPRA!\n");
+          }
         } else {
           printf("CLIENTE INEXISTENTE!\n");
         }
       }
+      system("pause");
         break;
       default:
         break;
