@@ -8,6 +8,7 @@
 #define TAM 50
 
 int checa_carro(char * placa);
+int checa_cliente(char * cpf);
 
 char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
   {"banco.couro"}, {"sensor.estacionamento"}};
@@ -230,13 +231,13 @@ int checa_venda_carro(char * placa){
   while(!feof(fp)){
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
       if(strcmp(placa, venda.placa_car) == 0){
-        check = 1;
+        return 1;
       } 
     }
   }
 
   fclose(fp);
-  return check;
+  return 0;
 }
 
 void apaga_carro(char * placa){
@@ -475,6 +476,30 @@ void inserirCliente(){
   } while(esc != 'S' && esc != 'N');
 }
 
+int checa_venda_cliente(char * cpf){
+  const char *teste = "vendas.bin";
+  if(access(teste, F_OK) == -1){
+    return 0;
+  }
+
+  struct VENDA_CARRO venda;
+  FILE * fp = fopen("vendas.bin", "rb");
+
+  if(fp == NULL){
+    printf("ERRO AO ABRIR O ARQUIVO PARA CHECAR COMPRA DO CLIENTE!\n");
+    exit(100);
+  }
+
+  while(!feof(fp)){
+    if(fread(&venda, sizeof(venda), 1, fp) > 0){
+      if(strcmp(cpf, venda.cpf_cli) == 0) return 1;
+    }
+  }
+  
+  fclose(fp);
+  return 0;
+}
+
 void menuCliente(){
   int esc;
   do{
@@ -489,7 +514,17 @@ void menuCliente(){
       case 1:
         inserirCliente();
         break;
-      case 2:
+      case 2:{
+        char cpf[15];
+        printf("INSIRA O CPF DO CLIENTE: ");
+        getchar();
+        fgets(cpf, sizeof(cpf), stdin);
+        if(checa_cliente(cpf) == 3){
+          
+        } else {
+          printf("CLIENTE INEXISTENTE!\n");
+        }
+      }
         break;
       default:
         break;
