@@ -548,7 +548,7 @@ void apaga_cliente(char * cpf){
   printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
-int comparar_clientes(const void *a, const void *b){
+int comparar_clientes_nome(const void *a, const void *b){
   const char *nome1 = ((struct CLIENTE *)a)->nome;
   const char *nome2 = ((struct CLIENTE *)b)->nome;
   return strcmp(nome1, nome2);
@@ -570,7 +570,7 @@ void listar_clientes_nome(){
 
   fclose(fp);
 
-  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes);
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_nome);
 
   system("cls");
   for(int i = 0; i < n; i++){
@@ -593,7 +593,13 @@ void listar_clientes_nome(){
   }
 }
 
-void listar_cliente_renda(){
+int comparar_clientes_renda(const void *a, const void *b){
+  const float renda1 = ((struct CLIENTE *)a)->renda_mensal;
+  const float renda2 = ((struct CLIENTE *)b)->renda_mensal;
+  return (renda1 - renda2);
+}
+
+void listar_clientes_renda(){
   struct CLIENTE clientes[100];
 
   FILE * fp = fopen("clientes.bin", "rb");
@@ -609,7 +615,27 @@ void listar_cliente_renda(){
 
   fclose(fp);
 
-  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes);
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_renda);
+
+  system("cls");
+  for(int i = 0; i < n; i++){
+    printf("------------------------------\n");
+    printf("NOME: %s\n", clientes[i].nome);
+    printf("CPF: %s\n", clientes[i].cpf);
+    printf("ENDERECO:\n");
+    printf("  RUA: %s\n", clientes[i].endereco.rua);
+    printf("  NUMERO: %d\n", clientes[i].endereco.numero);
+    printf("  BAIRRO: %s\n", clientes[i].endereco.bairro);
+    printf("  CIDADE: %s\n", clientes[i].endereco.cidade);
+    printf("  ESTADO: %s\n", clientes[i].endereco.estado);
+    printf("  CEP: %s\n", clientes[i].endereco.cep);
+    printf("TELEFONE RESIDENCIAL: %s\n", clientes[i].residencial.telefone);
+    printf("TELEFONE CELULAR:\n");
+    for(int j = 0; j < 5; j++){
+      printf(" %d: %s\n", j+1, clientes[i].celular[j].telefone);
+    }
+    printf("RENDA MENSAL: %.2f\n", clientes[i].renda_mensal);
+  }
 }
 
 void menuCliente(){
@@ -648,7 +674,7 @@ void menuCliente(){
         system("pause");
         break;
       case 4:
-        lista_clientes_renda();
+        listar_clientes_renda();
         system("pause");
         break;
       default:
