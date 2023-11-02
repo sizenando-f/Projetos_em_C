@@ -548,6 +548,70 @@ void apaga_cliente(char * cpf){
   printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
+int comparar_clientes(const void *a, const void *b){
+  const char *nome1 = ((struct CLIENTE *)a)->nome;
+  const char *nome2 = ((struct CLIENTE *)b)->nome;
+  return strcmp(nome1, nome2);
+}
+
+void listar_clientes_nome(){
+  struct CLIENTE clientes[100];
+
+  FILE * fp = fopen("clientes.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  int n = 0;
+  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++;
+
+  fclose(fp);
+
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes);
+
+  system("cls");
+  for(int i = 0; i < n; i++){
+    printf("------------------------------\n");
+    printf("NOME: %s\n", clientes[i].nome);
+    printf("CPF: %s\n", clientes[i].cpf);
+    printf("ENDERECO:\n");
+    printf("  RUA: %s\n", clientes[i].endereco.rua);
+    printf("  NUMERO: %d\n", clientes[i].endereco.numero);
+    printf("  BAIRRO: %s\n", clientes[i].endereco.bairro);
+    printf("  CIDADE: %s\n", clientes[i].endereco.cidade);
+    printf("  ESTADO: %s\n", clientes[i].endereco.estado);
+    printf("  CEP: %s\n", clientes[i].endereco.cep);
+    printf("TELEFONE RESIDENCIAL: %s\n", clientes[i].residencial.telefone);
+    printf("TELEFONE CELULAR:\n");
+    for(int j = 0; j < 5; j++){
+      printf(" %d: %s\n", j+1, clientes[i].celular[j].telefone);
+    }
+    printf("RENDA MENSAL: %.2f\n", clientes[i].renda_mensal);
+  }
+}
+
+void listar_cliente_renda(){
+  struct CLIENTE clientes[100];
+
+  FILE * fp = fopen("clientes.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  int n = 0;
+  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++;
+
+  fclose(fp);
+
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes);
+}
+
 void menuCliente(){
   int esc;
   do{
@@ -578,6 +642,14 @@ void menuCliente(){
         }
       }
       system("pause");
+        break;
+      case 3:
+        listar_clientes_nome();
+        system("pause");
+        break;
+      case 4:
+        lista_clientes_renda();
+        system("pause");
         break;
       default:
         break;
