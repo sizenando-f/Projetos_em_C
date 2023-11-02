@@ -229,7 +229,10 @@ int checa_venda_carro(char * placa){
 
   while(!feof(fp)){
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
-      if(strcmp(placa, venda.placa_car) == 0) return 1; 
+      if(strcmp(placa, venda.placa_car) == 0){
+        fclose(fp);
+        return 1;
+      } 
     }
   }
 
@@ -276,7 +279,7 @@ void apaga_carro(char * placa){
     exit(100);
   }
 
-  printf("EXCLUSAO REALIZADA COM SUCESSO!");
+  printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
 void menuCarro(){
@@ -491,7 +494,10 @@ int checa_venda_cliente(char * cpf){
 
   while(!feof(fp)){
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
-      if(strcmp(cpf, venda.cpf_cli) == 0) return 1;
+      if(strcmp(cpf, venda.cpf_cli) == 0){
+        fclose(fp);
+        return 1;
+      };
     }
   }
   
@@ -515,6 +521,9 @@ void apaga_cliente(char * cpf){
 
   struct CLIENTE cliente;
 
+  fseek(original, 0, SEEK_SET);
+  fseek(temporario, 0, SEEK_SET);
+
   while(!feof(original)){
     if(fread(&cliente, sizeof(cliente), 1, original) > 0){
       if(strcmp(cpf, cliente.cpf) != 0){
@@ -536,7 +545,7 @@ void apaga_cliente(char * cpf){
     exit(100);
   }
 
-  printf("EXCLUSAO REALIZADA COM SUCESSO!");
+  printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
 void menuCliente(){
@@ -665,6 +674,48 @@ void realiza_venda(char * placa, char * cpf){
   fclose(arc);
 }
 
+void apaga_venda(char * placa){
+  FILE * original = fopen("vendas.bin", "rb");
+  if(original == NULL){
+    printf("ERRO AO ABRIR ARQUIVO ORIGINAL PARA APAGAR VENDA!\n");
+    exit(100);
+  }
+
+  FILE * temporario = fopen("temp.bin", "ab");
+  if(temporario == NULL){
+    printf("ERRO AO ABRIR ARQUIVO TEMPORARIO PARA APAGAR VENDA!\n");
+    fclose(original);
+    exit(100);
+  }
+
+  struct VENDA_CARRO venda;
+
+  fseek(original, 0, SEEK_SET);
+
+  while(!feof(original)){
+    if(fread(&venda, sizeof(venda), 1, original) > 0){
+      if(strcmp(placa, venda.placa_car) != 0){
+        fwrite(&venda, sizeof(venda), 1, temporario);
+      }
+    }
+  }
+
+  fclose(original);
+  fclose(temporario);
+
+  if(remove("vendas.bin") != 0){
+    printf("ERRO AO DELETAR ARQUIVO DE VENDAS! REINICIE O PROGRAMA E TENTE NOVAMENTE\n");
+    exit(100);
+  }
+
+  if(rename("temp.bin", "vendas.bin") != 0){
+    printf("ERRO AO RENOMEAR ARQUIVO DE VENDAS!\n");
+    exit(100);
+  }
+
+  printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
+}
+
 void menuVenda(){
   int esc, check = 0;
   char cpf[15], placa[9];
@@ -711,7 +762,17 @@ void menuVenda(){
             break;
         }
         break;
-      case 2:
+      case 2:{
+        printf("INSIRA A PLACA DO CARRO: ");
+        getchar();
+        fgets(placa, sizeof(placa), stdin);
+        if(checa_carro(placa) == 2){
+          apaga_venda(placa);
+        } else {
+          printf("CARRO INEXISTENTE!\n");
+        }
+      }
+      system("pause");
         break;
       default:
         break;
