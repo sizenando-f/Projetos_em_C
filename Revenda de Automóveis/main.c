@@ -64,12 +64,11 @@ struct VENDA_CARRO {
 
 void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod, char * combustivel, char * cor, int * opcional, float * preco){
   char * modelos[] = {"onix", "s10", "celta", "strada", "palio", "corolla", "hillux", "saveiro", "voyage", "gol"};
-  // srand(time(NULL));
 
   strcpy(fabricante, "");
 
   int n = nAleatorio(0, 9);
-  strcpy(modelo, modelos[n]);
+
   if(n < 3){
     strcpy(fabricante, "chevrolet");
   } else if(n < 5){
@@ -79,6 +78,8 @@ void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod,
   } else {
     strcpy(fabricante, "volkswagen");
   }
+
+  strcpy(modelo, modelos[n]);
 
   switch (n){
     case 0:
@@ -282,6 +283,75 @@ void apaga_carro(char * placa){
   printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
+int comparar_carros_fabricante(const void *a, const void *b){
+  const char *fabricante1 = ((struct CARRO *)a)->fabricante;
+  const char *fabricante2 = ((struct CARRO *)b)->fabricante;
+  return strcmp(fabricante1, fabricante2);
+}
+
+void listar_carro_fabricante(){
+  struct CARRO carros[100];
+
+  FILE * fp = fopen("carros.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM DOS CARROS!\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  int n = 0;
+  while(fread(&carros[n], sizeof(struct CARRO), 1, fp) == 1) n++;
+
+  fclose(fp);
+
+  qsort(carros, n, sizeof(carros[0]), comparar_carros_fabricante);
+
+  system("cls");
+  for(int i = 0; i < n; i++){
+    printf("---------------------\n");
+    printf("PLACA: %s\n", carros[i].placa);
+    printf("MODELO: %s\n", carros[i].modelo);
+    printf("FABRICANTE: %s\n", carros[i].fabricante);
+    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
+    printf("ANO DO MODELO: %d\n", carros[i].ano_modelo);
+    printf("COMBUSTIVEL: %s\n", carros[i].combustivel);
+    printf("COR: %s\n", carros[i].cor);
+    printf("OPCIONAL: %s\n", opcionais[carros[i].opcional[0]]);
+    printf("PRECO DE COMPRA: %.2f\n", carros[i].preco_compra);
+  }
+}
+
+void listar_carros_opcionais(int opcional[], int tam){
+  FILE * fp = fopen("carros.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM POR OPCIONAL\n");
+    exit(100);
+  }
+
+  struct CARRO carro;
+
+  system("cls");
+  while (fread(&carro, sizeof(carro), 1, fp) > 0) {
+        for (int i = 0; i < tam; i++) {
+            if (carro.opcional[0] == opcional[i]-1) {
+                printf("---------------------\n");
+                printf("PLACA: %s\n", carro.placa);
+                printf("MODELO: %s\n", carro.modelo);
+                printf("FABRICANTE: %s\n", carro.fabricante);
+                printf("ANO DE FABRICACAO: %d\n", carro.ano_fabricacao);
+                printf("ANO DO MODELO: %d\n", carro.ano_modelo);
+                printf("COMBUSTIVEL: %s\n", carro.combustivel);
+                printf("COR: %s\n", carro.cor);
+                printf("OPCIONAL: %s\n", opcionais[carro.opcional[0]]);
+                printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+            }
+        }
+    }
+
+  fclose(fp);
+}
+
 void menuCarro(){
   int esc;
   do{
@@ -315,6 +385,37 @@ void menuCarro(){
       system("pause");
         break;
       case 3:
+        listar_carro_fabricante();
+        system("pause");
+        break;
+      case 4:{
+        int opcional[8], cont = 0, opc = 0;
+        system("cls");
+        printf("---------------------------------------------------\n");
+        printf("1. 4 PORTAS           2. CAMBIO AUTOMATICO\n");
+        printf("3. VIDROS ELETRICOS   4. ABS\n");
+        printf("5. AIR BAGS           6. AR CONDICIONADO\n");
+        printf("7. BANCO DE COURO     8. SENSOR DE ESTACIONAMENTO\n");
+        printf("---------------------------------------------------\n");
+        printf("INSIRA OS OPCIONAIS QUE DESEJA (INSIRA -1 PARA FINALIZAR): \n");
+
+        while(opc != -1 && cont < 8){
+          printf("-> ");
+          scanf("%d", &opc);
+          if(opc > 8){
+            printf("ENTRADA INVALIDA!\n");
+            continue;
+          }
+          if(opc < 1){
+            printf("NAO EXISTE...\n");
+            break;
+          }
+          opcional[cont++] = opc;
+        }
+
+        listar_carros_opcionais(opcional, cont);
+        system("pause");
+      }
         break;
       default:
         break;
