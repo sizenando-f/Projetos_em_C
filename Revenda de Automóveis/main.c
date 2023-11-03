@@ -390,7 +390,6 @@ void listar_carros_ano(int anoInicio, int anoFim){
   }
 }
 
-
 void menuCarro(){
   int esc;
   do{
@@ -421,7 +420,7 @@ void menuCarro(){
           printf("CARRO INEXISENTE!\n");
         }
       }
-      system("pause");
+        system("pause");
         break;
       case 3:
         listar_carro_fabricante();
@@ -455,6 +454,8 @@ void menuCarro(){
         listar_carros_opcionais(opcional, cont);
         system("pause");
       }
+        system("pause");
+
         break;
       case 5: {
         int anoInicio, anoFim;
@@ -464,9 +465,14 @@ void menuCarro(){
         printf("INSIRA O ANO FINAL: ");
         scanf("%d", &anoFim);
         listar_carros_ano(anoInicio, anoFim);
-        system("pause");
       }
+        system("pause");
+      break;
+      case 6:
+        break;
       default:
+        printf("ENTRADA INVALIDA!\n");
+        system("pause");
         break;
     }
   } while(esc != 6);
@@ -817,7 +823,7 @@ void menuCliente(){
           printf("CLIENTE INEXISTENTE!\n");
         }
       }
-      system("pause");
+        system("pause");
         break;
       case 3:
         listar_clientes_nome();
@@ -827,7 +833,10 @@ void menuCliente(){
         listar_clientes_renda();
         system("pause");
         break;
+      case 5:
+        break;
       default:
+        printf("OPCAO INVALIDA!\n");
         break;
     }
   }while(esc != 5);
@@ -1049,7 +1058,11 @@ int main(){
       case 3:
         menuVenda();
         break;
+      case 4:
+        break;
       default:
+        printf("ENTRADA INVALIDA!\n");
+        system("pause");
         break;
     }
   } while(esc != 4);
