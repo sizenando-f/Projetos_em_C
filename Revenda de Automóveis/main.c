@@ -323,6 +323,7 @@ void listar_carro_fabricante(){
 }
 
 void listar_carros_opcionais(int opcional[], int tam){
+  int cont = 0;
   FILE * fp = fopen("carros.bin", "rb");
   if(fp == NULL){
     printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM POR OPCIONAL\n");
@@ -345,12 +346,50 @@ void listar_carros_opcionais(int opcional[], int tam){
                 printf("COR: %s\n", carro.cor);
                 printf("OPCIONAL: %s\n", opcionais[carro.opcional[0]]);
                 printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+                cont++;
             }
         }
     }
 
   fclose(fp);
+  if(!cont){
+    printf("NAO FOI ENCONTRADO NENHUM CARRO!\n");
+  }
 }
+
+void listar_carros_ano(int anoInicio, int anoFim){
+  int cont = 0;
+  FILE * fp = fopen("carros.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA LISTAGEM POR OPCIONAL\n");
+    exit(100);
+  }
+
+  struct CARRO carro;
+
+  system("cls");
+  while (fread(&carro, sizeof(carro), 1, fp) > 0){
+            if (carro.ano_fabricacao >= anoInicio && carro.ano_fabricacao <= anoFim) {
+                printf("---------------------\n");
+                printf("PLACA: %s\n", carro.placa);
+                printf("MODELO: %s\n", carro.modelo);
+                printf("FABRICANTE: %s\n", carro.fabricante);
+                printf("ANO DE FABRICACAO: %d\n", carro.ano_fabricacao);
+                printf("ANO DO MODELO: %d\n", carro.ano_modelo);
+                printf("COMBUSTIVEL: %s\n", carro.combustivel);
+                printf("COR: %s\n", carro.cor);
+                printf("OPCIONAL: %s\n", opcionais[carro.opcional[0]]);
+                printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+                cont++;
+            }
+        }
+
+  fclose(fp);
+  if(!cont){
+    printf("NAO FOI ENCONTRADO NENHUM CARRO!\n");
+  }
+}
+
 
 void menuCarro(){
   int esc;
@@ -417,6 +456,16 @@ void menuCarro(){
         system("pause");
       }
         break;
+      case 5: {
+        int anoInicio, anoFim;
+        system("cls");
+        printf("INSIRA O ANO INICIAL: ");
+        scanf("%d", &anoInicio);
+        printf("INSIRA O ANO FINAL: ");
+        scanf("%d", &anoFim);
+        listar_carros_ano(anoInicio, anoFim);
+        system("pause");
+      }
       default:
         break;
     }
