@@ -395,6 +395,7 @@ void listar_carros_ano(int anoInicio, int anoFim){
 void menuCarro(){
   int esc;
   do{
+    esc = 0;
     system("cls");
     printf("1. INSERIR UM CARRO\n");
     printf("2. EXCLUIR UM CARRO\n");
@@ -976,8 +977,8 @@ void apaga_venda(char * placa){
 }
 
 int comparar_vendas_modelo(const void *a, const void *b){
-  const char carro1 = ((struct CARRO *)a)->modelo;
-  const char carro2 = ((struct CARRO *)a)->modelo;
+  const char *carro1 = ((struct CARRO *)a)->modelo;
+  const char *carro2 = ((struct CARRO *)b)->modelo;
   return strcmp(carro1, carro2);
 }
 
@@ -1016,7 +1017,7 @@ void carros_vendidos_fabricante(int opc){
       if(strcmp(carro.fabricante, fabricantes[opc-1]) == 0){
         fseek(vd, 0, SEEK_SET);
         while(!feof(vd)){
-          if(fread(&venda, sizeof(venda)), 1, vd) > 0){
+          if(fread(&venda, sizeof(venda), 1, vd) > 0){
             if(strcmp(carro.placa, venda.placa_car) == 0){
               carros[n++] = carro;
             }
@@ -1029,9 +1030,30 @@ void carros_vendidos_fabricante(int opc){
   qsort(carros, n, sizeof(carros[0]), comparar_vendas_modelo);
 
   for(int i = 0; i < n; i++){
-    
+    printf("--------------------\n");
+    printf("MODELO: %s\n", carros[i].modelo);
+    printf("PLACA: %s\n", carros[i].placa);
+    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
+    fseek(vd, 0, SEEK_SET);
+    while(!feof(vd)){
+      if(fread(&venda, sizeof(venda), 1, vd) > 0){
+        if(strcmp(venda.placa_car, carros[i].placa) == 0){
+          fseek(cli, 0, SEEK_SET);
+          while(!feof(cli)){
+            if(fread(&cliente, sizeof(cliente), 1, cli) > 0){
+              if(strcmp(cliente.cpf, venda.cpf_cli) == 0){
+                printf("CLIENTE:  %s\n", cliente.nome);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
+  fclose(fp);
+  fclose(vd);
+  fclose(cli);
 }
 
 void menuVenda(){
@@ -1099,13 +1121,14 @@ void menuVenda(){
         printf("3. TOYOTA       4. VOLSWAGE\n");
         printf("------------------\n");
         printf("INSIRA O FABRICANTE: ");
-        sncaf("%d", &opc);
+        scanf("%d", &opc);
         if(opc < 1 || opc > 4){
           printf("OPCAO INVALIDA!\n");
           continue;
         }
         carros_vendidos_fabricante(opc);
       }
+        system("pause");
         break;
       default:
         break;
