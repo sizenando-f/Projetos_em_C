@@ -10,10 +10,11 @@
 int checa_carro(char * placa);
 int checa_cliente(char * cpf);
 
-char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"},
-  {"banco.couro"}, {"sensor.estacionamento"}};
+char opcionais[][TAM]={ {"4.portas"}, {"cambio.automatico"}, {"vidros.eletricos"}, {"abs"}, {"air.bag"}, {"ar.condicionado"}, {"banco.couro"}, {"sensor.estacionamento"}};
 
 char fabricantes[][TAM] = {{"chevrolet"}, {"fiat"}, {"toyota"}, {"volkswagen"}};
+
+char modelosss[][TAM] = {{"onix"}, {"s10"}, {"celta"}, {"strada"}, {"palio"}, {"corolla"}, {"hillux"}, {"saveiro"}, {"voyage"}, {"gol"}};
 
 int nAleatorio(int menor, int maior){
   return menor + (rand() % (maior - menor + 1));
@@ -146,7 +147,6 @@ void geraPlaca(char * placa){
     letras[i][1] = '\0';
   }
 
-  // srand(time(NULL));
 
   for(int i = 0; i < 3; i++){
     int nAleatorio = rand() % 26;
@@ -1056,6 +1056,85 @@ void carros_vendidos_fabricante(int opc){
   fclose(cli);
 }
 
+int comparar_vendas_fabricacao(const void *a, const void *b){
+  const int ano1 = ((struct CARRO *)a)->ano_fabricacao;
+  const int ano2 = ((struct CARRO *)b)->ano_fabricacao;
+  return (ano1 - ano2);
+}
+
+void carros_vendidos_modelo(int opc){
+  FILE * fp = fopen("carros.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO ABRIR ARQUIVO DE CARROS\n");
+    exit(100);
+  }
+
+  FILE * vd = fopen("vendas.bin", "rb");
+  if(vd == NULL){
+    printf("ERRO ABRIR ARQUIVO DE CARROS\n");
+    fclose(fp);
+    exit(100);
+  }
+
+  FILE * cli = fopen("clientes.bin", "rb");
+  if(cli == NULL){
+    printf("ERRO ABRIR ARQUIVO DE CLIENTES\n");
+    fclose(fp);
+    fclose(vd);
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  struct CARRO carro;
+  struct VENDA_CARRO venda;
+  struct CLIENTE cliente;
+  struct CARRO carros[100];
+
+  int n = 0;
+  while(!feof(fp)){
+    if(fread(&carro, sizeof(carro), 1, fp) > 0){
+      if(strcmp(carro.modelo, modelosss[opc-1]) == 0){
+        fseek(vd, 0, SEEK_SET);
+        while(!feof(vd)){
+          if(fread(&venda, sizeof(venda), 1, vd) > 0){
+            if(strcmp(carro.placa, venda.placa_car) == 0){
+              carros[n++] = carro;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  qsort(carros, n, sizeof(carros[0]), comparar_vendas_fabricacao);
+
+  for(int i = 0; i < n; i++){
+    printf("--------------------\n");
+    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
+    printf("PLACA: %s\n", carros[i].placa);
+    fseek(vd, 0, SEEK_SET);
+    while(!feof(vd)){
+      if(fread(&venda, sizeof(venda), 1, vd) > 0){
+        if(strcmp(venda.placa_car, carros[i].placa) == 0){
+          fseek(cli, 0, SEEK_SET);
+          while(!feof(cli)){
+            if(fread(&cliente, sizeof(cliente), 1, cli) > 0){
+              if(strcmp(cliente.cpf, venda.cpf_cli) == 0){
+                printf("CLIENTE:  %s\n", cliente.nome);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  fclose(fp);
+  fclose(vd);
+  fclose(cli);
+}
+
 void menuVenda(){
   int esc, check = 0;
   char cpf[15], placa[9];
@@ -1116,6 +1195,7 @@ void menuVenda(){
         break;
       case 3:{
         int opc = 0;
+        system("cls");
         printf("------------------\n");
         printf("1. CHEVROLET    2. FIAT\n");
         printf("3. TOYOTA       4. VOLSWAGE\n");
@@ -1126,7 +1206,27 @@ void menuVenda(){
           printf("OPCAO INVALIDA!\n");
           continue;
         }
+        system("cls");
         carros_vendidos_fabricante(opc);
+      }
+        system("pause");
+        break;
+      case 4: {
+        int opc;
+        system("cls");
+        printf("------------------\n");
+        printf("1. ONIX     2. S10         3. CELTA       4. STRADA\n");
+        printf("5. PALIO    6. COROLLA     7. HILLUX      8. SAVEIRO\n");
+        printf("9. VOYAGE   10. GOL\n");
+        printf("------------------\n");
+        printf("INSIRA O MODELO: ");
+        scanf("%d", &opc);
+        if(opc < 1 || opc > 10){
+          printf("OPCAO INVALIDA!\n");
+          continue;
+        }
+        system("cls");
+        carros_vendidos_modelo(opc);
       }
         system("pause");
         break;
