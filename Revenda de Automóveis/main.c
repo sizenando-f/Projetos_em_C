@@ -932,6 +932,7 @@ void realiza_venda(char * placa, char * cpf){
   venda.data_venda = retorna_data();
   fwrite(&venda, sizeof(venda), 1, arc);
   fclose(arc);
+
 }
 
 void apaga_venda(char * placa){
@@ -951,6 +952,7 @@ void apaga_venda(char * placa){
   struct VENDA_CARRO venda;
 
   fseek(original, 0, SEEK_SET);
+
 
   while(!feof(original)){
     if(fread(&venda, sizeof(venda), 1, original) > 0){
@@ -1135,6 +1137,32 @@ void carros_vendidos_modelo(int opc){
   fclose(cli);
 }
 
+void checa_vendas(){
+  FILE * fp = fopen("vendas.bin", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO DE VENDAS PARA CHECAGEM\n");
+    exit(100);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+
+  struct VENDA_CARRO venda;
+  float total_precos = 0;
+  int quant_vendas = 0;
+
+  while(!feof(fp)){
+    if(fread(&venda, sizeof(venda), 1, fp) > 0){
+      quant_vendas++;
+      total_precos += venda.preco_venda;
+    }
+  }
+
+  fclose(fp);
+
+  printf("QUANTIDADE DE VENDAS: %d\n", quant_vendas);
+  printf("VALOR TOTAL: %.2f\n", total_precos);
+}
+
 void menuVenda(){
   int esc, check = 0;
   char cpf[15], placa[9];
@@ -1228,6 +1256,10 @@ void menuVenda(){
         system("cls");
         carros_vendidos_modelo(opc);
       }
+        system("pause");
+        break;
+      case 5:
+        checa_vendas();
         system("pause");
         break;
       default:
