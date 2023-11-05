@@ -112,7 +112,7 @@ void mostra_registros_ord(){
   while(!feof(fp)){
     if(fread(&carro, sizeof(carro), 1, fp) > 0){
       printf("-------------------\n");
-      printf("ID: %d\n", carro.id_reg);
+      printf("ID: %ld\n", carro.id_reg);
       printf("PLACA: %s\n", carro.placa);
       printf("MODELO: %s\n", carro.modelo);
       printf("FABRICANTE: %s\n", carro.fabricante);
@@ -128,6 +128,103 @@ void mostra_registros_ord(){
       }
       printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
     }
+  }
+
+  fclose(fp);
+}
+
+void descobre_combustiveis(char combustiveis[4][TAM]){
+  FILE * fp = fopen("carro.dbf", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA ORDENACAO\n");
+    exit(100);
+  }
+
+  int n = 0;
+  CARRO carro;
+
+  fseek(fp, 0, SEEK_SET);
+
+  while(!feof(fp)){
+    if(fread(&carro, sizeof(carro), 1, fp) > 0){
+      int check = 0;
+      for(int i = 0; i < n; i++){
+        if(strcmp(carro.combustivel, combustiveis[i]) == 0){
+          check = 1;
+        }
+      }
+      if(!check){
+        strcpy(combustiveis[n++], carro.combustivel);
+      }
+    }
+  }
+
+  fclose(fp);
+}
+
+void combustivel_para_carro(){
+  char combustiveis[4][TAM];
+  int cont_comb[4];
+
+  descobre_combustiveis(combustiveis);
+
+  FILE * fp = fopen("carro.dbf", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA ORDENACAO\n");
+    exit(100);
+  }
+
+  CARRO carro;
+
+  for(int i = 0; i < 4; i++){
+    fseek(fp, 0, SEEK_SET);
+    int cont = 0;
+    while(!feof(fp)){
+      if(fread(&carro, sizeof(carro), 1, fp) > 0){
+        if(strcmp(carro.combustivel, combustiveis[i]) == 0){
+          cont++;
+        }
+      }
+    }
+    cont_comb[i] = cont;
+  }
+  
+  for(int i = 0; i < 4; i++){
+    printf("%s:%d\n", combustiveis[i], cont_comb[i]);
+  }
+
+  fclose(fp);
+}
+
+void opcional_para_carro(){
+  FILE * fp = fopen("carro.dbf", "rb");
+  if(fp == NULL){
+    printf("ERRO AO ABRIR ARQUIVO PARA ORDENACAO\n");
+    exit(100);
+  }
+
+  CARRO carro;
+  int cont_opc[8];
+
+  for(int i = 0; i < 8; i++){
+    fseek(fp, 0, SEEK_SET);
+    int cont = 0;
+    while(!feof(fp)){
+      if(fread(&carro, sizeof(carro), 1, fp) > 0){
+        for(int j = 0; j < 8; j++){
+          if(carro.opcional[j] == 1){
+            if(j == i){
+              cont++;
+            }
+          }
+        }
+      }
+    }
+    cont_opc[i] = cont;
+  }
+
+  for(int i = 0; i < 8; i++){
+    printf("%s: %d\n", opcionais[i], cont_opc[i]);
   }
 
   fclose(fp);
@@ -159,7 +256,19 @@ int main(){
         mostra_registros_ord();
         system("pause");
         break;
+      case 4:
+        combustivel_para_carro();
+        system("pause");
+        break;
+      case 5:
+        opcional_para_carro();
+        system("pause");
+        break;
+      case 6:
+        break;
       default:
+        printf("ENTRADA INVALIDA\n");
+        system("pause");
         break;
     }
   }while(esc != 6);
