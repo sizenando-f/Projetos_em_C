@@ -458,7 +458,6 @@ void menuCarro(){
         }
 
         listar_carros_opcionais(opcional, cont);
-        system("pause");
       }
         system("pause");
 
@@ -1196,42 +1195,54 @@ void menuVenda(){
   char cpf[15], placa[9];
   do{
     system("cls");
-    printf("1. INSERIR UMA VENDA\n");
-    printf("2. EXCLUIR UMA VENDA\n");
-    printf("3. CARROS VENDIDOS DE UM DETERMINADO FABRICANTE\n");
-    printf("4. CARROS VENDIDOS DE UM DETERMINADO MODELO\n");
-    printf("5. QUANTIDADE DE CARROS VENDIDOS COM O VALOR TOTALIZADO DOS PRECOS VENDIDOS\n");
-    printf("6. LUCRO TOTAL DAS VENDAS\n");
-    printf("7. SAIR\n");
+    printf("-------------------------------------------------------------------------------\n");
+    printf("|1. INSERIR UMA VENDA                                                         |\n");
+    printf("|2. EXCLUIR UMA VENDA                                                         |\n");
+    printf("|3. CARROS VENDIDOS DE UM DETERMINADO FABRICANTE                              |\n");
+    printf("|4. CARROS VENDIDOS DE UM DETERMINADO MODELO                                  |\n");
+    printf("|5. QUANTIDADE DE CARROS VENDIDOS COM O VALOR TOTALIZADO DOS PRECOS VENDIDOS  |\n");
+    printf("|6. LUCRO TOTAL DAS VENDAS                                                    |\n");
+    printf("|7. SAIR                                                                      |\n");
+    printf("-------------------------------------------------------------------------------\n");
     printf("-> ");
     scanf("%d", &esc);
+    system("cls");
     switch (esc){
       case 1:
-        printf("INSIRA O CPF DO CLIENTE: ");
-        getchar();
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("- INSIRA O CPF DO CLIENTE -> ");
         fgets(cpf, sizeof(cpf), stdin);
-        printf("INSIRA A PLACA DO CARRO: ");
-        getchar();
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("- INSIRA A PLACA DO CARRO -> ");
         fgets(placa, sizeof(placa), stdin);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         check = checa_carro(placa);
         check += checa_cliente(cpf);
-
+        system("cls");
         switch (check){
           case 0:
-            printf("CLIENTE E CARRO INEXISTENTE!\n");
+            printf("------------- ERRO -------------\n");
+            printf("| CLIENTE E CARRO INEXISTENTE! |\n");
+            printf("--------------------------------\n");
             system("pause");
             break;
           case 2:
-            printf("CLIENTE INEXISTENTE!\n");
+            printf("---------- ERRO --------\n");
+            printf("| CLIENTE INEXISTENTE! |\n");
+            printf("------------------------\n");
             system("pause");
             break;
           case 3:
-            printf("CARRO INEXISTENTE!\n");
+            printf("-------- ERRO --------\n");
+            printf("| CARRO INEXISTENTE! |\n");
+            printf("----------------------\n");
             system("pause");
             break;
           case 5:
             realiza_venda(placa, cpf);
-            printf("OPERACAO REALIZADA COM SUCESSO!\n");
+            printf("------------- SUECESSO ------------\n");
+            printf("| OPERACAO REALIZADA COM SUCESSO! |\n");
+            printf("-----------------------------------\n");
             system("pause");
             break;
           default:
@@ -1239,13 +1250,17 @@ void menuVenda(){
         }
         break;
       case 2:{
-        printf("INSIRA A PLACA DO CARRO: ");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+        printf("- INSIRA A PLACA DO CARRO -> ");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
         getchar();
         fgets(placa, sizeof(placa), stdin);
         if(checa_carro(placa) == 2){
           apaga_venda(placa);
         } else {
-          printf("CARRO INEXISTENTE!\n");
+          printf("-------- ERRO --------\n");
+          printf("| CARRO INEXISTENTE! |\n");
+          printf("----------------------\n");
         }
       }
       system("pause");
@@ -1306,10 +1321,12 @@ int main(){
   int esc;
   do{
     system("cls");
-    printf("1. CARRO\n");
-    printf("2. CLIENTE\n");
-    printf("3. VENDA\n");
-    printf("4. SAIR\n");
+    printf("-----------------\n");
+    printf("|1. CARRO       |\n");
+    printf("|2. CLIENTE     |\n");
+    printf("|3. VENDA       |\n");
+    printf("|4. SAIR        |\n");
+    printf("-----------------\n");
     printf("-> ");
     scanf("%d", &esc);
 
