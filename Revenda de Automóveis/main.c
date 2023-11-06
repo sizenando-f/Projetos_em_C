@@ -405,6 +405,7 @@ void menuCarro(){
     printf("4. CARROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
     printf("5. CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO\n");
     printf("6. SAIR\n");
+    printf("-> ");
     scanf("%d", &esc);
     switch (esc){
       case 1:
@@ -808,6 +809,7 @@ void menuCliente(){
     printf("3. CLIENTES ORDENADOS POR NOME\n");
     printf("4. CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL\n");
     printf("5. SAIR\n");
+    printf("-> ");
     scanf("%d", &esc);
     switch (esc){
       case 1:
@@ -1152,6 +1154,43 @@ void checa_vendas(){
   printf("VALOR TOTAL: %.2f\n", total_precos);
 }
 
+void checa_lucro(){
+  FILE * vd = fopen("vendas.bin", "rb");
+  if(vd == NULL){printf("ERRO AO ABRIR ARQUIVO DE VENDAS\n"); exit(100);}
+
+  fseek(vd, 0, SEEK_SET);
+
+  struct VENDA_CARRO venda;
+  float soma_lucro = 0;
+
+  while(!feof(vd)){
+    if(fread(&venda, sizeof(venda), 1, vd) > 0){
+      soma_lucro += venda.preco_venda;
+    }
+  }
+
+  fclose(vd);
+
+  FILE * cr = fopen("carros.bin", "rb");
+  if(cr == NULL) {printf("ERRO AO ABRIR ARQUIVO DE VENDAS\n"); exit(100);}
+
+  fseek(cr, 0, SEEK_SET);
+
+  struct CARRO carro;
+
+  while(!feof(cr)){
+    if(fread(&carro, sizeof(carro), 1, cr) > 0){
+      soma_lucro -= carro.preco_compra;
+    }
+  }
+
+  fclose(cr);
+
+  printf("----------------\n");
+  printf("O LUCRO TOTAL FOI DE: %.2f\n", soma_lucro);
+  printf("----------------\n");
+}
+
 void menuVenda(){
   int esc, check = 0;
   char cpf[15], placa[9];
@@ -1164,6 +1203,7 @@ void menuVenda(){
     printf("5. QUANTIDADE DE CARROS VENDIDOS COM O VALOR TOTALIZADO DOS PRECOS VENDIDOS\n");
     printf("6. LUCRO TOTAL DAS VENDAS\n");
     printf("7. SAIR\n");
+    printf("-> ");
     scanf("%d", &esc);
     switch (esc){
       case 1:
@@ -1251,6 +1291,10 @@ void menuVenda(){
         checa_vendas();
         system("pause");
         break;
+      case 6:
+        checa_lucro();
+        system("pause");
+        break;
       default:
         break;
     }
@@ -1266,6 +1310,7 @@ int main(){
     printf("2. CLIENTE\n");
     printf("3. VENDA\n");
     printf("4. SAIR\n");
+    printf("-> ");
     scanf("%d", &esc);
 
     switch (esc){
