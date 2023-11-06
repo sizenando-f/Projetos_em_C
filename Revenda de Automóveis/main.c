@@ -965,7 +965,9 @@ void apaga_venda(char * placa){
     exit(100);
   }
 
-  printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
+  printf("-------------- SUCESSO ------------\n");
+  printf("| EXCLUSAO REALIZADA COM SUCESSO! |\n");
+  printf("-----------------------------------\n");
 }
 
 int comparar_vendas_modelo(const void *a, const void *b){
@@ -1022,10 +1024,10 @@ void carros_vendidos_fabricante(int opc){
   qsort(carros, n, sizeof(carros[0]), comparar_vendas_modelo);
 
   for(int i = 0; i < n; i++){
-    printf("--------------------\n");
-    printf("MODELO: %s\n", carros[i].modelo);
-    printf("PLACA: %s\n", carros[i].placa);
-    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
+    printf("#================#=================#\n");
+    printf("-            MODELO -> %s\n", carros[i].modelo);
+    printf("-             PLACA -> %s\n", carros[i].placa);
+    printf("- ANO DE FABRICACAO -> %d\n", carros[i].ano_fabricacao);
     fseek(vd, 0, SEEK_SET);
     while(!feof(vd)){
       if(fread(&venda, sizeof(venda), 1, vd) > 0){
@@ -1034,7 +1036,7 @@ void carros_vendidos_fabricante(int opc){
           while(!feof(cli)){
             if(fread(&cliente, sizeof(cliente), 1, cli) > 0){
               if(strcmp(cliente.cpf, venda.cpf_cli) == 0){
-                printf("CLIENTE:  %s\n", cliente.nome);
+                printf("-           CLIENTE -> %s\n", cliente.nome);
               }
             }
           }
@@ -1102,9 +1104,9 @@ void carros_vendidos_modelo(int opc){
   qsort(carros, n, sizeof(carros[0]), comparar_vendas_fabricacao);
 
   for(int i = 0; i < n; i++){
-    printf("--------------------\n");
-    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
-    printf("PLACA: %s\n", carros[i].placa);
+    printf("#================#=================#\n");
+    printf("- ANO DE FABRICACAO -> %d\n", carros[i].ano_fabricacao);
+    printf("-             PLACA -> %s\n", carros[i].placa);
     fseek(vd, 0, SEEK_SET);
     while(!feof(vd)){
       if(fread(&venda, sizeof(venda), 1, vd) > 0){
@@ -1113,7 +1115,7 @@ void carros_vendidos_modelo(int opc){
           while(!feof(cli)){
             if(fread(&cliente, sizeof(cliente), 1, cli) > 0){
               if(strcmp(cliente.cpf, venda.cpf_cli) == 0){
-                printf("CLIENTE:  %s\n", cliente.nome);
+                printf("-           CLIENTE -> %s\n", cliente.nome);
               }
             }
           }
@@ -1148,9 +1150,11 @@ void checa_vendas(){
   }
 
   fclose(fp);
-
-  printf("QUANTIDADE DE VENDAS: %d\n", quant_vendas);
-  printf("VALOR TOTAL: %.2f\n", total_precos);
+  printf("#==============#================#\n");
+  printf("- QUANTIDADE DE VENDAS -> %d\n", quant_vendas);
+  printf("#-------------------------------#\n");
+  printf("- VALOR TOTAL -> R$%.2f\n", total_precos);
+  printf("#==============#================#\n");
 }
 
 void checa_lucro(){
@@ -1185,9 +1189,9 @@ void checa_lucro(){
 
   fclose(cr);
 
-  printf("----------------\n");
-  printf("O LUCRO TOTAL FOI DE: %.2f\n", soma_lucro);
-  printf("----------------\n");
+  printf("#=================#===============#\n");
+  printf("- O LUCRO TOTAL FOI DE -> R$%.2f\n", soma_lucro);
+  printf("#=================#===============#\n");
 }
 
 void menuVenda(){
@@ -1267,15 +1271,16 @@ void menuVenda(){
         break;
       case 3:{
         int opc = 0;
-        system("cls");
-        printf("------------------\n");
-        printf("1. CHEVROLET    2. FIAT\n");
-        printf("3. TOYOTA       4. VOLSWAGE\n");
-        printf("------------------\n");
-        printf("INSIRA O FABRICANTE: ");
+        printf("---------------------------------\n");
+        printf("| 1. CHEVROLET    | 2. FIAT     |\n");
+        printf("| 3. TOYOTA       | 4. VOLSWAGE |\n");
+        printf("---------------------------------\n");
+        printf("- INSIRA O FABRICANTE -> ");
         scanf("%d", &opc);
         if(opc < 1 || opc > 4){
-          printf("OPCAO INVALIDA!\n");
+          printf("------- ERRO ------\n");
+          printf("| OPCAO INVALIDA! |\n");
+          printf("-------------------\n");
           continue;
         }
         system("cls");
@@ -1286,15 +1291,17 @@ void menuVenda(){
       case 4: {
         int opc;
         system("cls");
-        printf("------------------\n");
-        printf("1. ONIX     2. S10         3. CELTA       4. STRADA\n");
-        printf("5. PALIO    6. COROLLA     7. HILLUX      8. SAVEIRO\n");
-        printf("9. VOYAGE   10. GOL\n");
-        printf("------------------\n");
-        printf("INSIRA O MODELO: ");
+        printf("--------------------------------------------------------------\n");
+        printf("| 1. ONIX     | 2. S10         | 3. CELTA       | 4. STRADA  |\n");
+        printf("| 5. PALIO    | 6. COROLLA     | 7. HILLUX      | 8. SAVEIRO |\n");
+        printf("| 9. VOYAGE   | 10. GOL                                      |\n");
+        printf("--------------------------------------------------------------\n");
+        printf("- INSIRA O MODELO -> ");
         scanf("%d", &opc);
         if(opc < 1 || opc > 10){
-          printf("OPCAO INVALIDA!\n");
+          printf("------- ERRO ------\n");
+          printf("| OPCAO INVALIDA! |\n");
+          printf("-------------------\n");
           continue;
         }
         system("cls");
