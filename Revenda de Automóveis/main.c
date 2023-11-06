@@ -917,7 +917,7 @@ void realiza_venda(char * placa, char * cpf){
 
   strcpy(venda.placa_car, placa);
   strcpy(venda.cpf_cli, cpf);
-  venda.preco_venda = 10000 + (rand() % 200000 - 10000 + 1);
+  venda.preco_venda = 30000 + (rand() % 300000);
   venda.data_venda = retorna_data();
   fwrite(&venda, sizeof(venda), 1, arc);
   fclose(arc);
