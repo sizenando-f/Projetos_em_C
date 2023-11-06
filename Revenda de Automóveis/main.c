@@ -585,22 +585,23 @@ void inserirCliente(){
   float renda_mensal = nAleatorio(1200, 10000);
   char esc;
   do{
-    printf("--- VOCE DESEJA INSERIR O SEGUINTE CLIENTE? ---\n");
-    printf("NOME: %s\n", nome);
-    printf("CPF: %s\n", cpf);
-    printf("ENDERECO: \n");
-    printf("  RUA: %s\n", endereco.rua);
-    printf("  NUMERO: %d\n", endereco.numero);
-    printf("  BAIRRO: %s\n", endereco.bairro);
-    printf("  CIDADE: %s\n", endereco.cidade);
-    printf("  ESTADO: %s\n", endereco.estado);
-    printf("  CEP: %s\n", endereco.cep);
-    printf("TELEFONE RESIDENCIAL: %s\n", residencial.telefone);
-    printf("TELEFONE CELULAR: \n");
+    printf("=-= VOCE DESEJA INSERIR O SEGUINTE CLIENTE? =-=\n");
+    printf("-                NOME -> %s\n", nome);
+    printf("-                 CPF -> %s\n", cpf);
+    printf("- ENDERECO: \n");
+    printf("  -    RUA -> %s\n", endereco.rua);
+    printf("  - NUMERO -> %d\n", endereco.numero);
+    printf("  - BAIRRO -> %s\n", endereco.bairro);
+    printf("  - CIDADE -> %s\n", endereco.cidade);
+    printf("  - ESTADO -> %s\n", endereco.estado);
+    printf("  -    CEP -> %s\n", endereco.cep);
+    printf("- TELEFONE RESIDENCIAL -> %s\n", residencial.telefone);
+    printf("- TELEFONE CELULAR: \n");
     for(int i = 0; i < 5; i++){
-      printf("  %d: %s\n", i+1, celular[i].telefone);
+      printf("  -           %d -> %s\n", i+1, celular[i].telefone);
     }
-    printf("RENDA MENSAL: %.2f\n", renda_mensal);
+    printf("-         RENDA MENSAL -> R$%.2f\n", renda_mensal);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("S/N -> ");
     scanf(" %c", &esc);
     esc = toupper(esc);
@@ -623,14 +624,20 @@ void inserirCliente(){
         }
         fwrite(&cliente, sizeof(cliente), 1, fp);
         fclose(fp);
+        printf("------------- SUCESSO -------------\n");
+        printf("| CLIENTE CADASTRADO COM SUCESSO! |\n");
+        printf("-----------------------------------\n");
       }
       break;
       case 'N':
-        printf("OPERACAO CANCELADA!\n");
-        system("pause");
+        printf("-------- AVISO --------\n");
+        printf("| OPERACAO CANCELADA! |\n");
+        printf("-----------------------\n");
         break;
       default:
-        printf("ENTRADA INVALIDA!\n");
+        printf("-------- ERRO -------\n");
+        printf("| ENTRADA INVALIDA! |\n");
+        printf("---------------------\n");
         system("pause");
         break;
     }
@@ -735,22 +742,22 @@ void listar_clientes_nome(){
 
   system("cls");
   for(int i = 0; i < n; i++){
-    printf("------------------------------\n");
-    printf("NOME: %s\n", clientes[i].nome);
-    printf("CPF: %s\n", clientes[i].cpf);
-    printf("ENDERECO:\n");
-    printf("  RUA: %s\n", clientes[i].endereco.rua);
-    printf("  NUMERO: %d\n", clientes[i].endereco.numero);
-    printf("  BAIRRO: %s\n", clientes[i].endereco.bairro);
-    printf("  CIDADE: %s\n", clientes[i].endereco.cidade);
-    printf("  ESTADO: %s\n", clientes[i].endereco.estado);
-    printf("  CEP: %s\n", clientes[i].endereco.cep);
-    printf("TELEFONE RESIDENCIAL: %s\n", clientes[i].residencial.telefone);
-    printf("TELEFONE CELULAR:\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("-                 NOME -> %s\n", clientes[i].nome);
+    printf("-                  CPF -> %s\n", clientes[i].cpf);
+    printf("-   ENDERECO:\n");
+    printf("  -    RUA -> %s\n", clientes[i].endereco.rua);
+    printf("  - NUMERO -> %d\n", clientes[i].endereco.numero);
+    printf("  - BAIRRO -> %s\n", clientes[i].endereco.bairro);
+    printf("  - CIDADE -> %s\n", clientes[i].endereco.cidade);
+    printf("  - ESTADO -> %s\n", clientes[i].endereco.estado);
+    printf("  -    CEP -> %s\n", clientes[i].endereco.cep);
+    printf("- TELEFONE RESIDENCIAL -> %s\n", clientes[i].residencial.telefone);
+    printf("- TELEFONE CELULAR:\n");
     for(int j = 0; j < 5; j++){
-      printf(" %d: %s\n", j+1, clientes[i].celular[j].telefone);
+      printf(" -            %d -> %s\n", j+1, clientes[i].celular[j].telefone);
     }
-    printf("RENDA MENSAL: %.2f\n", clientes[i].renda_mensal);
+    printf("-         RENDA MENSAL -> R$%.2f\n", clientes[i].renda_mensal);
   }
 }
 
@@ -780,22 +787,22 @@ void listar_clientes_renda(){
 
   system("cls");
   for(int i = 0; i < n; i++){
-    printf("------------------------------\n");
-    printf("NOME: %s\n", clientes[i].nome);
-    printf("CPF: %s\n", clientes[i].cpf);
-    printf("ENDERECO:\n");
-    printf("  RUA: %s\n", clientes[i].endereco.rua);
-    printf("  NUMERO: %d\n", clientes[i].endereco.numero);
-    printf("  BAIRRO: %s\n", clientes[i].endereco.bairro);
-    printf("  CIDADE: %s\n", clientes[i].endereco.cidade);
-    printf("  ESTADO: %s\n", clientes[i].endereco.estado);
-    printf("  CEP: %s\n", clientes[i].endereco.cep);
-    printf("TELEFONE RESIDENCIAL: %s\n", clientes[i].residencial.telefone);
-    printf("TELEFONE CELULAR:\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("-                 NOME -> %s\n", clientes[i].nome);
+    printf("-                  CPF -> %s\n", clientes[i].cpf);
+    printf("-   ENDERECO:\n");
+    printf("  -    RUA -> %s\n", clientes[i].endereco.rua);
+    printf("  - NUMERO -> %d\n", clientes[i].endereco.numero);
+    printf("  - BAIRRO -> %s\n", clientes[i].endereco.bairro);
+    printf("  - CIDADE -> %s\n", clientes[i].endereco.cidade);
+    printf("  - ESTADO -> %s\n", clientes[i].endereco.estado);
+    printf("  -    CEP -> %s\n", clientes[i].endereco.cep);
+    printf("- TELEFONE RESIDENCIAL -> %s\n", clientes[i].residencial.telefone);
+    printf("- TELEFONE CELULAR:\n");
     for(int j = 0; j < 5; j++){
-      printf(" %d: %s\n", j+1, clientes[i].celular[j].telefone);
+          printf(" -            %d -> %s\n", j+1, clientes[i].celular[j].telefone);
     }
-    printf("RENDA MENSAL: %.2f\n", clientes[i].renda_mensal);
+    printf("-         RENDA MENSAL -> R$%.2f\n", clientes[i].renda_mensal);
   }
 }
 
@@ -803,16 +810,19 @@ void menuCliente(){
   int esc;
   do{
     system("cls");
-    printf("1. INSERIR UM CLIENTE\n");
-    printf("2. EXCLUIR UM CLIENTE\n");
-    printf("3. CLIENTES ORDENADOS POR NOME\n");
-    printf("4. CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL\n");
-    printf("5. SAIR\n");
+    printf("-------------------------------------------------------------\n");
+    printf("| 1. INSERIR UM CLIENTE                                     |\n");
+    printf("| 2. EXCLUIR UM CLIENTE                                     |\n");
+    printf("| 3. CLIENTES ORDENADOS POR NOME                            |\n");
+    printf("| 4. CLIENTES ORDENADOS PELA FAIXA DE RENDA SALARIAL MENSAL |\n");
+    printf("| 5. VOLTAR                                                 |\n");
+    printf("-------------------------------------------------------------\n");
     printf("-> ");
     scanf("%d", &esc);
     switch (esc){
       case 1:
         inserirCliente();
+        system("pause");
         break;
       case 2:{
         char cpf[15];
@@ -842,7 +852,9 @@ void menuCliente(){
       case 5:
         break;
       default:
-        printf("OPCAO INVALIDA!\n");
+        printf("------ ERRO -------\n");
+        printf("| OPCAO INVALIDA! |\n");
+        printf("-------------------\n");
         break;
     }
   }while(esc != 5);
@@ -1206,7 +1218,7 @@ void menuVenda(){
     printf("|4. CARROS VENDIDOS DE UM DETERMINADO MODELO                                  |\n");
     printf("|5. QUANTIDADE DE CARROS VENDIDOS COM O VALOR TOTALIZADO DOS PRECOS VENDIDOS  |\n");
     printf("|6. LUCRO TOTAL DAS VENDAS                                                    |\n");
-    printf("|7. SAIR                                                                      |\n");
+    printf("|7. VOLTAR                                                                    |\n");
     printf("-------------------------------------------------------------------------------\n");
     printf("-> ");
     scanf("%d", &esc);
