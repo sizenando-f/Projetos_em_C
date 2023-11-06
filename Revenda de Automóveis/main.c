@@ -172,19 +172,19 @@ void inserirCarro(){
   geraCarroInfo(modelo, fabricante, &anoFab, &anoMod, combustivel, cor, &opcional, &preco);
   do{
     system("cls");
-    printf("--- DESEJA O SEGUINTE CARRO? ---\n");
-    printf("PLACA: %s\n", placa);
-    printf("MODELO: %s\n", modelo);
-    printf("FABRICANTE: %s\n", fabricante);
-    printf("ANO DE FABRICACAO: %d\n", anoFab);
-    printf("ANO DO MODELO: %d\n", anoMod);
-    printf("COMBUSTIVEL: %s\n", combustivel);
-    printf("COR: %s\n", cor);
-    printf("OPCIONAL: %s\n", opcionais[opcional]);
-    printf("PRECO DE COMPRA: %.2f\n", preco);
+    printf("=-=-= DESEJA O SEGUINTE CARRO? =-=-=\n");
+    printf("-             PLACA -> %s\n", placa);
+    printf("-            MODELO -> %s\n", modelo);
+    printf("-        FABRICANTE -> %s\n", fabricante);
+    printf("- ANO DE FABRICACAO -> %d\n", anoFab);
+    printf("-     ANO DO MODELO -> %d\n", anoMod);
+    printf("-       COMBUSTIVEL -> %s\n", combustivel);
+    printf("-               COR -> %s\n", cor);
+    printf("-          OPCIONAL -> %s\n", opcionais[opcional]);
+    printf("-   PRECO DE COMPRA -> R$%.2f\n", preco);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     printf("S/N -> ");
     scanf(" %c", &esc);
-
     esc = toupper(esc);
     if(esc == 'S'){
       strcpy(car.placa, placa);
@@ -205,13 +205,19 @@ void inserirCarro(){
 
       fwrite(&car, sizeof(car), 1, fp);
       fclose(fp);
+      printf("------------ SUCESSO ------------\n");
+      printf("| CARRO CADASTRADO COM SUCESSO! |\n");
+      printf("---------------------------------\n");
 
     } else if(esc == 'N'){
-      printf("OPERACAO CANCELADA!\n");
-      Sleep(2);
+      printf("-------- AVISO --------\n");
+      printf("| OPERACAO CANCELADA! |\n");
+      printf("-----------------------\n");
     } else {
-      printf("ESCOLHA INVALIDA!\n");
-      Sleep(2);
+      printf("-------- ERRO -------\n");
+      printf("| ENTRADA INVALIDA! |\n");
+      printf("---------------------\n");
+      system("pause");
     }
   } while(esc != 'S' && esc != 'N');
 }
@@ -399,17 +405,20 @@ void menuCarro(){
   do{
     esc = 0;
     system("cls");
-    printf("1. INSERIR UM CARRO\n");
-    printf("2. EXCLUIR UM CARRO\n");
-    printf("3. CARROS DISPONIVEIS PARA VENDA ORDENADOS POR FABRICANTE E MODELO\n");
-    printf("4. CARROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS\n");
-    printf("5. CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO\n");
-    printf("6. SAIR\n");
+    printf("------------------------------------------------------------------------------\n");
+    printf("| 1. INSERIR UM CARRO                                                        |\n");
+    printf("| 2. EXCLUIR UM CARRO                                                        |\n");
+    printf("| 3. CARROS DISPONIVEIS PARA VENDA ORDENADOS POR FABRICANTE E MODELO         |\n");
+    printf("| 4. CARROS DISPONIVEIS PARA VENDA POR SELECAO DE UM OU MAIS OPCIONAIS       |\n");
+    printf("| 5. CARROS DISPONIVEIS PARA VENDA POR SELECAO DA FAIXA DO ANO DE FABRICACAO |\n");
+    printf("| 6. VOLTAR                                                                  |\n");
+    printf("------------------------------------------------------------------------------\n");
     printf("-> ");
     scanf("%d", &esc);
     switch (esc){
       case 1:
         inserirCarro();
+        system("pause");
         break;
       case 2:{
         char placa[9];
