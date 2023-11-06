@@ -907,19 +907,6 @@ struct DATA retorna_data(){
 }
 
 void realiza_venda(char * placa, char * cpf){
-  struct CARRO carro;
-  float preco_compra;
-  FILE * fp = fopen("carros.bin", "rb");
-
-  while(!feof(fp)){
-    if(fread(&carro, sizeof(carro), 1, fp) > 0){
-      if(strcmp(carro.placa, placa) == 0){
-        preco_compra = carro.preco_compra;
-      }
-    }
-  }
-  fclose(fp);
-
   FILE * arc = fopen("vendas.bin", "ab");
   struct VENDA_CARRO venda;
 
@@ -930,7 +917,7 @@ void realiza_venda(char * placa, char * cpf){
 
   strcpy(venda.placa_car, placa);
   strcpy(venda.cpf_cli, cpf);
-  venda.preco_venda = preco_compra;
+  venda.preco_venda = 10000 + (rand() % 200000 - 10000 + 1);
   venda.data_venda = retorna_data();
   fwrite(&venda, sizeof(venda), 1, arc);
   fclose(arc);
