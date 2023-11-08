@@ -18,6 +18,7 @@ char fabricantes[][TAM] = {{"chevrolet"}, {"fiat"}, {"toyota"}, {"volkswagen"}};
 
 char modelosss[][TAM] = {{"onix"}, {"s10"}, {"celta"}, {"strada"}, {"palio"}, {"corolla"}, {"hillux"}, {"saveiro"}, {"voyage"}, {"gol"}};
 
+// Retorna um número aleatório dentro do limite estabelecido
 int nAleatorio(int menor, int maior){
   return menor + (rand() % (maior - menor + 1));
 }
@@ -67,6 +68,7 @@ struct VENDA_CARRO {
   struct DATA data_venda;
 };
 
+// Gera todas as informações necessárias do carro 
 void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod, char * combustivel, char * cor, int * opcional, float * preco){
   char * modelos[] = {"onix", "s10", "celta", "strada", "palio", "corolla", "hillux", "saveiro", "voyage", "gol"};
 
@@ -140,6 +142,7 @@ void geraCarroInfo(char * modelo, char * fabricante, int * anoFab, int * anoMod,
   *preco = nAleatorio(6000, 190000);
 }
 
+// Gera uma placa aleatória
 void geraPlaca(char * placa){
   char letras[27][2];
   char *numeros[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -162,6 +165,7 @@ void geraPlaca(char * placa){
 
 }
 
+// Insere um carro no cadastro gerando todas as informações necessárias
 void inserirCarro(){
   char placa[9], modelo[11], fabricante[11], combustivel[8], cor[10], esc;
   int anoFab, anoMod, opcional;
@@ -222,6 +226,7 @@ void inserirCarro(){
   } while(esc != 'S' && esc != 'N');
 }
 
+// Retorna a existência da venda de um carro
 int checa_venda_carro(char * placa){
   const char *teste = "vendas.bin";
   if(access(teste, F_OK) == -1){
@@ -251,6 +256,7 @@ int checa_venda_carro(char * placa){
   return 0;
 }
 
+// Realiza a remoção de um carro
 void apaga_carro(char * placa){
   FILE * original = fopen("carros.bin", "rb");
   if(original == NULL){
@@ -269,7 +275,7 @@ void apaga_carro(char * placa){
   fseek(temporario, 0, SEEK_SET);
 
   struct CARRO carro;
-  while(!feof(original)){
+  while(!feof(original)){ // Copia todos os carros ignorado aquele que deseja excluir
     if(fread(&carro, sizeof(carro), 1, original) > 0){
       if(strcmp(placa, carro.placa) != 0){
         fwrite(&carro, sizeof(carro), 1, temporario);
@@ -280,12 +286,12 @@ void apaga_carro(char * placa){
   fclose(original);
   fclose(temporario);
 
-  if(remove("carros.bin") != 0){
+  if(remove("carros.bin") != 0){  // Apaga arquivo de carros original
     printf("ERRO AO DELETAR ARQUIVO!\n");
     exit(100);
   }
 
-  if(rename("temp.bin", "carros.bin") != 0){
+  if(rename("temp.bin", "carros.bin") != 0){  // Renomeia arquivo temporario
     printf("ERRO AO RENOMEAR ARQUIVO!\n");
     exit(100);
   }
@@ -293,12 +299,14 @@ void apaga_carro(char * placa){
   printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
+// Retorna de forma crescente o fabricante dos carros recebidos
 int comparar_carros_fabricante(const void *a, const void *b){
   const char *fabricante1 = ((struct CARRO *)a)->fabricante;
   const char *fabricante2 = ((struct CARRO *)b)->fabricante;
   return strcmp(fabricante1, fabricante2);
 }
 
+// Mostra os carros ordenados pelo fabricante
 void listar_carro_fabricante(){
   struct CARRO carros[100];
 
@@ -311,11 +319,11 @@ void listar_carro_fabricante(){
   fseek(fp, 0, SEEK_SET);
 
   int n = 0;
-  while(fread(&carros[n], sizeof(struct CARRO), 1, fp) == 1) n++;
+  while(fread(&carros[n], sizeof(struct CARRO), 1, fp) == 1) n++; // Conta todos os carros e armazena num vetor
 
   fclose(fp);
 
-  qsort(carros, n, sizeof(carros[0]), comparar_carros_fabricante);
+  qsort(carros, n, sizeof(carros[0]), comparar_carros_fabricante);  // Função de ordenação da biblioteca stdlib.h
 
   system("cls");
   for(int i = 0; i < n; i++){
@@ -332,6 +340,7 @@ void listar_carro_fabricante(){
   }
 }
 
+// Lista os carros com os opcionais escolhidos
 void listar_carros_opcionais(int opcional[], int tam){
   int cont = 0;
   FILE * fp = fopen("carros.bin", "rb");
@@ -343,7 +352,7 @@ void listar_carros_opcionais(int opcional[], int tam){
   struct CARRO carro;
 
   system("cls");
-  while (fread(&carro, sizeof(carro), 1, fp) > 0) {
+  while (fread(&carro, sizeof(carro), 1, fp) > 0) { // Exibe todos os carros com os opcionais escolhidos
         for (int i = 0; i < tam; i++) {
             if (carro.opcional[0] == opcional[i]-1) {
                 printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
@@ -367,6 +376,7 @@ void listar_carros_opcionais(int opcional[], int tam){
   }
 }
 
+// Lista os carros com o ano de fabricação dentro do limite recebido
 void listar_carros_ano(int anoInicio, int anoFim){
   int cont = 0;
   FILE * fp = fopen("carros.bin", "rb");
@@ -378,7 +388,7 @@ void listar_carros_ano(int anoInicio, int anoFim){
   struct CARRO carro;
 
   system("cls");
-  while (fread(&carro, sizeof(carro), 1, fp) > 0){
+  while (fread(&carro, sizeof(carro), 1, fp) > 0){  // Exibe todos os carros no intervalo definido
             if (carro.ano_fabricacao >= anoInicio && carro.ano_fabricacao <= anoFim) {
                 printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
                 printf("-             PLACA -> %s\n", carro.placa);
@@ -400,6 +410,7 @@ void listar_carros_ano(int anoInicio, int anoFim){
   }
 }
 
+// Menu de carro
 void menuCarro(){
   int esc;
   do{
@@ -512,6 +523,7 @@ char * gera_nome(){
   return nome;
 }
 
+// Retorna um CPF válido
 char* gera_cpf_valido() {
     int soma = 0, resto = 0;
     int multiplicador1[9] = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
@@ -559,8 +571,8 @@ char* gera_cpf_valido() {
     return cpf_formatado;
 }
 
+// Retorna um CEP
 void * gera_cep() {
-  // srand(time(NULL));
   static char cep[11];
   int parte1 = rand() % 100;
   int parte2 = rand() % 1000;
@@ -570,8 +582,8 @@ void * gera_cep() {
   return cep;
 }
 
+// Retorna um endereço
 struct ENDERECO gera_endereco(){
-  // srand(time(NULL));
   char * ruas[20] = { "Rua A", "Rua B", "Rua C", "Rua D", "Rua E", "Rua F", "Rua G", "Rua H", "Rua I", "Rua J", "Rua K", "Rua L", "Rua M", "Rua N", "Rua O", "Rua P", "Rua Q", "Rua R", "Rua S", "Rua T" };
   char * bairros[20] = { "Bairro da Amizade", "Bairro das Flores", "Bairro da Liberdade", "Bairro do Sol", "Bairro Esperanca", "Bairro Felicidade", "Bairro Harmonia", "Bairro Primavera", "Bairro Recanto Verde", "Bairro Sossego", "Bairro Vila Alegre", "Bairro Vista Bela", "Bairro Novo Horizonte", "Bairro Jardim Azul", "Bairro Vale Encantado", "Bairro do Lago", "Bairro das Montanhas", "Bairro da Lua", "Bairro da Paz", "Bairro Estrela Brilhante" };
   char * cidades[20] = { "Cidade das Maravilhas", "Cidade Encantada", "Cidade Radiante", "Cidade dos Sonhos", "Cidade Luz", "Cidade da Alegria", "Cidade da Esperanca", "Cidade Magica", "Cidade das Cores", "Cidade Bela Vista", "Cidade Serrana", "Cidade Oasis", "Cidade do Futuro", "Cidade Celestial", "Cidade Paradisiaca", "Cidade do Arco-Iris", "Cidade das Mares", "Cidade das Estrelas", "Cidade dos Ventos", "Cidade Harmoniosa" };
@@ -586,6 +598,7 @@ struct ENDERECO gera_endereco(){
   return endereco;
 }
 
+// Retorna um número de telefone eleatório
 struct TELEFONE gera_telefone(){
   struct TELEFONE telefone;
   int parte1 = rand() % 99;
@@ -596,6 +609,7 @@ struct TELEFONE gera_telefone(){
   return telefone;
 }
 
+// Insere um cliente no cadastro gerando todas as informações necessárias
 void inserirCliente(){
   char * nome = gera_nome();
   char * cpf = gera_cpf_valido();
@@ -666,6 +680,7 @@ void inserirCliente(){
   } while(esc != 'S' && esc != 'N');
 }
 
+// Retorna se um cliente já realizou uma venda
 int checa_venda_cliente(char * cpf){
   const char *teste = "vendas.bin";
   if(access(teste, F_OK) == -1){
@@ -695,6 +710,7 @@ int checa_venda_cliente(char * cpf){
   return 0;
 }
 
+// Realiza a remoção de um cliente desejado
 void apaga_cliente(char * cpf){
   FILE * original = fopen("clientes.bin", "rb");
   if(original == NULL){
@@ -714,7 +730,7 @@ void apaga_cliente(char * cpf){
   fseek(original, 0, SEEK_SET);
   fseek(temporario, 0, SEEK_SET);
 
-  while(!feof(original)){
+  while(!feof(original)){ // Copia clientes ignorando aquele que deseja apagar
     if(fread(&cliente, sizeof(cliente), 1, original) > 0){
       if(strcmp(cpf, cliente.cpf) != 0){
         fwrite(&cliente, sizeof(cliente), 1, temporario);
@@ -725,12 +741,12 @@ void apaga_cliente(char * cpf){
   fclose(original);
   fclose(temporario);
 
-  if(remove("clientes.bin") != 0){
+  if(remove("clientes.bin") != 0){  // Remove arquivo de clientes original
     printf("ERRO AO DELETAR ARQUIVO DE CLIENTES!\n");
     exit(100);
   }
 
-  if(rename("temp.bin", "clientes.bin") != 0){
+  if(rename("temp.bin", "clientes.bin") != 0){  // Renomeia arquivo temporário
     printf("ERRO AO RENOMEAR ARQUIVO DE CLIENTES!\n");
     exit(100);
   }
@@ -740,12 +756,14 @@ void apaga_cliente(char * cpf){
 
 }
 
+// Retorna de forma crescente os nomes dos clientes recebidos
 int comparar_clientes_nome(const void *a, const void *b){
   const char *nome1 = ((struct CLIENTE *)a)->nome;
   const char *nome2 = ((struct CLIENTE *)b)->nome;
   return strcmp(nome1, nome2);
 }
 
+// Mostra os clientes ordenados pelo nome
 void listar_clientes_nome(){
   struct CLIENTE clientes[100];
 
@@ -758,11 +776,11 @@ void listar_clientes_nome(){
   fseek(fp, 0, SEEK_SET);
 
   int n = 0;
-  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++;
+  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++; // Conta quantos clietes existem e armaneza num vetor
 
   fclose(fp);
 
-  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_nome);
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_nome);  // Função de ordenação da biblioteca stdlib.h
 
   system("cls");
   for(int i = 0; i < n; i++){
@@ -785,12 +803,14 @@ void listar_clientes_nome(){
   }
 }
 
+// Retorna de forma crescente a renda dos clientes recebidos
 int comparar_clientes_renda(const void *a, const void *b){
   const float renda1 = ((struct CLIENTE *)a)->renda_mensal;
   const float renda2 = ((struct CLIENTE *)b)->renda_mensal;
   return (renda1 - renda2);
 }
 
+// Mostra os clientes ordenados pela renda mensal
 void listar_clientes_renda(){
   struct CLIENTE clientes[100];
 
@@ -803,11 +823,11 @@ void listar_clientes_renda(){
   fseek(fp, 0, SEEK_SET);
 
   int n = 0;
-  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++;
+  while(fread(&clientes[n], sizeof(struct CLIENTE), 1, fp) == 1) n++; // Conta quantos clientes existem e armazena num vetor
 
   fclose(fp);
 
-  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_renda);
+  qsort(clientes, n, sizeof(clientes[0]), comparar_clientes_renda); // Função de ordenação da biblioteca stdlib.h
 
   system("cls");
   for(int i = 0; i < n; i++){
@@ -830,6 +850,7 @@ void listar_clientes_renda(){
   }
 }
 
+// Menu de cliente
 void menuCliente(){
   int esc;
   do{
@@ -890,6 +911,7 @@ void menuCliente(){
   }while(esc != 5);
 }
 
+// Retorna a existência de um carro
 int checa_carro(char * placa){
   FILE * fp = fopen("carros.bin", "rb");
   struct CARRO carro;
@@ -913,6 +935,7 @@ int checa_carro(char * placa){
   return check;
 }
 
+// Retorna a existência de um cliente
 int checa_cliente(char * cpf){
   FILE * fp = fopen("clientes.bin", "rb");
   struct CLIENTE cliente;
@@ -937,6 +960,7 @@ int checa_cliente(char * cpf){
   return check;
 }
 
+// Retorna dia, mês e ano atual
 struct DATA retorna_data(){
   struct DATA data; 
   time_t tempo;
@@ -949,6 +973,7 @@ struct DATA retorna_data(){
   return data;
 }
 
+// Realiza uma venda
 void realiza_venda(char * placa, char * cpf){
   FILE * arc = fopen("vendas.bin", "ab");
   struct VENDA_CARRO venda;
@@ -960,13 +985,14 @@ void realiza_venda(char * placa, char * cpf){
 
   strcpy(venda.placa_car, placa);
   strcpy(venda.cpf_cli, cpf);
-  venda.preco_venda = 30000 + (rand() % 300000);
+  venda.preco_venda = 30000 + (rand() % 300000);  // Gera preço entre 30000 e 300000
   venda.data_venda = retorna_data();
   fwrite(&venda, sizeof(venda), 1, arc);
   fclose(arc);
 
 }
 
+// Realiza a remoção de uma venda de um carro desejado
 void apaga_venda(char * placa){
   FILE * original = fopen("vendas.bin", "rb");
   if(original == NULL){
@@ -986,7 +1012,7 @@ void apaga_venda(char * placa){
   fseek(original, 0, SEEK_SET);
 
 
-  while(!feof(original)){
+  while(!feof(original)){ // Copia para um novo arquivo ignorando o que deseja apagar
     if(fread(&venda, sizeof(venda), 1, original) > 0){
       if(strcmp(placa, venda.placa_car) != 0){
         fwrite(&venda, sizeof(venda), 1, temporario);
@@ -997,12 +1023,12 @@ void apaga_venda(char * placa){
   fclose(original);
   fclose(temporario);
 
-  if(remove("vendas.bin") != 0){
+  if(remove("vendas.bin") != 0){  // Apaga arquivo de vendas
     printf("ERRO AO DELETAR ARQUIVO DE VENDAS! REINICIE O PROGRAMA E TENTE NOVAMENTE\n");
     exit(100);
   }
 
-  if(rename("temp.bin", "vendas.bin") != 0){
+  if(rename("temp.bin", "vendas.bin") != 0){  // Renomeia arquivo temporário
     printf("ERRO AO RENOMEAR ARQUIVO DE VENDAS!\n");
     exit(100);
   }
@@ -1012,12 +1038,14 @@ void apaga_venda(char * placa){
   printf("-----------------------------------\n");
 }
 
+// Retorna modelo ordenado de forma crescente dos carros recebidos
 int comparar_vendas_modelo(const void *a, const void *b){
   const char *carro1 = ((struct CARRO *)a)->modelo;
   const char *carro2 = ((struct CARRO *)b)->modelo;
   return strcmp(carro1, carro2);
 }
 
+// Printa os carros vendidos ordenados pelo fabricante
 void carros_vendidos_fabricante(int opc){
   FILE * fp = fopen("carros.bin", "rb");
   if(fp == NULL){
@@ -1050,11 +1078,11 @@ void carros_vendidos_fabricante(int opc){
   int n = 0;
   while(!feof(fp)){
     if(fread(&carro, sizeof(carro), 1, fp) > 0){
-      if(strcmp(carro.fabricante, fabricantes[opc-1]) == 0){
+      if(strcmp(carro.fabricante, fabricantes[opc-1]) == 0){  // Compara fabricante recebido com a lista de fabricantes
         fseek(vd, 0, SEEK_SET);
         while(!feof(vd)){
           if(fread(&venda, sizeof(venda), 1, vd) > 0){
-            if(strcmp(carro.placa, venda.placa_car) == 0){
+            if(strcmp(carro.placa, venda.placa_car) == 0){  // Compara se o carro atual com o modelo já foi vendido
               carros[n++] = carro;
             }
           }
@@ -1063,9 +1091,9 @@ void carros_vendidos_fabricante(int opc){
     }
   }
 
-  qsort(carros, n, sizeof(carros[0]), comparar_vendas_modelo);
+  qsort(carros, n, sizeof(carros[0]), comparar_vendas_modelo);  // Função de ordenação da biblioteca stdlib.h
 
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < n; i++){ // Exibe carro
     printf("#================#=================#\n");
     printf("-            MODELO -> %s\n", carros[i].modelo);
     printf("-             PLACA -> %s\n", carros[i].placa);
@@ -1092,12 +1120,14 @@ void carros_vendidos_fabricante(int opc){
   fclose(cli);
 }
 
+// Retorna os anos ordenados de forma crescente dos carros recebidos
 int comparar_vendas_fabricacao(const void *a, const void *b){
   const int ano1 = ((struct CARRO *)a)->ano_fabricacao;
   const int ano2 = ((struct CARRO *)b)->ano_fabricacao;
   return (ano1 - ano2);
 }
 
+// Printa na tela os carros vendidos ordenados pelo modelo
 void carros_vendidos_modelo(int opc){
   FILE * fp = fopen("carros.bin", "rb");
   if(fp == NULL){
@@ -1130,12 +1160,12 @@ void carros_vendidos_modelo(int opc){
   int n = 0;
   while(!feof(fp)){
     if(fread(&carro, sizeof(carro), 1, fp) > 0){
-      if(strcmp(carro.modelo, modelosss[opc-1]) == 0){
+      if(strcmp(carro.modelo, modelosss[opc-1]) == 0){  // Compara modelo recebido com lista de modelos
         fseek(vd, 0, SEEK_SET);
         while(!feof(vd)){
           if(fread(&venda, sizeof(venda), 1, vd) > 0){
-            if(strcmp(carro.placa, venda.placa_car) == 0){
-              carros[n++] = carro;
+            if(strcmp(carro.placa, venda.placa_car) == 0){  // Compara carro com o modelo atual foi vendido
+              carros[n++] = carro;  // Adiciona carro ao vetor
             }
           }
         }
@@ -1143,9 +1173,9 @@ void carros_vendidos_modelo(int opc){
     }
   }
 
-  qsort(carros, n, sizeof(carros[0]), comparar_vendas_fabricacao);
+  qsort(carros, n, sizeof(carros[0]), comparar_vendas_fabricacao); // Função de ordenação da biblioteca stdlib.h
 
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < n; i++){ // Exibe carros ordenados
     printf("#================#=================#\n");
     printf("- ANO DE FABRICACAO -> %d\n", carros[i].ano_fabricacao);
     printf("-             PLACA -> %s\n", carros[i].placa);
@@ -1171,6 +1201,7 @@ void carros_vendidos_modelo(int opc){
   fclose(cli);
 }
 
+// Printa  quantidade e valores das vendas
 void checa_vendas(){
   FILE * fp = fopen("vendas.bin", "rb");
   if(fp == NULL){
@@ -1184,7 +1215,7 @@ void checa_vendas(){
   float total_precos = 0;
   int quant_vendas = 0;
 
-  while(!feof(fp)){
+  while(!feof(fp)){   // Soma todos os preços de venda e conta quantas vendas forma feitas
     if(fread(&venda, sizeof(venda), 1, fp) > 0){
       quant_vendas++;
       total_precos += venda.preco_venda;
@@ -1199,6 +1230,7 @@ void checa_vendas(){
   printf("#==============#================#\n");
 }
 
+// Printa na tela a diferença entre os preços de venda os preços dos carros
 void checa_lucro(){
   FILE * vd = fopen("vendas.bin", "rb");
   if(vd == NULL){printf("ERRO AO ABRIR ARQUIVO DE VENDAS\n"); exit(100);}
@@ -1208,9 +1240,9 @@ void checa_lucro(){
   struct VENDA_CARRO venda;
   float soma_lucro = 0;
 
-  while(!feof(vd)){
+  while(!feof(vd)){   // Soma todos os preços de vendas
     if(fread(&venda, sizeof(venda), 1, vd) > 0){
-      soma_lucro += venda.preco_venda;
+      soma_lucro += venda.preco_venda;  
     }
   }
 
@@ -1223,7 +1255,7 @@ void checa_lucro(){
 
   struct CARRO carro;
 
-  while(!feof(cr)){
+  while(!feof(cr)){   // Subtrai por todos os preços dos carros
     if(fread(&carro, sizeof(carro), 1, cr) > 0){
       soma_lucro -= carro.preco_compra;
     }
@@ -1232,10 +1264,11 @@ void checa_lucro(){
   fclose(cr);
 
   printf("#=================#===============#\n");
-  printf("- O LUCRO TOTAL FOI DE -> R$%.2f\n", soma_lucro);
+  printf("- O LUCRO TOTAL FOI DE -> R$%.2f\n", soma_lucro); //  Exibe lucro
   printf("#=================#===============#\n");
 }
 
+// Menu de Vendas
 void menuVenda(){
   int esc, check = 0;
   char cpf[15], placa[9];
@@ -1267,7 +1300,7 @@ void menuVenda(){
         check = checa_carro(placa);
         check += checa_cliente(cpf);
         system("cls");
-        switch (check){
+        switch (check){ // Realiza decisão aritmética de acordo com as checagens realizadas
           case 0:
             printf("------------- ERRO -------------\n");
             printf("| CLIENTE E CARRO INEXISTENTE! |\n");
