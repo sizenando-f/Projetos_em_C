@@ -51,9 +51,9 @@ void conta_registros(){
 
   fclose(fp);
 
-  printf("------------------\n");
+  printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
   printf("O ARQUIVO POSSUI %d REGISTROS\n", cont);
-  printf("------------------\n");
+  printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 }
 
 int compara_placa(const void *a, const void*b){
@@ -96,7 +96,9 @@ void ordena_registros(){
   }
   
   fclose(ord);
-  printf("OPERACAO REALIZADA COM SUCESSO!\n");
+  printf("------------- SUCESSO -------------\n");
+  printf("| OPERACAO REALIZADA COM SUCESSO! |\n");
+  printf("-----------------------------------\n");
 }
 
 void mostra_registros_ord(){
@@ -113,22 +115,22 @@ void mostra_registros_ord(){
   system("cls");
   while(!feof(fp)){
     if(fread(&carro, sizeof(carro), 1, fp) > 0){
-      printf("-------------------\n");
-      printf("ID: %ld\n", carro.id_reg);
-      printf("PLACA: %s\n", carro.placa);
-      printf("MODELO: %s\n", carro.modelo);
-      printf("FABRICANTE: %s\n", carro.fabricante);
-      printf("ANO DE FABRICACAO: %d\n", carro.ano_fabricacao);
-      printf("ANO DO MODELO: %d\n", carro.ano_modelo);
-      printf("COMBUSTIVEL: %s\n", carro.combustivel);
-      printf("COR: %s\n", carro.cor);
+      printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+      printf("-                ID- > %ld\n", carro.id_reg);
+      printf("-             PLACA -> %s\n", carro.placa);
+      printf("-            MODELO -> %s\n", carro.modelo);
+      printf("-        FABRICANTE -> %s\n", carro.fabricante);
+      printf("- ANO DE FABRICACAO -> %d\n", carro.ano_fabricacao);
+      printf("-     ANO DO MODELO -> %d\n", carro.ano_modelo);
+      printf("-       COMBUSTIVEL -> %s\n", carro.combustivel);
+      printf("-               COR -> %s\n", carro.cor);
       int cont = 0;
       for(int i = 0; i < 8; i++){
         if(carro.opcional[i] == 1){
-          printf("OPCIONAL %d: %s\n", cont+1, opcionais[i]);
+          printf("-       OPCIONAL %d -> %s\n", cont+1, opcionais[i]); cont++;
         }
       }
-      printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+      printf("-   PRECO DE COMPRA -> R$%.2f\n", carro.preco_compra);
     }
   }
 
@@ -192,7 +194,8 @@ void combustivel_para_carro(){
   }
   
   for(int i = 0; i < 4; i++){
-    printf("%s:%d\n", combustiveis[i], cont_comb[i]);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("- COMBUSTIVEL -> %s\n- QUANTIDADE -> %d\n", combustiveis[i], cont_comb[i]);
   }
 
   fclose(fp);
@@ -226,7 +229,8 @@ void opcional_para_carro(){
   }
 
   for(int i = 0; i < 8; i++){
-    printf("%s: %d\n", opcionais[i], cont_opc[i]);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("- OPCIONAL -> %s\n- QUANTIDADE -> %d\n", opcionais[i], cont_opc[i]);
   }
 
   fclose(fp);
@@ -235,13 +239,15 @@ void opcional_para_carro(){
 int main(){
   int esc;
   do{
-    printf("---------------\n");
-    printf("1. INFORMAR QUANTIDADE DE REGISTROS EM \"carro.dbf\"\n");
-    printf("2. ORDERNAR REGISTROS DE \"carro.dbf\" EM ORDEM CRESCENTE PELA PLACA E ARMAZENA-LOS EM \"carro.ord\"\n");
-    printf("3. MOSTRAR REGISTROS DE \"carro.ord\"\n");
-    printf("4. INFORMAR A QUANTIDADE DE CARRO PARA CADA TIPO DE COMBUSTIVEL\n");
-    printf("5. INFORMAR A QUANTIDADE DE CARRO PARA CADA TIPO DE OPCIONAL\n");
-    printf("6. SAIR\n");
+    system("cls");
+    printf("--------------------------------------------------------------------------------------------------------\n");
+    printf("| 1. INFORMAR QUANTIDADE DE REGISTROS EM \"carro.dbf\"                                                   |\n");
+    printf("| 2. ORDERNAR REGISTROS DE \"carro.dbf\" EM ORDEM CRESCENTE PELA PLACA E ARMAZENA-LOS EM \"carro.ord\"     |\n");
+    printf("| 3. MOSTRAR REGISTROS DE \"carro.ord\"                                                                  |\n");
+    printf("| 4. INFORMAR A QUANTIDADE DE CARRO PARA CADA TIPO DE COMBUSTIVEL                                      |\n");
+    printf("| 5. INFORMAR A QUANTIDADE DE CARRO PARA CADA TIPO DE OPCIONAL                                         |\n");
+    printf("| 6. SAIR                                                                                              |\n");
+    printf("--------------------------------------------------------------------------------------------------------\n");
     printf("ESCOLHA -> ");
     scanf("%d", &esc);
     system("cls");
@@ -267,6 +273,9 @@ int main(){
         system("pause");
         break;
       case 6:
+        printf("-------- AVISO -------\n");
+        printf("| PROGRAMA ENCERRADO |\n");
+        printf("----------------------\n");
         break;
       default:
         printf("ENTRADA INVALIDA\n");
