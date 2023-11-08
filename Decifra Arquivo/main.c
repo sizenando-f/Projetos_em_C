@@ -57,12 +57,32 @@ void exibe_linhas_com_numero(char texto[726][56]){
 
 int main() {
     char texto_convertido[99000];
+    char texto_formatado[726][56];
     converte_texto(texto_convertido);
 
-    char texto_formatado[726][56];
-    formata_texto(texto_convertido, texto_formatado);
+    do{
+        printf("1-Decifra arquivo\n");
+        printf("2-Grava numero linha em arquivo\n");
+        printf("3-Quantas linhas o arquivo tem\n");
+        printf("4-Qual a maior linha\n");
+        printf("5-Pesquisar uma palavra\n");
+        printf("0-Encerrar\n");
+        printf("\nQual opcao: ");
+        scanf("%d", &esc);
+        switch (esc){
+            case 1:
+                formata_texto(texto_convertido, texto_formatado);
+                printf("%s", texto_convertido);
+                break;
+            case 2:
+                exibe_linhas_com_numero(texto_formatado);
+                break;
+            default:
+                break;
+        }
+    }while(esc != 0);
 
-    exibe_linhas_com_numero(texto_formatado);
+
 
     return 0;
 }
