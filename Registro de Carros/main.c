@@ -30,6 +30,7 @@ typedef struct {
   float preco_compra;
 } CARRO;
 
+// Conta quantos registros existem
 void conta_registros(){
   FILE * fp = fopen("carro.dbf", "rb");
 
@@ -56,12 +57,14 @@ void conta_registros(){
   printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 }
 
+// Retorna as placas ordenadas de forma crescente de todos carros recebidos
 int compara_placa(const void *a, const void*b){
   const char *placa1 = ((CARRO *)a)->placa;
   const char *placa2 = ((CARRO *)b)->placa;
   return strcmp(placa1, placa2);
 }
 
+// Ordena os registros e armazena noutro arquivo
 void ordena_registros(){
   FILE * fp = fopen("carro.dbf", "rb");
   if(fp == NULL){
@@ -83,7 +86,7 @@ void ordena_registros(){
 
   fclose(fp);
 
-  qsort(carros, n, sizeof(carros[0]), compara_placa);
+  qsort(carros, n, sizeof(carros[0]), compara_placa); // Função de ordenação da biblioteca stdlib.h
 
   FILE * ord = fopen("carro.ord", "wb");
   if(ord == NULL){
@@ -101,6 +104,7 @@ void ordena_registros(){
   printf("-----------------------------------\n");
 }
 
+// Exibe os registros ordenados
 void mostra_registros_ord(){
   FILE * fp = fopen("carro.ord", "rb");
   if(fp == NULL){
@@ -137,6 +141,7 @@ void mostra_registros_ord(){
   fclose(fp);
 }
 
+// Descobre quais combustíveis existem
 void descobre_combustiveis(char combustiveis[4][TAM]){
   FILE * fp = fopen("carro.dbf", "rb");
   if(fp == NULL){
@@ -166,6 +171,7 @@ void descobre_combustiveis(char combustiveis[4][TAM]){
   fclose(fp);
 }
 
+// Mostra quantidade de carros para cada tipo de combustível
 void combustivel_para_carro(){
   char combustiveis[4][TAM];
   int cont_comb[4];
@@ -201,6 +207,7 @@ void combustivel_para_carro(){
   fclose(fp);
 }
 
+// Mostra a quantidade de carros com cada opcional
 void opcional_para_carro(){
   FILE * fp = fopen("carro.dbf", "rb");
   if(fp == NULL){
