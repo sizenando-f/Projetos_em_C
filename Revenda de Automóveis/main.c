@@ -319,16 +319,16 @@ void listar_carro_fabricante(){
 
   system("cls");
   for(int i = 0; i < n; i++){
-    printf("---------------------\n");
-    printf("PLACA: %s\n", carros[i].placa);
-    printf("MODELO: %s\n", carros[i].modelo);
-    printf("FABRICANTE: %s\n", carros[i].fabricante);
-    printf("ANO DE FABRICACAO: %d\n", carros[i].ano_fabricacao);
-    printf("ANO DO MODELO: %d\n", carros[i].ano_modelo);
-    printf("COMBUSTIVEL: %s\n", carros[i].combustivel);
-    printf("COR: %s\n", carros[i].cor);
-    printf("OPCIONAL: %s\n", opcionais[carros[i].opcional[0]]);
-    printf("PRECO DE COMPRA: %.2f\n", carros[i].preco_compra);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("-             PLACA -> %s\n", carros[i].placa);
+    printf("-            MODELO -> %s\n", carros[i].modelo);
+    printf("-        FABRICANTE -> %s\n", carros[i].fabricante);
+    printf("- ANO DE FABRICACAO -> %d\n", carros[i].ano_fabricacao);
+    printf("-     ANO DO MODELO -> %d\n", carros[i].ano_modelo);
+    printf("-       COMBUSTIVEL -> %s\n", carros[i].combustivel);
+    printf("-               COR -> %s\n", carros[i].cor);
+    printf("-          OPCIONAL -> %s\n", opcionais[carros[i].opcional[0]]);
+    printf("-   PRECO DE COMPRA -> R$%.2f\n", carros[i].preco_compra);
   }
 }
 
@@ -346,16 +346,16 @@ void listar_carros_opcionais(int opcional[], int tam){
   while (fread(&carro, sizeof(carro), 1, fp) > 0) {
         for (int i = 0; i < tam; i++) {
             if (carro.opcional[0] == opcional[i]-1) {
-                printf("---------------------\n");
-                printf("PLACA: %s\n", carro.placa);
-                printf("MODELO: %s\n", carro.modelo);
-                printf("FABRICANTE: %s\n", carro.fabricante);
-                printf("ANO DE FABRICACAO: %d\n", carro.ano_fabricacao);
-                printf("ANO DO MODELO: %d\n", carro.ano_modelo);
-                printf("COMBUSTIVEL: %s\n", carro.combustivel);
-                printf("COR: %s\n", carro.cor);
-                printf("OPCIONAL: %s\n", opcionais[carro.opcional[0]]);
-                printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+                printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+                printf("-             PLACA -> %s\n", carro.placa);
+                printf("-            MODELO -> %s\n", carro.modelo);
+                printf("-        FABRICANTE -> %s\n", carro.fabricante);
+                printf("- ANO DE FABRICACAO -> %d\n", carro.ano_fabricacao);
+                printf("-     ANO DO MODELO -> %d\n", carro.ano_modelo);
+                printf("-       COMBUSTIVEL -> %s\n", carro.combustivel);
+                printf("-               COR -> %s\n", carro.cor);
+                printf("-          OPCIONAL -> %s\n", opcionais[carro.opcional[0]]);
+                printf("-   PRECO DE COMPRA -> R$%.2f\n", carro.preco_compra);
                 cont++;
             }
         }
@@ -380,16 +380,16 @@ void listar_carros_ano(int anoInicio, int anoFim){
   system("cls");
   while (fread(&carro, sizeof(carro), 1, fp) > 0){
             if (carro.ano_fabricacao >= anoInicio && carro.ano_fabricacao <= anoFim) {
-                printf("---------------------\n");
-                printf("PLACA: %s\n", carro.placa);
-                printf("MODELO: %s\n", carro.modelo);
-                printf("FABRICANTE: %s\n", carro.fabricante);
-                printf("ANO DE FABRICACAO: %d\n", carro.ano_fabricacao);
-                printf("ANO DO MODELO: %d\n", carro.ano_modelo);
-                printf("COMBUSTIVEL: %s\n", carro.combustivel);
-                printf("COR: %s\n", carro.cor);
-                printf("OPCIONAL: %s\n", opcionais[carro.opcional[0]]);
-                printf("PRECO DE COMPRA: %.2f\n", carro.preco_compra);
+                printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+                printf("-             PLACA -> %s\n", carro.placa);
+                printf("-            MODELO -> %s\n", carro.modelo);
+                printf("-        FABRICANTE -> %s\n", carro.fabricante);
+                printf("- ANO DE FABRICACAO -> %d\n", carro.ano_fabricacao);
+                printf("-     ANO DO MODELO -> %d\n", carro.ano_modelo);
+                printf("-       COMBUSTIVEL -> %s\n", carro.combustivel);
+                printf("-               COR -> %s\n", carro.cor);
+                printf("-          OPCIONAL -> %s\n", opcionais[carro.opcional[0]]);
+                printf("-   PRECO DE COMPRA -> %.2f\n", carro.preco_compra);
                 cont++;
             }
         }
@@ -422,17 +422,23 @@ void menuCarro(){
         break;
       case 2:{
         char placa[9];
-        printf("INSIRA A PLACA DO CARRO: ");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("- INSIRA A PLACA DO CARRO -> ");
         getchar();
         fgets(placa, sizeof(placa), stdin);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         if(checa_carro(placa) == 2){
           if(!checa_venda_carro(placa)){
             apaga_carro(placa);
           } else {
-            printf("CARRO JA FOI VENDIDO!\n");
+            printf("--------- ERRO ----------\n");
+            printf("| CARRO JA FOI VENDIDO! |\n");
+            printf("-------------------------\n");
           }
         } else {
-          printf("CARRO INEXISENTE!\n");
+          printf("------- ERRO --------\n");
+          printf("| CARRO INEXISENTE! |\n");
+          printf("---------------------\n");
         }
       }
         system("pause");
@@ -444,28 +450,29 @@ void menuCarro(){
       case 4:{
         int opcional[8], cont = 0, opc = 0;
         system("cls");
-        printf("---------------------------------------------------\n");
-        printf("1. 4 PORTAS           2. CAMBIO AUTOMATICO\n");
-        printf("3. VIDROS ELETRICOS   4. ABS\n");
-        printf("5. AIR BAGS           6. AR CONDICIONADO\n");
-        printf("7. BANCO DE COURO     8. SENSOR DE ESTACIONAMENTO\n");
-        printf("---------------------------------------------------\n");
-        printf("INSIRA OS OPCIONAIS QUE DESEJA (INSIRA -1 PARA FINALIZAR): \n");
-
+        printf("-------------------------------------------------------\n");
+        printf("| 1. 4 PORTAS           | 2. CAMBIO AUTOMATICO        |\n");
+        printf("| 3. VIDROS ELETRICOS   | 4. ABS                      |\n");
+        printf("| 5. AIR BAGS           | 6. AR CONDICIONADO          |\n");
+        printf("| 7. BANCO DE COURO     | 8. SENSOR DE ESTACIONAMENTO |\n");
+        printf("-------------------------------------------------------\n");
+        printf("INSIRA OS OPCIONAIS QUE DESEJA (INSIRA -1 PARA FINALIZAR) \n");
         while(opc != -1 && cont < 8){
           printf("-> ");
           scanf("%d", &opc);
           if(opc > 8){
-            printf("ENTRADA INVALIDA!\n");
+            system("cls");
+            printf("-------- ERRO -------\n");
+            printf("| ENTRADA INVALIDA! |\n");
+            printf("---------------------\n");
+            system("pause");
             continue;
           }
           if(opc < 1){
-            printf("NAO EXISTE...\n");
             break;
           }
           opcional[cont++] = opc;
         }
-
         listar_carros_opcionais(opcional, cont);
       }
         system("pause");
@@ -474,10 +481,13 @@ void menuCarro(){
       case 5: {
         int anoInicio, anoFim;
         system("cls");
-        printf("INSIRA O ANO INICIAL: ");
+        printf("---------------------------\n");
+        printf("- INSIRA O ANO INICIAL -> ");
         scanf("%d", &anoInicio);
-        printf("INSIRA O ANO FINAL: ");
+        printf("---------------------------\n");
+        printf("- INSIRA O ANO FINAL -> ");
         scanf("%d", &anoFim);
+        printf("---------------------------\n");
         listar_carros_ano(anoInicio, anoFim);
       }
         system("pause");
@@ -485,7 +495,9 @@ void menuCarro(){
       case 6:
         break;
       default:
-        printf("ENTRADA INVALIDA!\n");
+        printf("-------- ERRO -------\n");
+        printf("| ENTRADA INVALIDA! |\n");
+        printf("---------------------\n");
         system("pause");
         break;
     }
@@ -594,6 +606,7 @@ void inserirCliente(){
   float renda_mensal = nAleatorio(1200, 10000);
   char esc;
   do{
+    system("cls");
     printf("=-= VOCE DESEJA INSERIR O SEGUINTE CLIENTE? =-=\n");
     printf("-                NOME -> %s\n", nome);
     printf("-                 CPF -> %s\n", cpf);
@@ -721,8 +734,10 @@ void apaga_cliente(char * cpf){
     printf("ERRO AO RENOMEAR ARQUIVO DE CLIENTES!\n");
     exit(100);
   }
+  printf("------------- SUCESSO -------------\n");
+  printf("| EXCLUSAO REALIZADA COM SUCESSO! |\n");
+  printf("-----------------------------------\n");
 
-  printf("EXCLUSAO REALIZADA COM SUCESSO!\n");
 }
 
 int comparar_clientes_nome(const void *a, const void *b){
@@ -835,17 +850,23 @@ void menuCliente(){
         break;
       case 2:{
         char cpf[15];
-        printf("INSIRA O CPF DO CLIENTE: ");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("- INSIRA O CPF DO CLIENTE -> ");
         getchar();
         fgets(cpf, sizeof(cpf), stdin);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         if(checa_cliente(cpf) == 3){
           if(!checa_venda_cliente(cpf)){
             apaga_cliente(cpf);
           } else {
-            printf("CLIENTE JA REALIZOU UMA COMPRA!\n");
+            printf("--------------- ERRO --------------\n");
+            printf("| CLIENTE JA REALIZOU UMA COMPRA! |\n");
+            printf("-----------------------------------\n");
           }
         } else {
-          printf("CLIENTE INEXISTENTE!\n");
+          printf("--------- ERRO ---------\n");
+          printf("| CLIENTE INEXISTENTE! |\n");
+          printf("------------------------\n");
         }
       }
         system("pause");
@@ -1236,9 +1257,11 @@ void menuVenda(){
       case 1:
         printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         printf("- INSIRA O CPF DO CLIENTE -> ");
+        getchar();
         fgets(cpf, sizeof(cpf), stdin);
         printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         printf("- INSIRA A PLACA DO CARRO -> ");
+        getchar();
         fgets(placa, sizeof(placa), stdin);
         printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         check = checa_carro(placa);
@@ -1275,11 +1298,11 @@ void menuVenda(){
         }
         break;
       case 2:{
-        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         printf("- INSIRA A PLACA DO CARRO -> ");
-        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
         getchar();
         fgets(placa, sizeof(placa), stdin);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         if(checa_carro(placa) == 2){
           apaga_venda(placa);
         } else {
@@ -1292,16 +1315,17 @@ void menuVenda(){
         break;
       case 3:{
         int opc = 0;
-        printf("---------------------------------\n");
-        printf("| 1. CHEVROLET    | 2. FIAT     |\n");
-        printf("| 3. TOYOTA       | 4. VOLSWAGE |\n");
-        printf("---------------------------------\n");
+        printf("-----------------------------------\n");
+        printf("| 1. CHEVROLET    | 2. FIAT       |\n");
+        printf("| 3. TOYOTA       | 4. VOLKSWAGEN |\n");
+        printf("-----------------------------------\n");
         printf("- INSIRA O FABRICANTE -> ");
         scanf("%d", &opc);
         if(opc < 1 || opc > 4){
           printf("------- ERRO ------\n");
           printf("| OPCAO INVALIDA! |\n");
           printf("-------------------\n");
+          system("pause");
           continue;
         }
         system("cls");
@@ -1369,6 +1393,10 @@ int main(){
         menuVenda();
         break;
       case 4:
+        printf("------- AVISO --------\n");
+        printf("| PROGRAMA ENCERRADO |\n");
+        printf("----------------------\n");
+        printf("  TENHA UM OTIMO DIA\n");
         break;
       default:
         printf("ENTRADA INVALIDA!\n");
