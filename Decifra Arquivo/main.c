@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-void converte_texto(char texto_convertido[99000]){
+void converte_texto_n(char texto_convertido[99000]){
     char texto[99000];
 
     FILE *fp = fopen("readme.code.txt", "r");
@@ -103,52 +103,25 @@ void cria_linhas_com_numero(char texto[726][56]){
     }while(esc != 'S' && esc != 'N');
 }
 
-void descobre_maior_linha(){
-    int maior = 0, maior_l = 0, cont = 0; 
-    char linha[56];
-    if(access("readme.nlines.txt", F_OK) != -1){
-        FILE * fp = fopen("readme.nlines.txt", "r");
-        if(fp == NULL){
-            printf("Erro ao abrir o arquivo\n"); exit(100);
-        }
-
-        while(fgets(linha, sizeof(linha), fp)){
-            cont++;
-            int test = strlen(linha);
-            if(test > maior){
-                maior = test;
-                maior_l = cont;
+void descobre_maior_linha(char * texto){
+    int i = 0, linha = 1, cont_char = 0, maior = 0, maior_l = 0;
+    while(texto[i] != '\0'){
+        cont_char++;
+        if(texto[i] == '\n'){
+            if(cont_char > maior){
+                maior = cont_char;
+                maior_l = linha;
             }
+            cont_char = 0;
+            linha++;
         }
-
-        fclose(fp);
-        printf("A linha [%d] e a maior com (%d) caracteres\n", maior_l, maior);
-    } else {
-        printf("Primeiro grave o numero da linha no arquivo (opcao 2)\n");
+        i++;
     }
+    printf("A linha [%d] e a maior com (%d) caracteres\n", maior_l, maior);
 }
 
-void encontra_palavra(char * palavra){
-    if(access("readme.nlines.txt", F_OK) != -1){
-        FILE * fp = fopen("readme.nlines.txt", "r");
-        if(fp == NULL){
-            printf("Erro ao abrir o arquivo\n"); exit(100);
-        }
-        int cont = 0;
-        char linha[56];
-        printf("\nAs linhas em que a palavra \"%s\" ocorre:\n\n", palavra);
-        while(fgets(linha, sizeof(linha), fp)){
-            char * resultado = strstr(linha, palavra);
-            if(resultado != NULL){
-                printf("%s", linha);
-                cont++;
-            }
-        }
-        printf("\n\ne tem %d ocorrencias.", cont);
-
-    } else {
-        printf("Primeiro grave o numero da linha no arquivo (opcao 2)\n");
-    }
+void encontra_palavra(char * palavra, char texto_f[711][61]){
+    
 }
 
 void conta_linhas(char * texto_convertido){
@@ -160,10 +133,29 @@ void conta_linhas(char * texto_convertido){
     printf("O arquivo \"readme.code.txt\" tem (%d) linhas\n", cont+1);
 }
 
+void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
+    int linha = 0, coluna = 0, i = 0, cont = 0; 
+    while (texto_n[i] != '\0') {
+        if (texto_n[i] == '\n' || cont == 61) {
+            texto_f[linha][coluna] = '\0';
+            linha++;  
+            coluna = 0; 
+            cont = 0;
+        } else {
+            texto_f[linha][coluna] = texto_n[i];
+            coluna++;
+        }
+        i++;
+        cont++;
+    }
+}
+
 int main() {
-    char texto_convertido[99000];
+    char texto_convertido_n[99000];
+    char texto_convertido_f[712][61];
     char texto_formatado[726][56];
-    converte_texto(texto_convertido);
+    converte_texto_n(texto_convertido_n);
+    converte_texto_f(texto_convertido_n, texto_convertido_f);
     int esc = 0, check = 0;
     char palavra[20];
 
@@ -179,7 +171,7 @@ int main() {
         scanf("%d", &esc);
         switch (esc){
             case 1:
-                formata_texto(texto_convertido, texto_formatado);
+                formata_texto(texto_convertido_n, texto_formatado);
                 check = 1;
                 system("pause");
                 break;
@@ -193,17 +185,17 @@ int main() {
                 system("pause");
                 break;
             case 3:
-                conta_linhas(texto_convertido);    
+                conta_linhas(texto_convertido_n);    
                 system("pause");
                 break;
             case 4:
-                descobre_maior_linha(texto_formatado);
+                descobre_maior_linha(texto_convertido_n);
                 system("pause");
                 break;
             case 5:
                 printf("Qual palavra pesquisar: ");
                 scanf("%s", palavra);
-                encontra_palavra(palavra);
+                encontra_palavra(palavra, texto_convertido_f);
                 system("pause");
                 break;
             default:
