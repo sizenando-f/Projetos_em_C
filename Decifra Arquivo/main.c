@@ -15,15 +15,11 @@ void converte_texto_n(char texto_convertido[99000]){
     }
 
     if (fgets(texto, sizeof(texto), fp) != NULL) {
-        // Inicializa a string de texto_convertido
         texto_convertido[0] = '\0';
-
-        // Usa strtok para separar os números entre colchetes
         char *numero_char = strtok(texto, "[]");
         while (numero_char != NULL) {
             int numero_int = atoi(numero_char);
             char letra = (char)numero_int;
-            // Concatena o caractere à string texto_convertido
             strncat(texto_convertido, &letra, 1);
             numero_char = strtok(NULL, "[]");
         }
@@ -31,7 +27,19 @@ void converte_texto_n(char texto_convertido[99000]){
     fclose(fp);
 }
 
-void formata_texto(char texto[99000], char texto_formatado[726][56]) {
+void formata_texto(char texto[99000], char texto_formatado[726][56], char texto_f[712][61]) {
+    FILE * fp = fopen("readme.decifra.txt", "w+");
+    if(fp == NULL){
+        printf("ERRO AO ABRIR O ARQUIVO\n");
+        exit(100);
+    }
+
+    for(int i = 0; i < 711; i++){
+        fprintf(fp, "%s\n", texto_f[i]);
+    }
+
+    fclose(fp);
+
     int linha = 0, coluna = 0, i = 0, cont = 0;
     char esc;
     
@@ -87,7 +95,7 @@ void cria_linhas_com_numero(char texto[726][56]){
     do{
         system("cls");
         printf("\nOperacao realizada com sucesso\n");
-        printf("Deseja exibi-lo? (s/n) ->");
+        printf("\nDeseja exibi-lo? (s/n) ->");
         getchar();
         scanf("%c", &esc);
         esc = toupper(esc);
@@ -151,11 +159,6 @@ void conta_linhas(char * texto_convertido){
 }
 
 void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
-    FILE * fp = fopen("readme.decifra.txt", "w+");
-    if(fp == NULL){
-        printf("ERRO AO ABRIR O ARQUIVO\n");
-        exit(100);
-    }
     int linha = 0, coluna = 0, i = 0, cont = 0; 
     while (texto_n[i] != '\0') {
         if (texto_n[i] == '\n' || cont == 61) {
@@ -170,12 +173,6 @@ void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
         i++;
         cont++;
     }
-
-    for(int i = 0; i < 711; i++){
-        fprintf(fp, "%s\n", texto_f[i]);
-    }
-
-    fclose(fp);
 }
 
 int main() {
@@ -199,7 +196,7 @@ int main() {
         scanf("%d", &esc);
         switch (esc){
             case 1:
-                formata_texto(texto_convertido_n, texto_formatado);
+                formata_texto(texto_convertido_n, texto_formatado, texto_convertido_f);
                 check = 1;
                 system("pause");
                 break;
@@ -227,7 +224,7 @@ int main() {
                 system("pause");
                 break;
             case 0:
-                printf("Programa encerrado\n");
+                printf("\nPrograma encerrado\n\n");
                 break;
             default:
                 printf("\nEntrada invalida\n\n");
@@ -235,8 +232,5 @@ int main() {
                 break;
         }
     }while(esc != 0);
-
-
-
     return 0;
 }
