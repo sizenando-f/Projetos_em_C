@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
+//  Converte binário em caractere
 void converte_texto_n(char texto_convertido[99000]){
     char texto[99000];
 
@@ -15,18 +16,19 @@ void converte_texto_n(char texto_convertido[99000]){
     }
 
     if (fgets(texto, sizeof(texto), fp) != NULL) {
-        texto_convertido[0] = '\0';
-        char *numero_char = strtok(texto, "[]");
+        texto_convertido[0] = '\0'; // Inicializa vetor
+        char *numero_char = strtok(texto, "[]");    // Pega bloco do código
         while (numero_char != NULL) {
-            int numero_int = atoi(numero_char);
-            char letra = (char)numero_int;
-            strncat(texto_convertido, &letra, 1);
-            numero_char = strtok(NULL, "[]");
+            int numero_int = atoi(numero_char); // Converto para inteiro
+            char letra = (char)numero_int;  // Converte de inteiro para caractere da tabela ASCII
+            strncat(texto_convertido, &letra, 1);   // Concatena no vetor
+            numero_char = strtok(NULL, "[]");   // Passa para próximo bloco
         }
     }
     fclose(fp);
 }
 
+// Cria arquivo "readme.decrifra.txt" com texto decifrado e prepara texto para linhas
 void formata_texto(char texto[99000], char texto_formatado[726][56], char texto_f[712][61]) {
     FILE * fp = fopen("readme.decifra.txt", "w+");
     if(fp == NULL){
@@ -35,7 +37,7 @@ void formata_texto(char texto[99000], char texto_formatado[726][56], char texto_
     }
 
     for(int i = 0; i < 711; i++){
-        fprintf(fp, "%s\n", texto_f[i]);
+        fprintf(fp, "%s\n", texto_f[i]);    // Insere texto convertido no arquivo
     }
 
     fclose(fp);
@@ -43,20 +45,22 @@ void formata_texto(char texto[99000], char texto_formatado[726][56], char texto_
     int linha = 0, coluna = 0, i = 0, cont = 0;
     char esc;
     
+    // Prepara texto para inserção de linhas
     while (texto[i] != '\0') {
-        if (texto[i] == '\n' || cont == 56) {
-            texto_formatado[linha][coluna] = '\0';
-            linha++;  
-            coluna = 0; 
-            cont = 0;
+        if (texto[i] == '\n' || cont == 56) {   // Se houver quebra de linhas ou atingido o tamanho definido no trabalho
+            texto_formatado[linha][coluna] = '\0';  // Inicializa
+            linha++;     // Pula linha
+            coluna = 0;     // Vai para primeira coluna
+            cont = 0;   // Reinicia contador de caracteres
         } else {
-            texto_formatado[linha][coluna] = texto[i];
-            coluna++;
+            texto_formatado[linha][coluna] = texto[i];  // Insere caractere na linha
+            coluna++;   //  Passa para próxima coluna
         }
-        i++;
-        cont++;
+        i++;    // Passa para próximo caractere
+        cont++; // Aumenta contador de caractere
     }
     
+    // Exibe ou não texto convertido
     do{
         system("cls");
         printf("\nDecodificacao realizada com sucesso\n");
@@ -78,6 +82,7 @@ void formata_texto(char texto[99000], char texto_formatado[726][56], char texto_
     
 }
 
+// Cria o arquivo "readme.nlines.txt"
 void cria_linhas_com_numero(char texto[726][56]){
     char esc;
     FILE * fp = fopen("readme.nlines.txt", "w+");
@@ -87,11 +92,12 @@ void cria_linhas_com_numero(char texto[726][56]){
     }
 
     for(int i = 0; i < 726; i++){
-        fprintf(fp, "[linha: %d] %s\n", i+1, texto[i]);
+        fprintf(fp, "[linha: %d] %s\n", i+1, texto[i]); // Insere linhas com números
     }
 
     fclose(fp);
     
+    // Exibe ou não texto com números
     do{
         system("cls");
         printf("\nOperacao realizada com sucesso\n");
@@ -115,6 +121,7 @@ void cria_linhas_com_numero(char texto[726][56]){
     }while(esc != 'S' && esc != 'N');
 }
 
+// Mostra qual maior linha e quantos caracteres ela possui
 void descobre_maior_linha(char * texto){
     int i = 0, linha = 1, cont_char = 0, maior = 0, maior_l = 0;
     while(texto[i] != '\0'){
@@ -132,14 +139,15 @@ void descobre_maior_linha(char * texto){
     printf("\nA linha [%d] e a maior com (%d) caracteres\n\n", maior_l, maior);
 }
 
+// Exibe palavra recebida do usuário
 void encontra_palavra(char palavra[20], char texto_f[711][61]){
     system("cls");
     printf("\nAs linhas em que a palavra \"%s\" ocorre: \n", palavra);
     int cont = 0;
     for(int i = 0; i < 711; i++){
-        if(strstr(texto_f[i], palavra)){
-            printf("\n[linha: %d] %s", i+1, texto_f[i]);
-            cont++;
+        if(strstr(texto_f[i], palavra)){    // Se palavra existir na string atual
+            printf("\n[linha: %d] %s", i+1, texto_f[i]);    // Mostra frase com a palavra
+            cont++; // Incrementa no contador de ocorrências
         }
     }
     if(cont){
@@ -149,6 +157,7 @@ void encontra_palavra(char palavra[20], char texto_f[711][61]){
     }
 }
 
+// Exibe quantidade de linhas no texto
 void conta_linhas(char * texto_convertido){
     int i = 0, cont = 0;
     while(texto_convertido[i] != '\0'){
@@ -158,20 +167,21 @@ void conta_linhas(char * texto_convertido){
     printf("\nO arquivo \"readme.decifra.txt\" tem (%d) linhas\n\n", cont+1);
 }
 
+// Insere texto com o formato original
 void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
     int linha = 0, coluna = 0, i = 0, cont = 0; 
     while (texto_n[i] != '\0') {
-        if (texto_n[i] == '\n' || cont == 61) {
-            texto_f[linha][coluna] = '\0';
-            linha++;  
-            coluna = 0; 
-            cont = 0;
-        } else {
-            texto_f[linha][coluna] = texto_n[i];
-            coluna++;
+        if (texto_n[i] == '\n' || cont == 61) { // Se houver quebra de linha ou se for tiver a quantidade de caracteres máximo
+            texto_f[linha][coluna] = '\0';  // Inicializa
+            linha++;    // Passa para próxima linha
+            coluna = 0;    // Inicializa coluna
+            cont = 0;   // Inciializa contador de caracteres
+        } else { 
+            texto_f[linha][coluna] = texto_n[i];    // Inserece caractere na linha
+            coluna++;   // Passa para próxima coluna
         }
-        i++;
-        cont++;
+        i++;    // Passa para próximo caractere
+        cont++; // Incrementa contador de caracteres
     }
 }
 
@@ -179,9 +189,12 @@ int main() {
     char texto_convertido_n[99000];
     char texto_convertido_f[712][61];
     char texto_formatado[726][56];
+
     converte_texto_n(texto_convertido_n);
     converte_texto_f(texto_convertido_n, texto_convertido_f);
+
     int esc = 0, check = 0;
+    
     char palavra[20];
 
     do{
