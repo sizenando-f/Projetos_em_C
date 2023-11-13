@@ -151,6 +151,15 @@ void encontra_palavra(char * palavra){
     }
 }
 
+void conta_linhas(char * texto_convertido){
+    int i = 0, cont = 0;
+    while(texto_convertido[i] != '\0'){
+        if(texto_convertido[i] == '\n') cont++;
+        i++;
+    }
+    printf("O arquivo \"readme.code.txt\" tem (%d) linhas\n", cont+1);
+}
+
 int main() {
     char texto_convertido[99000];
     char texto_formatado[726][56];
@@ -184,12 +193,7 @@ int main() {
                 system("pause");
                 break;
             case 3:
-                    if(access("readme.nlines.txt", F_OK) != -1){
-                        printf("O arquivo \"readme.nlines.txt\" tem (726) linhas.\n");
-                    } else {
-                        printf("Grave o numero de linhas no arquivo ( opcao 2) e entao tente novamente\n");
-                    }
-                    
+                conta_linhas(texto_convertido);    
                 system("pause");
                 break;
             case 4:
