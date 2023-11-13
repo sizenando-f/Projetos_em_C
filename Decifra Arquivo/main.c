@@ -48,20 +48,22 @@ void formata_texto(char texto[99000], char texto_formatado[726][56]) {
         i++;
         cont++;
     }
-    system("cls");
-    printf("Decodificacao realizada com sucesso\n");
-    printf("Deseja exibi-lo? (s/n)-> ");
-    getchar();
-    scanf("%c", &esc);
-    esc = toupper(esc);
+    
     do{
+        system("cls");
+        printf("\nDecodificacao realizada com sucesso\n");
+        printf("\nDeseja exibi-lo? (s/n)-> ");
+        getchar();
+        scanf("%c", &esc);
+        esc = toupper(esc);
         switch (esc){
             case 'S':
                 printf("%s\n", texto); break;
             case 'N':
-                printf("Exibicao recusada\n"); break;
+                printf("\nExibicao recusada\n\n"); break;
             default:
-                printf("Entrada invalida\n");
+                printf("\nEntrada invalida\n\n");
+                system("pause");
                 break;
         }
     }while(esc != 'S' && esc != 'N');
@@ -72,7 +74,7 @@ void cria_linhas_com_numero(char texto[726][56]){
     char esc;
     FILE * fp = fopen("readme.nlines.txt", "w+");
     if(fp == NULL){
-        printf("ERRO AO ABRIR O ARQUIVO\n");
+        printf("ERRO AO ABRIR O ARQUIVO\n\n");
         exit(100);
     }
 
@@ -81,13 +83,14 @@ void cria_linhas_com_numero(char texto[726][56]){
     }
 
     fclose(fp);
-    system("cls");
-    printf("Operacao realizada com sucesso\n");
-    printf("Deseja exibi-lo? (s/n) ->");
-    getchar();
-    scanf("%c", &esc);
-    esc = toupper(esc);
+    
     do{
+        system("cls");
+        printf("\nOperacao realizada com sucesso\n");
+        printf("Deseja exibi-lo? (s/n) ->");
+        getchar();
+        scanf("%c", &esc);
+        esc = toupper(esc);
         switch (esc){
             case 'S':
                 for(int i = 0; i < 726; i++){
@@ -95,9 +98,10 @@ void cria_linhas_com_numero(char texto[726][56]){
                 }
                 break;
             case 'N':
-                printf("Exibicao recusada\n"); break;
+                printf("\nExibicao recusada\n\n"); break;
             default:
-                printf("Entrada invalida\n");
+                printf("\nEntrada invalida\n\n");
+                system("pause");
                 break;
         }
     }while(esc != 'S' && esc != 'N');
@@ -117,11 +121,24 @@ void descobre_maior_linha(char * texto){
         }
         i++;
     }
-    printf("A linha [%d] e a maior com (%d) caracteres\n", maior_l, maior);
+    printf("\nA linha [%d] e a maior com (%d) caracteres\n\n", maior_l, maior);
 }
 
-void encontra_palavra(char * palavra, char texto_f[711][61]){
-    
+void encontra_palavra(char palavra[20], char texto_f[711][61]){
+    system("cls");
+    printf("\nAs linhas em que a palavra \"%s\" ocorre: \n", palavra);
+    int cont = 0;
+    for(int i = 0; i < 711; i++){
+        if(strstr(texto_f[i], palavra)){
+            printf("\n[linha: %d] %s", i+1, texto_f[i]);
+            cont++;
+        }
+    }
+    if(cont){
+        printf("\n\ne tem %d ocorrencias.\n\n", cont);
+    } else {
+        printf("\nnao existe ocorrencia da palavra.\n\n");
+    }
 }
 
 void conta_linhas(char * texto_convertido){
@@ -130,7 +147,7 @@ void conta_linhas(char * texto_convertido){
         if(texto_convertido[i] == '\n') cont++;
         i++;
     }
-    printf("O arquivo \"readme.code.txt\" tem (%d) linhas\n", cont+1);
+    printf("\nO arquivo \"readme.code.txt\" tem (%d) linhas\n\n", cont+1);
 }
 
 void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
@@ -193,12 +210,17 @@ int main() {
                 system("pause");
                 break;
             case 5:
-                printf("Qual palavra pesquisar: ");
+                printf("\nQual palavra pesquisar: ");
                 scanf("%s", palavra);
                 encontra_palavra(palavra, texto_convertido_f);
                 system("pause");
                 break;
+            case 0:
+                printf("Programa encerrado\n");
+                break;
             default:
+                printf("\nEntrada invalida\n\n");
+                system("pause");
                 break;
         }
     }while(esc != 0);
