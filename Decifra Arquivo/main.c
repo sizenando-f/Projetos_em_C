@@ -147,10 +147,15 @@ void conta_linhas(char * texto_convertido){
         if(texto_convertido[i] == '\n') cont++;
         i++;
     }
-    printf("\nO arquivo \"readme.code.txt\" tem (%d) linhas\n\n", cont+1);
+    printf("\nO arquivo \"readme.decifra.txt\" tem (%d) linhas\n\n", cont+1);
 }
 
 void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
+    FILE * fp = fopen("readme.decifra.txt", "w+");
+    if(fp == NULL){
+        printf("ERRO AO ABRIR O ARQUIVO\n");
+        exit(100);
+    }
     int linha = 0, coluna = 0, i = 0, cont = 0; 
     while (texto_n[i] != '\0') {
         if (texto_n[i] == '\n' || cont == 61) {
@@ -165,6 +170,12 @@ void converte_texto_f(char texto_n[99000], char texto_f[711][61]){
         i++;
         cont++;
     }
+
+    for(int i = 0; i < 711; i++){
+        fprintf(fp, "%s\n", texto_f[i]);
+    }
+
+    fclose(fp);
 }
 
 int main() {
