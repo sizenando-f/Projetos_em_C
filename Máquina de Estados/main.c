@@ -12,16 +12,17 @@ int verificaEstado(char estados[20], char estado, int numEstados){
 }
 
 // Verifica a existência de uma cadeia de estados
-int verificaEstados(char estados[20], char palavra[20], int numEstados){
-  for(int i = 0; i < numEstados; i++){
+int verificaEstados(char estados[20], char palavra[20], int numEstados, int numEstadosAceitacao){
+  printf("Numero de estados: %d | Numero de estados de aceitacao: %d\n", numEstados, numEstadosAceitacao);
+  for(int i = 0; i < numEstadosAceitacao; i++){
     int check = 0;
     for(int j = 0; j < numEstados; j++){
-      if(estados[i] == palavra[j]){
+      if(palavra[i] == estados[j]){
         check = 1;
       }
     }
     if(!check){
-      printf("\nAlguma estado nao esta presente na maquina, tente novamente\n");
+      printf("\nAlgum estado nao esta presente na maquina, tente novamente\n");
       return 0;
     }
   }
@@ -60,9 +61,10 @@ void getEstadoInicial(char estados[20], char *estadoInicial, int numEstados){
 
 // Recebe os estados de aceitacao da maquina
 void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int numEstados){
-  char temp[30];
+  char temp[30] = "";
   int check = 1;
   while(check){
+    int numEstadosAceitacao = 0;
     printf("Insira os estados de aceitacao da maquina (separe por virgulas): ");
     fgets(temp, sizeof(temp), stdin);
     char *pont = strtok(temp, ",");
@@ -71,12 +73,12 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
       estadosDeAceitacao[indice] = *pont;
       pont = strtok(NULL, ",");
       indice++;
+      numEstadosAceitacao++;
     }
-    if(verificaEstados(estados, estadosDeAceitacao, numEstados)){
+    if(verificaEstados(estados, estadosDeAceitacao, numEstados, numEstadosAceitacao)){
       check = 0;
     }
   }
-
   
 }
 
