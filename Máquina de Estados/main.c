@@ -13,7 +13,6 @@ int verificaEstado(char estados[20], char estado, int numEstados){
 
 // Verifica a existência de uma cadeia de estados
 int verificaEstados(char estados[20], char palavra[20], int numEstados, int numEstadosAceitacao){
-  printf("Numero de estados: %d | Numero de estados de aceitacao: %d\n", numEstados, numEstadosAceitacao);
   for(int i = 0; i < numEstadosAceitacao; i++){
     int check = 0;
     for(int j = 0; j < numEstados; j++){
@@ -82,14 +81,46 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
   
 }
 
+void getFuncao(char funcao[20][2], char estados[20], int numEstados){
+  char temp;
+  for(int i = 0; i < numEstados; i++){
+    for(int j = 0; j < 2; j++){
+      printf("Delta de '%c' quando receber %d: ", estados[i], j);
+      scanf(" %c", &temp);
+      if(!verificaEstado(estados, temp, numEstados)){
+        printf("O estado inserido nao existe, tente novamante\n");
+        j--;
+      } else {
+        funcao[i][j] = temp;
+      }
+    }
+  }
+}
+
 int main(){
-  char estadoInicial, estados[20] = "", estadosDeAceitacao[20];
+  char estadoInicial, estados[20] = "", estadosDeAceitacao[20], funcao[20][2];
   int numEstados = 0;
   getEstado(estados, &numEstados);
   getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
   getEstadoInicial(estados, &estadoInicial, numEstados);
+  getFuncao(funcao, estados, numEstados);
 
-  printf("\n\n %s", estados);
-  printf("\n A maquina possui %d estados: ", numEstados);
+  // printf("Visao geral\n");
+  // printf("Estados da maquina: ");
+  // for(int i = 0; i < numEstados; i++){
+  //   printf("%c ", estados[i]);
+  // }
+  // printf("\nEstado inicial: %c\n", estadoInicial);
+  // printf("Estados de aceitacao: ");
+  // for(int i = 0; i < numEstados; i++){
+  //   printf("%c ", estadosDeAceitacao[i]);
+  // }
+  // printf("Funcao: \n");
+  // for(int i = 0; i < numEstados; i++){
+  //   for(int j = 0; j < 2; j++){
+  //     printf("%c ", funcao[i][j]);
+  //   }
+  //   printf("\n");
+  // }
   return 0;
 }
