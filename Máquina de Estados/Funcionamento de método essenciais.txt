@@ -17,3 +17,21 @@ char str[] = "Olá, mundo! Esta é uma string de exemplo.";
         printf("%s\n", token);
         token = strtok(NULL, " ,.!");
     }
+
+// printf("Visao geral\n");
+  // printf("Estados da maquina: ");
+  // for(int i = 0; i < numEstados; i++){
+  //   printf("%c ", estados[i]);
+  // }
+  // printf("\nEstado inicial: %c\n", estadoInicial);
+  // printf("Estados de aceitacao: ");
+  // for(int i = 0; i < numEstados; i++){
+  //   printf("%c ", estadosDeAceitacao[i]);
+  // }
+  // printf("Funcao: \n");
+  // for(int i = 0; i < numEstados; i++){
+  //   for(int j = 0; j < 2; j++){
+  //     printf("%c ", funcao[i][j]);
+  //   }
+  //   printf("\n");
+  // }

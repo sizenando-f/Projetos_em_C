@@ -21,7 +21,6 @@ int verificaEstados(char estados[20], char palavra[20], int numEstados, int numE
       }
     }
     if(!check){
-      printf("\nAlgum estado nao esta presente na maquina, tente novamente\n");
       return 0;
     }
   }
@@ -29,9 +28,9 @@ int verificaEstados(char estados[20], char palavra[20], int numEstados, int numE
 }
 
 // Recebe os estados da maquina
-void getEstado(char estados[20], int *numEstados){
+void getEstados(char estados[20], int *numEstados){
   char temp[30] = "";
-  printf("Insira o estado da maquina (separe por virgulas): ");
+  printf("Insira os estados da maquina (separe por virgulas): ");
   fgets(temp, sizeof(temp), stdin);
 
   char *pont = strtok(temp, ",");
@@ -76,6 +75,8 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
     }
     if(verificaEstados(estados, estadosDeAceitacao, numEstados, numEstadosAceitacao)){
       check = 0;
+    } else {
+      printf("Alguma estado inserido nao pertence a maquina, tente novamente\n");
     }
   }
   
@@ -97,30 +98,30 @@ void getFuncao(char funcao[20][2], char estados[20], int numEstados){
   }
 }
 
-int main(){
-  char estadoInicial, estados[20] = "", estadosDeAceitacao[20], funcao[20][2];
-  int numEstados = 0;
-  getEstado(estados, &numEstados);
-  getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
-  getEstadoInicial(estados, &estadoInicial, numEstados);
-  getFuncao(funcao, estados, numEstados);
+void getPalavra(char palavra[100], char estados[20], int numEstados){
+  char temp[100] = "";
+  int check = 1;
+  while(check){
+    printf("Insira a palavra: ");
+    fgets(temp, sizeof(temp), stdin);
+    if(!verificaEstados(estados, temp, numEstados, strlen(temp)-1)){
+      printf("Alguma letra inserida nao pertence a maquina, tente novamente\n");
+    } else {
+      strcpy(palavra, temp);
+      check = 0;
+    }
+  }
+  
+}
 
-  // printf("Visao geral\n");
-  // printf("Estados da maquina: ");
-  // for(int i = 0; i < numEstados; i++){
-  //   printf("%c ", estados[i]);
-  // }
-  // printf("\nEstado inicial: %c\n", estadoInicial);
-  // printf("Estados de aceitacao: ");
-  // for(int i = 0; i < numEstados; i++){
-  //   printf("%c ", estadosDeAceitacao[i]);
-  // }
-  // printf("Funcao: \n");
-  // for(int i = 0; i < numEstados; i++){
-  //   for(int j = 0; j < 2; j++){
-  //     printf("%c ", funcao[i][j]);
-  //   }
-  //   printf("\n");
-  // }
+int main(){
+  char estadoInicial, estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "";
+  int numEstados = 0;
+  getEstados(estados, &numEstados);
+  // getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
+  // getEstadoInicial(estados, &estadoInicial, numEstados);
+  // getFuncao(funcao, estados, numEstados);
+  getPalavra(palavra, estados, numEstados);
+  printf("%c", palavra[0]);
   return 0;
 }
