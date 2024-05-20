@@ -33,7 +33,9 @@ void getAlfabeto(char alfabeto[2]){
   scanf(" %c", &alfabeto[0]);
   printf("Insira a segunda letra do alfabeto: ");
   scanf(" %c", &alfabeto[1]);
+  alfabeto[2] = '\0';
   getchar();
+
 }
 
 // Retorna indice de um estado
@@ -140,6 +142,7 @@ void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabe
       }
     }
   }
+  getchar();
 }
 
 void getPalavra(char palavra[100], char alfabeto[2]){
@@ -158,24 +161,37 @@ void getPalavra(char palavra[100], char alfabeto[2]){
   
 }
 
-void executaMaquina(char estadoInicial, char estados[20], char alfabeto[2], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
-  char estadoAtual = estadoInicial;
+void executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
+  printf("Estado inicial: %c\n", estadoInicial);
+  printf("Estados: %s\n", estados);
+  printf("Alfabeto: %s\n", alfabeto);
+  printf("Estados de aceitacao: %s\n", estadosDeAceitacao);
+  for(int i = 0; i < strlen(estados); i++){
+    for(int j = 0; j < 2; j++){
+      printf("%c | ", funcao[i][j]);
+    }
+    printf("\n");
+  }
+  printf("Palavra: %s\n", palavra);
+
   int tamPalavra = strlen(palavra)-1;
   for(int i = 0; i < tamPalavra; i++){
-    int indice = encontraEstado(estados, estadoAtual, strlen(estados)-1);
-    estadoAtual = funcao[indice][]
+    printf("%c -> ", estadoInicial);
+    int indiceEstado = encontraEstado(estados, estadoInicial, strlen(estados));
+    int indiceLetra = encontraLetra(alfabeto, palavra[i]);
+    estadoInicial = funcao[indiceEstado][indiceLetra];
   }
 }
 
 int main(){
   char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "";
   int numEstados = 0;
-  // getEstados(estados, &numEstados);
+  getEstados(estados, &numEstados);
   getAlfabeto(alfabeto);
-  // getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
-  // getEstadoInicial(estados, &estadoInicial, numEstados);
-  // getFuncao(funcao, estados, numEstados);
+  getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
+  getEstadoInicial(estados, &estadoInicial, numEstados);
+  getFuncao(funcao, estados, numEstados, alfabeto);
   getPalavra(palavra, alfabeto);
-  printf("%s", palavra);
+  executaMaquina(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra);
   return 0;
 }
