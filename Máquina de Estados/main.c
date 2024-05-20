@@ -11,6 +11,22 @@ int verificaEstado(char estados[20], char estado, int numEstados){
   return 0;
 }
 
+void getAlfabeto(char alfabeto[2]){
+  printf("Insira a primeira letra do alfabeto: ");
+  scanf(" %c", &alfabeto[0]);
+  printf("Insira a segunda letra do alfabeto: ");
+  scanf(" %c", &alfabeto[1]);
+}
+
+int encontraLetra(char estados[20], char letra, int numEstados){
+  for(int i = 0; i < numEstados; i++){
+    if(estados[i] == letra){
+      return i;
+    }
+  }
+  return -1;
+}
+
 // Verifica a existência de uma cadeia de estados
 int verificaEstados(char estados[20], char palavra[20], int numEstados, int numEstadosAceitacao){
   for(int i = 0; i < numEstadosAceitacao; i++){
@@ -114,14 +130,22 @@ void getPalavra(char palavra[100], char estados[20], int numEstados){
   
 }
 
+// void executaMaquina(char estadoInicial, char estados[20], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100], int numEstados, int tamPalavra){
+//   char estadoAtual = estadoInicial;
+//   for(int i = 0; i < tamPalavra; i++){
+
+//   }
+// }
+
 int main(){
-  char estadoInicial, estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "";
+  char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "";
   int numEstados = 0;
-  getEstados(estados, &numEstados);
+  // getEstados(estados, &numEstados);
+  getAlfabeto(alfabeto);
   // getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
   // getEstadoInicial(estados, &estadoInicial, numEstados);
   // getFuncao(funcao, estados, numEstados);
-  getPalavra(palavra, estados, numEstados);
-  printf("%c", palavra[0]);
+  // getPalavra(palavra, estados, numEstados);
+  printf("%c", alfabeto[0]);
   return 0;
 }
