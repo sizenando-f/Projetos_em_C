@@ -161,18 +161,7 @@ void getPalavra(char palavra[100], char alfabeto[2]){
   
 }
 
-void executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
-  printf("Estado inicial: %c\n", estadoInicial);
-  printf("Estados: %s\n", estados);
-  printf("Alfabeto: %s\n", alfabeto);
-  printf("Estados de aceitacao: %s\n", estadosDeAceitacao);
-  for(int i = 0; i < strlen(estados); i++){
-    for(int j = 0; j < 2; j++){
-      printf("%c | ", funcao[i][j]);
-    }
-    printf("\n");
-  }
-  printf("Palavra: %s\n", palavra);
+int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
 
   int tamPalavra = strlen(palavra)-1;
   for(int i = 0; i < tamPalavra; i++){
@@ -181,6 +170,13 @@ void executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char 
     int indiceLetra = encontraLetra(alfabeto, palavra[i]);
     estadoInicial = funcao[indiceEstado][indiceLetra];
   }
+
+  for(size_t i = 0; i < strlen(estadosDeAceitacao); i++){
+    if(estadoInicial == estadosDeAceitacao[i]){
+      return 1;
+    }
+  }
+  return 0;
 }
 
 int main(){
