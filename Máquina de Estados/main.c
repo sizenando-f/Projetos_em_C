@@ -1,8 +1,10 @@
 // Projeto: Máquina de Estados
 // Descrição: Simula o funcionamento de uma máquina de estados
+// Versão: 1.2.1
 
 // Autor: Sizenando S. França
-// Data de criação: 
+// Data de criação: 19/05/24
+// Última modificação: 21/05/24
 
 #include <stdio.h>
 #include <stdlib.h>
