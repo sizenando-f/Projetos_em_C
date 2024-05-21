@@ -10,8 +10,6 @@ void limpa_tela(){
 #endif
 }
 
-
-
 // Verifica existênicia de um estado apenas
 int verificaEstado(char estados[20], char estado, int numEstados){
   for(int i = 0; i < numEstados; i++){
@@ -40,12 +38,13 @@ int verificaPalavra(char palavra[100], char alfabeto[2], int tamPalavra){
 
 // Pega o alfabeto do usuario
 void getAlfabeto(char alfabeto[2]){
-  printf("Insira a primeira letra do alfabeto: ");
+  printf("[ <- ] Insira a primeira letra do alfabeto > ");
   scanf(" %c", &alfabeto[0]);
-  printf("Insira a segunda letra do alfabeto: ");
+  printf("[ <- ] Insira a segunda letra do alfabeto > ");
   scanf(" %c", &alfabeto[1]);
   alfabeto[2] = '\0';
   getchar();
+  printf("-----------------------------------------------------------------------\n");
 }
 
 // Retorna indice de um estado
@@ -86,7 +85,7 @@ int verificaEstados(char estados[20], char palavra[20], int numEstados, int numE
 // Recebe os estados da maquina
 void getEstados(char estados[20], int *numEstados){
   char temp[30] = "";
-  printf("Insira os estados da maquina (separe por virgulas): ");
+  printf("[ <- ] Insira os estados da maquina (separe por virgulas) > ");
   fgets(temp, sizeof(temp), stdin);
 
   char *pont = strtok(temp, ",");
@@ -97,20 +96,22 @@ void getEstados(char estados[20], int *numEstados){
     indice++;
     *numEstados = *numEstados + 1;
   }
+  printf("-----------------------------------------------------------------------\n");
 }
 
 // Recebe o estado inicial da maquina
 void getEstadoInicial(char estados[20], char *estadoInicial, int numEstados){
   int check = 1;
   while(check){
-    printf("Insira o estado inicial da maquina: ");
+    printf("[ <- ] Insira o estado inicial da maquina > ");
     fgets(estadoInicial, sizeof(estadoInicial), stdin);
     if(verificaEstado(estados, *estadoInicial, numEstados)){
       check = 0;
     } else {
-      printf("\nEstado nao existe na maquina, tente novamente\n");
+      printf("\n[ -># ERRO ] Estado nao existe na maquina, tente novamente\n");
     }
   }
+  printf("-----------------------------------------------------------------------\n");
 }
 
 // Recebe os estados de aceitacao da maquina
@@ -119,7 +120,7 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
   int check = 1;
   while(check){
     int numEstadosAceitacao = 0;
-    printf("Insira os estados de aceitacao da maquina (separe por virgulas): ");
+    printf("[ <- ] Insira os estados de aceitacao da maquina (separe por virgulas) > ");
     fgets(temp, sizeof(temp), stdin);
     char *pont = strtok(temp, ",");
     int indice = 0;
@@ -132,20 +133,21 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
     if(verificaEstados(estados, estadosDeAceitacao, numEstados, numEstadosAceitacao)){
       check = 0;
     } else {
-      printf("Alguma estado inserido nao pertence a maquina, tente novamente\n");
+      printf("[ -># ERRO ] Algum estado inserido nao pertence a maquina, tente novamente\n");
     }
   }
   
+  printf("-----------------------------------------------------------------------\n");
 }
 
 void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabeto[2]){
   char temp;
   for(int i = 0; i < numEstados; i++){
     for(int j = 0; j < 2; j++){
-      printf("Delta de '%c' quando receber '%c': ", estados[i], alfabeto[j]);
+      printf("[ <- ] Delta(%c, %c) > ", estados[i], alfabeto[j]);
       scanf(" %c", &temp);
-      if(!verificaEstado(estados, temp, numEstados)){
-        printf("O estado inserido nao existe, tente novamante\n");
+      if(!verificaEstado(estados, temp, numEstados) && temp != '-'){
+        printf("[ -># ERRO ] Utilize '-' para representar estado parcial\n");
         j--;
       } else {
         funcao[i][j] = temp;
@@ -153,61 +155,78 @@ void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabe
     }
   }
   getchar();
+  printf("-----------------------------------------------------------------------\n");
 }
 
 void getPalavra(char palavra[100], char alfabeto[2]){
   char temp[100] = "";
   int check = 1;
   while(check){
-    printf("Insira a palavra: ");
+    printf("[ <- ] Insira a palavra > ");
     fgets(temp, sizeof(temp), stdin);
     if(!verificaPalavra(temp, alfabeto, strlen(temp)-1)){
-      printf("Alguma letra inserida nao pertence a maquina, tente novamente\n");
+      printf("[ -># ERRO ] Alguma letra inserida nao pertence a maquina, tente novamente\n");
     } else {
       strcpy(palavra, temp);
       check = 0;
     }
   }
   
+  printf("-----------------------------------------------------------------------\n");
 }
 
 int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
   int tamPalavra = strlen(palavra);
+  limpa_tela();
+  printf("Palavra %s", palavra);
+  printf("< Estados de aceitacao ");
+  for(size_t i = 0; i < strlen(estadosDeAceitacao); i++){
+    printf("[%c] ", estadosDeAceitacao[i]);
+  }
+  printf("> \n");
   for(int i = 0; i < tamPalavra; i++){
-    printf(" -> %c", estadoInicial);
+    printf(" -> [%c]", estadoInicial);
     int indiceEstado = encontraEstado(estados, estadoInicial, strlen(estados));
+    if(indiceEstado == -1){
+      printf("\n[ -># ERRO ] A maquina travou\n");
+      return 0;
+    }
     int indiceLetra = encontraLetra(alfabeto, palavra[i]);
     estadoInicial = funcao[indiceEstado][indiceLetra];
   }
+  printf("\n-----------------------------------------------------------------------\n");
 
   for(size_t i = 0; i < strlen(estadosDeAceitacao); i++){
     if(estadoInicial == estadosDeAceitacao[i]){
       return 1;
     }
   }
-
   return 0;
 }
 
-void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2]){
-  int numEstados = strlen(estados);
-  printf("Visao geral\n");
-  printf("Estados da maquina: ");
+void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], int numEstados){
+  printf("            [# VISAO GERAL #]\n");
+  printf("[ @ ] Estados da maquina   -> ");
   for(int i = 0; i < numEstados; i++){
-    printf("%c ", estados[i]);
+    printf("[%c] ", estados[i]);
   }
-  printf("\nAlfabeto: %c %c", alfabeto[0], alfabeto[1]);
-  printf("\nEstado inicial: %c", estadoInicial);
-  printf("\nEstados de aceitacao: ");
-  for(int i = 0; i < numEstados; i++){
-    printf("%c ", estadosDeAceitacao[i]);
+  printf("\n[ @ ] Alfabeto             -> [%c] [%c]", alfabeto[0], alfabeto[1]);
+  printf("\n[ @ ] Estado inicial       -> [%c]", estadoInicial);
+  printf("\n[ @ ] Estados de aceitacao -> ");
+  for(size_t i = 0; i < strlen(estadosDeAceitacao); i++){
+    printf("[%c] ", estadosDeAceitacao[i]);
   }
-  printf("\nFuncao: \n");
+  printf("\n\n  { FUNCAO }\n");
+  printf("--------------\n");
+  printf("|   | %c    %c |\n", alfabeto[0], alfabeto[1]);
+  printf("--------------\n");
   for(int i = 0; i < numEstados; i++){
+    printf("| %c ", estados[i]);
     for(int j = 0; j < 2; j++){
-      printf("%c ", funcao[i][j]);
+      printf("| %c |", funcao[i][j]);
     }
     printf("\n");
+    printf("--------------\n");
   }
 }
 
@@ -225,36 +244,37 @@ void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20],
 
 int main(){
   char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "", esc;
-  int numEstados = 0, check = 1;
+  int check = 1;
   do{
+    int numEstados = 0;
+    limpa_tela();
+    printf("            ==== MAQUINA DE ESTADOS ====\n");
     inicializa(estados, alfabeto, estadosDeAceitacao, &estadoInicial, funcao, &numEstados);
     limpa_tela();
-    exibeVisaoGeral(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao);
-    printf("Deseja continuar? [S/n] ->");
+    exibeVisaoGeral(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, numEstados);
+    printf("[ <- ] Deseja continuar? [S/n] > ");
     scanf(" %c", &esc);
     getchar();
     if(esc == 'S' || esc == 's'){
       check = 0;
     }
-    limpa_tela();
   } while(check);
   check = 1;
   do{
     limpa_tela();
     getPalavra(palavra, alfabeto);
     if(executaMaquina(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra)){
-      printf("\nA maquina terminou em um estado aceitacao, a palavra foi aceita");
+      printf("\n[ -> ] A maquina terminou em um estado aceitacao, a palavra foi aceita");
     } else {
-      printf("\nA maquina terminou em um estado incorreto, a palavra foi recusada");
+      printf("\n[ -> ] A maquina terminou em um estado incorreto, a palavra foi recusada");
     }
-    printf("Deseja tentar outra palavra? [S/n] -> ");
+    printf("\n[ <- ] Deseja tentar outra palavra? [S/n] > ");
     scanf(" %c", &esc);
     getchar();
     if(esc == 'N' || esc == 'n'){
       check = 0;
     }
   }while(check);
-
-  
+  printf("[ -> ] PROGRAMA ENCERRADO");
   return 0;
 }
