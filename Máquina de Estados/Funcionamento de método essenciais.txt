@@ -35,3 +35,13 @@ char str[] = "Olá, mundo! Esta é uma string de exemplo.";
   //   }
   //   printf("\n");
   // }
+  
+exibição e inicialização inserido, apagar caso n der certo
+
+// getEstados(estados, &numEstados);
+  // getAlfabeto(alfabeto);
+  // getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
+  // getEstadoInicial(estados, &estadoInicial, numEstados);
+  // getFuncao(funcao, estados, numEstados, alfabeto);
+  // getPalavra(palavra, alfabeto);
+  // executaMaquina(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra);

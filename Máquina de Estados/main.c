@@ -1,5 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+void limpa_tela(){
+#ifdef _WIN32
+  system("cls");
+#else
+  system("clear");
+#endif
+}
+
+
 
 // Verifica existênicia de um estado apenas
 int verificaEstado(char estados[20], char estado, int numEstados){
@@ -35,7 +46,6 @@ void getAlfabeto(char alfabeto[2]){
   scanf(" %c", &alfabeto[1]);
   alfabeto[2] = '\0';
   getchar();
-
 }
 
 // Retorna indice de um estado
@@ -162,10 +172,9 @@ void getPalavra(char palavra[100], char alfabeto[2]){
 }
 
 int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
-
-  int tamPalavra = strlen(palavra)-1;
+  int tamPalavra = strlen(palavra);
   for(int i = 0; i < tamPalavra; i++){
-    printf("%c -> ", estadoInicial);
+    printf(" -> %c", estadoInicial);
     int indiceEstado = encontraEstado(estados, estadoInicial, strlen(estados));
     int indiceLetra = encontraLetra(alfabeto, palavra[i]);
     estadoInicial = funcao[indiceEstado][indiceLetra];
@@ -176,18 +185,76 @@ int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char e
       return 1;
     }
   }
+
   return 0;
 }
 
-int main(){
-  char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "";
-  int numEstados = 0;
-  getEstados(estados, &numEstados);
+void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2]){
+  int numEstados = strlen(estados);
+  printf("Visao geral\n");
+  printf("Estados da maquina: ");
+  for(int i = 0; i < numEstados; i++){
+    printf("%c ", estados[i]);
+  }
+  printf("\nAlfabeto: %c %c", alfabeto[0], alfabeto[1]);
+  printf("\nEstado inicial: %c", estadoInicial);
+  printf("\nEstados de aceitacao: ");
+  for(int i = 0; i < numEstados; i++){
+    printf("%c ", estadosDeAceitacao[i]);
+  }
+  printf("\nFuncao: \n");
+  for(int i = 0; i < numEstados; i++){
+    for(int j = 0; j < 2; j++){
+      printf("%c ", funcao[i][j]);
+    }
+    printf("\n");
+  }
+}
+
+void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20], char *estadoInicial, char funcao[20][2], int *numEstados){
+  int numEstadosTemp = 0;
+  char estadoInicialTemp;
+  getEstados(estados, &numEstadosTemp);
+  *numEstados = numEstadosTemp;
   getAlfabeto(alfabeto);
-  getEstadosDeAceitacao(estados, estadosDeAceitacao, numEstados);
-  getEstadoInicial(estados, &estadoInicial, numEstados);
-  getFuncao(funcao, estados, numEstados, alfabeto);
-  getPalavra(palavra, alfabeto);
-  executaMaquina(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra);
+  getEstadosDeAceitacao(estados, estadosDeAceitacao, *numEstados);
+  getEstadoInicial(estados, &estadoInicialTemp, *numEstados);
+  *estadoInicial = estadoInicialTemp;
+  getFuncao(funcao, estados, *numEstados, alfabeto);
+}
+
+int main(){
+  char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "", esc;
+  int numEstados = 0, check = 1;
+  do{
+    inicializa(estados, alfabeto, estadosDeAceitacao, &estadoInicial, funcao, &numEstados);
+    limpa_tela();
+    exibeVisaoGeral(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao);
+    printf("Deseja continuar? [S/n] ->");
+    scanf(" %c", &esc);
+    getchar();
+    if(esc == 'S' || esc == 's'){
+      check = 0;
+    }
+    limpa_tela();
+  } while(check);
+  check = 1;
+  do{
+    limpa_tela();
+    getPalavra(palavra, alfabeto);
+    if(executaMaquina(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra)){
+      printf("\nA maquina terminou em um estado aceitacao, a palavra foi aceita");
+    } else {
+      printf("\nA maquina terminou em um estado incorreto, a palavra foi recusada");
+    }
+    printf("Deseja tentar outra palavra? [S/n] -> ");
+    scanf(" %c", &esc);
+    getchar();
+    if(esc == 'N' || esc == 'n'){
+      check = 0;
+    }
+  }while(check);
+
+  
   return 0;
 }
