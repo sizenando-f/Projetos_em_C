@@ -1,7 +1,14 @@
+// Projeto: Máquina de Estados
+// Descrição: Simula o funcionamento de uma máquina de estados
+
+// Autor: Sizenando S. França
+// Data de criação: 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Limpa a tela de acordo com o sistema operacional
 void limpa_tela(){
 #ifdef _WIN32
   system("cls");
@@ -10,7 +17,7 @@ void limpa_tela(){
 #endif
 }
 
-// Verifica existênicia de um estado apenas
+// Verifica existênicia de um estado no conjunto de estados
 int verificaEstado(char estados[20], char estado, int numEstados){
   for(int i = 0; i < numEstados; i++){
     if(estados[i] == estado){
@@ -20,7 +27,7 @@ int verificaEstado(char estados[20], char estado, int numEstados){
   return 0;
 }
 
-// Verifica se todas letras estao no alfabeto
+// Verifica se todas letras da palavra estão no alfabeto pré-determinado
 int verificaPalavra(char palavra[100], char alfabeto[2], int tamPalavra){
   for(int i = 0; i < tamPalavra; i++){
     int check = 0;
@@ -36,7 +43,7 @@ int verificaPalavra(char palavra[100], char alfabeto[2], int tamPalavra){
   return 1;
 }
 
-// Pega o alfabeto do usuario
+// Recebe o alfabeto do usuario
 void getAlfabeto(char alfabeto[2]){
   printf("[ <- ] Insira a primeira letra do alfabeto > ");
   scanf(" %c", &alfabeto[0]);
@@ -54,19 +61,20 @@ int encontraEstado(char estados[20], char estadoAtual, int numEstados){
       return i;
     }
   }
-  return -1; // Nunca vai retornar isso
+  return -1;
 }
 
+// Retorna indice de uma letra do alfabeto
 int encontraLetra(char alfabeto[2], char letra){
   for(int i = 0; i < 2; i++){
     if(alfabeto[i] == letra){
       return i;
     }
   }
-  return -1;  // Nunca vai parar aqui
+  return -1;
 }
 
-// Verifica a existência de uma cadeia de estados
+// Verifica se os estados de aceitação são válidos
 int verificaEstados(char estados[20], char palavra[20], int numEstados, int numEstadosAceitacao){
   for(int i = 0; i < numEstadosAceitacao; i++){
     int check = 0;
@@ -140,6 +148,7 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
   printf("-----------------------------------------------------------------------\n");
 }
 
+// Recebe a função de funcionamento da máquina
 void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabeto[2]){
   char temp;
   for(int i = 0; i < numEstados; i++){
@@ -158,6 +167,7 @@ void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabe
   printf("-----------------------------------------------------------------------\n");
 }
 
+// Recebe palavra para ser executada na máquina
 void getPalavra(char palavra[100], char alfabeto[2]){
   char temp[100] = "";
   int check = 1;
@@ -175,6 +185,7 @@ void getPalavra(char palavra[100], char alfabeto[2]){
   printf("-----------------------------------------------------------------------\n");
 }
 
+// Executa a máquina por completo
 int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
   int tamPalavra = strlen(palavra);
   limpa_tela();
@@ -204,6 +215,7 @@ int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char e
   return 0;
 }
 
+// Usuário escolhe ou não continuar com os dados entrados
 void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], int numEstados){
   printf("            [# VISAO GERAL #]\n");
   printf("[ @ ] Estados da maquina   -> ");
@@ -230,6 +242,7 @@ void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char
   }
 }
 
+// Realiza todos os passos de montagem da máquina
 void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20], char *estadoInicial, char funcao[20][2], int *numEstados){
   int numEstadosTemp = 0;
   char estadoInicialTemp;
@@ -245,6 +258,8 @@ void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20],
 int main(){
   char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "", esc;
   int check = 1;
+
+  // Processo de inserção de dados na máquina e verificação
   do{
     int numEstados = 0;
     limpa_tela();
@@ -259,7 +274,10 @@ int main(){
       check = 0;
     }
   } while(check);
+
   check = 1;
+
+  // Processo de inserção de palavras
   do{
     limpa_tela();
     getPalavra(palavra, alfabeto);
@@ -275,6 +293,7 @@ int main(){
       check = 0;
     }
   }while(check);
+
   printf("[ -> ] PROGRAMA ENCERRADO");
   return 0;
 }
