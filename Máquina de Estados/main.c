@@ -1,10 +1,10 @@
 // Projeto: Máquina de Estados
 // Descrição: Simula o funcionamento de uma máquina de estados
-// Versão: 1.2.1
+// Versão: 1.2.2
 
 // Autor: Sizenando S. França
 // Data de criação: 19/05/24
-// Última modificação: 21/05/24
+// Última modificação: 23/05/24
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -197,8 +197,8 @@ int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char e
     printf("[%c] ", estadosDeAceitacao[i]);
   }
   printf("> \n");
-  for(int i = 0; i < tamPalavra; i++){
-    printf(" -> [%c]", estadoInicial);
+  printf(" -> [%c]", estadoInicial);
+  for(int i = 0; i < tamPalavra-1; i++){
     int indiceEstado = encontraEstado(estados, estadoInicial, strlen(estados));
     if(indiceEstado == -1){
       printf("\n[ -># ERRO ] A maquina travou\n");
@@ -206,9 +206,9 @@ int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char e
     }
     int indiceLetra = encontraLetra(alfabeto, palavra[i]);
     estadoInicial = funcao[indiceEstado][indiceLetra];
+    printf(" -> [%c]", estadoInicial);
   }
   printf("\n-----------------------------------------------------------------------\n");
-
   for(size_t i = 0; i < strlen(estadosDeAceitacao); i++){
     if(estadoInicial == estadosDeAceitacao[i]){
       return 1;
