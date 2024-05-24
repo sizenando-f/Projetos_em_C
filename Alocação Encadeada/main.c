@@ -4,6 +4,8 @@
 // SEO = Simplesmente Encadeada Sem Nó Cabeça Ordenado
 // CSEO = Circular Simplesmente Encadeada Sem Nó Cabeça Ordenado
 // DENC = Duplamente Encadeada com Nó Cabeça
+// LIFO = Last In First Out (Pilha)
+// FIFO = First In FIrst Out (Fila)
 
 struct Lista{
   int num;
@@ -189,6 +191,39 @@ void removeDENC(struct ListaDup **L, int num){
   }
 }
 
+void insereLIFO(int pilha[], int n, int *topo, int valor){
+  if((*topo) != n){
+    (*topo) = (*topo) + 1;
+    pilha[(*topo)] = valor;
+    return;
+  }
+  printf("A pilha esta cheia!\n");
+}
+
+void removeLIFO(int *topo){
+  if((*topo) != 0){
+    (*topo) = (*topo) - 1;
+    return;
+  }
+  printf("A pilha esta vazia!\n");
+}
+
+void insereFIFO(int fila[], int n, int *fim, int valor){
+  if((*fim) == n-1){
+    printf("Fila esta cheia!\n");
+    return;
+  } else {
+    (*fim) = (*fim) + 1;
+    fila[(*fim)] = valor;
+  }
+}
+
+void removeFIFO(int fila[], int *fim){
+  for(int i = 0; i < (*fim); i++){
+    fila[i] = fila[i+1];
+  }
+  (*fim) = (*fim) - 1;
+}
 
 int main(){
   // Uso da SEO
@@ -219,5 +254,16 @@ int main(){
   //   p = p->prox;
   // }
 
+  // Uso do LIFO
+  // int n = 10, pilha[n], topo = -1;
+  // for(int i = 0; i <= topo; i++){
+  //   printf("%d ", pilha[i]);
+  // }
+  
+  // Uso do FIFO
+  // int n = 10, fila[n], fim = -1;
+  // for(int i = 0; i <= fim; i++){
+  //   printf("%d ", fila[i]);
+  // }
   return 0;
 }
