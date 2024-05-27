@@ -1,5 +1,8 @@
-#include <stdio.h>
+#include "gfx.h"
+#include <stdio.h>  /* printf */
+#include <unistd.h> /* sleep  */
 #include <stdlib.h>
+#include <string.h>
 
 // SEO = Simplesmente Encadeada Sem Nó Cabeça Ordenado
 // CSEO = Circular Simplesmente Encadeada Sem Nó Cabeça Ordenado
@@ -225,6 +228,52 @@ void removeFIFO(int fila[], int *fim){
   (*fim) = (*fim) - 1;
 }
 
+void menuSEO(){
+	struct Lista *L = NULL;
+  	struct Lista *p;
+	int esc, valor, cont;
+	char num[100] = "";
+	do{
+		int x1 = 10, x2 = 60, y = 18;
+		cont = 0;
+		printf(" - Lista Simplesmente Encadeada Ordenada Sem No Cabeca -\n");
+		printf("[ 1 ] Insercao\n");
+		printf("[ 2 ] Remocao\n");
+		printf("[ 3 ] Busca\n");
+		printf("[ 4 ] Sair\n");
+		printf("Selecione a operacao > ");
+		scanf("%d", &esc);
+		switch(esc){
+			case 1:
+				printf("Insira o valor do no >");
+				scanf("%d", &valor);
+				getchar();
+				insereSEO(valor, &L);
+				break;
+			default:
+				break;
+		}
+		gfx_quit();
+		gfx_init(800, 300, "Lista Simplesmente Encadeada Ordenada Sem No Cabeca");
+		p = L;
+		while(p != NULL){
+			sprintf(num, "%d", p->num);
+			gfx_rectangle(x1, 10, x2, 40);
+			gfx_text(x1+((x2-x1)/2)-2, y, num);
+			if(cont){
+				gfx_line(x1, 25, x1 - 20, 25);
+			}
+			gfx_paint();
+			x1 = x2 + 20;
+			x2 = x1 + 50;
+			p = p->prox;
+			cont = 1;
+		}
+	}while(esc != 4);
+	gfx_quit();
+
+}
+
 int main(){
   // Uso da SEO
   // struct Lista *L = NULL;
@@ -265,5 +314,23 @@ int main(){
   // for(int i = 0; i <= fim; i++){
   //   printf("%d ", fila[i]);
   // }
+
+	int esc;
+	printf("		-- MENU --\n");
+	printf("[ 1 ] Lista Simplesmente Encadeada Ordenada Sem No Cabeca\n");
+	printf("[ 2 ] Lista Circular Simplesmente Encadeada Ordenada Sem No Cabeca\n");
+	printf("[ 3 ] Duplamente Encadeada Com No Cabeca\n");
+	printf("[ 4 ] Fila\n");
+	printf("[ 5 ] Pilha\n");
+	printf("Qual estrutura deseja usar? > ");
+	scanf("%d", &esc);
+	switch(esc){
+		case 1:
+			menuSEO();
+			break;
+		default:
+			break;
+	}
+
   return 0;
 }
