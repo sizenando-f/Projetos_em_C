@@ -65,13 +65,14 @@ void insereSEO(int x, struct Lista **L){
 
 // Remove nó da lista simplesmente encadeada sem nó cabeça ordenado
 void removeSEO(struct Lista **inicio, int num){
-  struct Lista *ptr = *inicio;
+	if((*inicio) == NULL) return;
+  struct Lista *ptr = (*inicio);
   struct Lista *ant = NULL;
 
   while(ptr != NULL){
     if(ptr->num == num){
       if(ant == NULL){
-        *inicio = ptr->prox;
+        (*inicio) = ptr->prox;
       } else {
         ant->prox = ptr->prox;
       }
@@ -130,6 +131,7 @@ void insereCSEO(struct Lista **inicio, int num) {
 }
 
 void removeCSEO(struct Lista **inicio, int num){
+	if((*inicio) == NULL) return;
   struct Lista *ptr = *inicio;
   struct Lista *ant = NULL;
 
@@ -195,6 +197,7 @@ void insereDENC(struct ListaDup **L, int x){
 }
 
 void removeDENC(struct ListaDup **L, int num){
+	if((*L) == NULL) return;
   struct ListaDup *ptr = (*L)->prox, *temp;
   while(ptr != NULL){
     if(ptr->num == num){
@@ -239,6 +242,7 @@ void removeFIFO(int fila[], int *fim){
 		fila[i] = fila[i+1];
 		}
 		(*fim) = (*fim) - 1;
+		return;
 	}
 	printf("A fila esta vazia!\n");
 }
@@ -620,6 +624,7 @@ void menuSEO(){
 			p = p->prox;
 			cont = 1;
 		}
+		
 	}while(esc != 4);
 }
 
