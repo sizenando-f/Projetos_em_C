@@ -10,11 +10,13 @@
 // LIFO = Last In First Out (Pilha)
 // FIFO = First In FIrst Out (Fila)
 
+// Estrutura básica de uma lista
 struct Lista{
   int num;
   struct Lista *prox;
 };
 
+// Estrutura básica da lista duplamente encadeada
 struct ListaDup{
   int num;
   struct ListaDup *ant;
@@ -84,6 +86,7 @@ void removeSEO(struct Lista **inicio, int num){
   }
 }
 
+// Retorna nó anterior do valor encontrado na lista circular e o ponteiro do valor
 void buscaCSEO(int x, struct Lista **L, struct Lista **ant, struct Lista **pont) {
     (*ant) = NULL;
     (*pont) = NULL;
@@ -103,6 +106,7 @@ void buscaCSEO(int x, struct Lista **L, struct Lista **ant, struct Lista **pont)
     } while (ptr != (*L));
 }
 
+// Insere um novo nó na lista circular
 void insereCSEO(struct Lista **inicio, int num) {
     struct Lista *no = (struct Lista *) malloc(sizeof(struct Lista));
     no->num = num;
@@ -130,6 +134,7 @@ void insereCSEO(struct Lista **inicio, int num) {
     }
 }
 
+// Remove o nó da lista circular
 void removeCSEO(struct Lista **inicio, int num){
 	if((*inicio) == NULL) return;
   struct Lista *ptr = *inicio;
@@ -155,6 +160,7 @@ void removeCSEO(struct Lista **inicio, int num){
   }while(ptr != (*inicio));
 }
 
+// Inicializa lista com nó cabeça
 void inicializaDENC(struct ListaDup **L){
   (*L) = (struct ListaDup *) malloc(sizeof(struct ListaDup));
   (*L)->ant = NULL;
@@ -162,6 +168,7 @@ void inicializaDENC(struct ListaDup **L){
   (*L)->num = 0;
 }
 
+// Retorna nó do ponteiro com o valor encontrado
 void buscaDENC(struct ListaDup **L, int x, struct ListaDup **pont){
   struct ListaDup *ptr = (*L)->prox;
   while(ptr != NULL){
@@ -173,6 +180,7 @@ void buscaDENC(struct ListaDup **L, int x, struct ListaDup **pont){
   }
 }
 
+// Insere nó na lista duplamente encadeada com nó cabeça
 void insereDENC(struct ListaDup **L, int x){
   struct ListaDup *ptr = (*L)->prox;
   
@@ -196,6 +204,7 @@ void insereDENC(struct ListaDup **L, int x){
   ptr->prox = p;
 }
 
+// Remove nó da lista duplamente encadeada com nó cabeça
 void removeDENC(struct ListaDup **L, int num){
 	if((*L) == NULL) return;
   struct ListaDup *ptr = (*L)->prox, *temp;
@@ -209,6 +218,7 @@ void removeDENC(struct ListaDup **L, int num){
   }
 }
 
+// Insere valor na pilha
 void insereLIFO(int pilha[], int n, int *topo, int valor){
   if((*topo) != n){
     (*topo) = (*topo) + 1;
@@ -218,6 +228,7 @@ void insereLIFO(int pilha[], int n, int *topo, int valor){
   printf("A pilha esta cheia!\n");
 }
 
+// Remove valor na pilha
 void removeLIFO(int *topo){
 	if((*topo) != -1){
 		(*topo) = (*topo) - 1;
@@ -226,6 +237,7 @@ void removeLIFO(int *topo){
 	printf("A pilha esta vazia!\n");
 }
 
+// Insere valor na fila
 void insereFIFO(int fila[], int n, int *fim, int valor){
   if((*fim) == n-1){
     printf("Fila esta cheia!\n");
@@ -236,6 +248,7 @@ void insereFIFO(int fila[], int n, int *fim, int valor){
   }
 }
 
+// Remove valor na fila
 void removeFIFO(int fila[], int *fim){
 	if((*fim) != -1){
 		for(int i = 0; i < (*fim); i++){
@@ -247,6 +260,7 @@ void removeFIFO(int fila[], int *fim){
 	printf("A fila esta vazia!\n");
 }
 
+// Retorna qual nó contém o valor procurado na lista duplamente encadeada
 int retornaIndiceDENC(struct ListaDup **L, int valor){
 	if((*L)->prox == NULL) return 0;
 	int indice = 0;
@@ -261,6 +275,7 @@ int retornaIndiceDENC(struct ListaDup **L, int valor){
 	return 0;
 }
 
+// Retorna qual nó contém o valor procurado na lista simplesmente encadeada
 int retornaIndice(struct Lista **L, int valor){
 	if((*L) == NULL) return 0;
 	int indice = 0;
@@ -275,6 +290,7 @@ int retornaIndice(struct Lista **L, int valor){
 	return 0;
 }
 
+// Retorna qual nó contém o valor procurado na lista circular
 int retornaIndiceCSEO(struct Lista **L, int valor){
 	if((*L) == NULL) return 0;
 	int indice = 0;
@@ -289,6 +305,7 @@ int retornaIndiceCSEO(struct Lista **L, int valor){
 	return 0;
 }
 
+// Desaloca todos os nós da lista duplamente encadeada
 void desalocaDENC(struct ListaDup **L){
 	if((*L) == NULL) return;
 	struct ListaDup *p = (*L), *temp;
@@ -299,6 +316,7 @@ void desalocaDENC(struct ListaDup **L){
 	}
 }
 
+// Desaloca todos os nós da lista simplesmente encadeada
 void desaloca(struct Lista **L){
 	if((*L) == NULL) return;
 	struct Lista *p = (*L), *temp;
@@ -309,6 +327,7 @@ void desaloca(struct Lista **L){
 	}
 }
 
+// Desaloca todos os nós da lista circular
 void desalocaCSEO(struct Lista **L){
 	if((*L) == NULL) return;
 	struct Lista *p = (*L), *temp;
@@ -319,6 +338,7 @@ void desalocaCSEO(struct Lista **L){
 	}while(p != (*L));
 }
 
+// Menu de opções para manusear a fila com exibição gráfica
 void menuFIFO(){
 	int n = 10, fila[n], fim = -1;
 	int esc, valor;
@@ -362,6 +382,7 @@ void menuFIFO(){
 	}while(esc != 4);
 }
 
+// Menu de opções para manusear a pilha com exibição gráfica
 void menuLIFO(){
 	int n = 10, pilha[n], topo = -1;
 	int esc, valor;
@@ -405,6 +426,7 @@ void menuLIFO(){
 	}while(esc != 4);
 }
 
+// Menu de opções para manusear a lista duplamente encadeada com exibição gráfica
 void menuDENC(){
 	struct ListaDup *L = NULL;
   	inicializaDENC(&L);
@@ -478,6 +500,7 @@ void menuDENC(){
 	}while(esc != 4);
 }
 
+// Menu de opções para manusear a lista circular com exibição gráfica
 void menuCSEO(){
 	struct Lista *L = NULL;
   	struct Lista *p;
@@ -558,6 +581,7 @@ void menuCSEO(){
 	}while(esc != 4);
 }
 
+// Menu de opções para manusear a lista simplesmente encadeada com exibição gráfica
 void menuSEO(){
 	struct Lista *L = NULL;
   	struct Lista *p;
