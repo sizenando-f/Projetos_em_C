@@ -7,14 +7,14 @@ struct TreeNode{
   struct TreeNode *right;
 };
 
-void preOrderWay(struct TreeNode **rootNode){
-  printf("-> %d ", (*rootNode)->key);
+void preOrderWay(struct TreeNode *rootNode){
+  printf("-> %d ", rootNode->key);
 
-  if((*rootNode)->left != NULL){
-    preOrderWay(&(*rootNode)->left);
+  if(rootNode->left != NULL){
+    preOrderWay(rootNode->left);
   }
-  if((*rootNode)->right != NULL){
-    preOrderWay(&(*rootNode)->right);
+  if(rootNode->right != NULL){
+    preOrderWay(rootNode->right);
   }
 }
 
@@ -67,8 +67,16 @@ struct TreeNode* findMin(struct TreeNode *node){
   return node;
 }
 
+struct TreeNode* findMax(struct TreeNode *node){
+  while(node->right != NULL){
+    node = node->right;
+  }
+
+  return node;
+}
+
 struct TreeNode* removeNode(struct TreeNode *root, int key){
-  if(root == NULL) return 0;
+  if(root == NULL) return NULL;
 
   if(key < root->key){
     root->left = removeNode(root->left, key);
@@ -98,19 +106,32 @@ struct TreeNode* removeNode(struct TreeNode *root, int key){
 int main(){
   struct TreeNode *ptr = NULL;
 
-  insertTree(1, &ptr);
-  insertTree(5, &ptr);
-  insertTree(4, &ptr);
-  insertTree(-8, &ptr);
-  insertTree(-4, &ptr);
+  insertTree(50, &ptr);
+  insertTree(30, &ptr);
+  insertTree(20, &ptr);
+  insertTree(40, &ptr);
+  insertTree(70, &ptr);
+  insertTree(60, &ptr);
+  insertTree(80, &ptr);
+  preOrderWay(ptr);
 
-  removeNode(ptr, 1);
-  
-  struct TreeNode *temp = ptr;
+  printf("\n");
+  removeNode(ptr, 20);
+  preOrderWay(ptr);
 
-  if(temp != NULL){
-    preOrderWay(&temp);
-  }
+  printf("\n");
+  removeNode(ptr, 30);
+  preOrderWay(ptr);
+
+  printf("\n");
+  removeNode(ptr, 50);
+  preOrderWay(ptr);
+
+  insertTree(10, &ptr);
+  removeNode(ptr, 40);
+
+  printf("\n");
+  preOrderWay(ptr);
 
   return 0;
 }
