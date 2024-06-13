@@ -59,6 +59,42 @@ void insertTree(int x, struct TreeNode **rootNode){
   }
 }
 
+struct TreeNode* findMin(struct TreeNode *node){
+  while(node->left != NULL){
+    node = node->left;
+  }
+
+  return node;
+}
+
+struct TreeNode* removeNode(struct TreeNode *root, int key){
+  if(root == NULL) return 0;
+
+  if(key < root->key){
+    root->left = removeNode(root->left, key);
+  } else if (key > root->key){
+    root->right = removeNode(root->right, key);
+  } else {
+    if(root->left == NULL){
+      struct TreeNode *temp = root->right;
+      free(root);
+      return temp;
+    } else if(root->right == NULL){
+      struct TreeNode *temp = root->left;
+      free(root);
+      return temp;
+    }
+
+    struct TreeNode *temp = findMin(root->right);
+
+    root->key = temp->key;
+
+    root->right = removeNode(root->right, temp->key);
+  }
+
+  return root;
+}
+
 int main(){
   struct TreeNode *ptr = NULL;
 
@@ -67,6 +103,8 @@ int main(){
   insertTree(4, &ptr);
   insertTree(-8, &ptr);
   insertTree(-4, &ptr);
+
+  removeNode(ptr, 1);
   
   struct TreeNode *temp = ptr;
 
