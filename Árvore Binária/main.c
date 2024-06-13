@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 struct TreeNode{
   int key;
@@ -7,8 +8,39 @@ struct TreeNode{
   struct TreeNode *right;
 };
 
+struct s_arq_no{
+  int32_t chave:30;
+  uint32_t esq:1;
+  uint32_t dir:1;
+};
+
 void preOrderWay(struct TreeNode *rootNode){
   printf("-> %d ", rootNode->key);
+
+  if(rootNode->left != NULL){
+    preOrderWay(rootNode->left);
+  }
+  if(rootNode->right != NULL){
+    preOrderWay(rootNode->right);
+  }
+}
+
+void preOrderWaySave(struct TreeNode *rootNode, FILE *fp){
+  struct s_arq_no node;
+  node.chave = (rootNode)->key;
+
+  if(rootNode->right != NULL){
+    node.dir = 1;
+  } else {
+    node.dir = 0;
+  }
+  if(rootNode->left != NULL){
+    node.esq = 1;
+  } else {
+    node.esq = 0;
+  }
+
+  fwrite(&node, sizeof(node), 1, fp);
 
   if(rootNode->left != NULL){
     preOrderWay(rootNode->left);
@@ -103,35 +135,23 @@ struct TreeNode* removeNode(struct TreeNode *root, int key){
   return root;
 }
 
+void saveTree(struct TreeNode *rootNode){
+  FILE * fp = fopen("binarytree.bin", "ab");
+
+  if(fp == NULL){
+    printf("Erro na abertura do arquivo!\n");
+    exit(100);
+  }
+
+  rewind(fp);
+  preOrderWaySave(rootNode, fp);
+
+  fclose(fp);
+
+}
+
 int main(){
-  struct TreeNode *ptr = NULL;
-
-  insertTree(50, &ptr);
-  insertTree(30, &ptr);
-  insertTree(20, &ptr);
-  insertTree(40, &ptr);
-  insertTree(70, &ptr);
-  insertTree(60, &ptr);
-  insertTree(80, &ptr);
-  preOrderWay(ptr);
-
-  printf("\n");
-  removeNode(ptr, 20);
-  preOrderWay(ptr);
-
-  printf("\n");
-  removeNode(ptr, 30);
-  preOrderWay(ptr);
-
-  printf("\n");
-  removeNode(ptr, 50);
-  preOrderWay(ptr);
-
-  insertTree(10, &ptr);
-  removeNode(ptr, 40);
-
-  printf("\n");
-  preOrderWay(ptr);
+  // struct TreeNode *ptr = NULL;
 
   return 0;
 }
