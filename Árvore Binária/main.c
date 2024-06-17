@@ -26,19 +26,13 @@ void preOrderWay(struct TreeNode *rootNode){
 }
 
 void preOrderWaySave(struct TreeNode *rootNode, FILE *fp){
+  if(rootNode == NULL) return;
+
   struct s_arq_no node;
   node.chave = (rootNode)->key;
+  node.esq = (rootNode->left != NULL) ? 1 : 0;
+  node.dir = (rootNode->right != NULL) ? 1 : 0;
 
-  if(rootNode->right != NULL){
-    node.dir = 1;
-  } else {
-    node.dir = 0;
-  }
-  if(rootNode->left != NULL){
-    node.esq = 1;
-  } else {
-    node.esq = 0;
-  }
 
   fwrite(&node, sizeof(node), 1, fp);
 
@@ -136,7 +130,6 @@ struct TreeNode* removeNode(struct TreeNode *root, int key){
 }
 
 void saveTree(struct TreeNode *rootNode){
-  remove("binarytree.bin");
   FILE * fp = fopen("binarytree.bin", "ab");
 
   if(fp == NULL){
@@ -144,13 +137,11 @@ void saveTree(struct TreeNode *rootNode){
     exit(100);
   }
 
-  rewind(fp);
   preOrderWaySave(rootNode, fp);
-
   fclose(fp);
 }
 
-void preOrderLoad(struct TreeNode **rootNodePerm, struct TreeNode **rootNode, struct TreeNode **pastNode, int side, FILE *fp){
+void preOrderLoad(struct TreeNode **rootNodePerm, struct TreeNode **rootNode, struct TreeNode *pastNode, int side, FILE *fp){
   struct s_arq_no savedNode;
   if(fread(&savedNode, sizeof(savedNode), 1, fp) > 0){
     struct TreeNode *node = (struct TreeNode*) malloc(sizeof(struct TreeNode));
@@ -160,27 +151,24 @@ void preOrderLoad(struct TreeNode **rootNodePerm, struct TreeNode **rootNode, st
     if(side == 0){
       (*rootNodePerm) = node;
     } else if(side == 1){
-      (*pastNode)->left = node;
+      pastNode->left = node;
     } else if(side == 2){
-      (*pastNode)->right = node;
+      pastNode->right = node;
     }
 
     (*rootNode) = node;
+    if(savedNode.esq == 1){
+      preOrderLoad(rootNodePerm, &node->left, node, 1, fp);
+    }
+    if(savedNode.dir == 1){
+      preOrderLoad(rootNodePerm, &node->right, node, 2, fp);
+    }
   }
 
-  (*pastNode) = (*rootNode);
-
-  if(savedNode.esq == 1){
-    preOrderLoad(rootNodePerm, &(*rootNode)->left, pastNode, 1, fp);
-  }
-  if(savedNode.dir == 1){
-    preOrderLoad(rootNodePerm, &(*rootNode)->right, pastNode, 2, fp);
-  }
 }
 
 void loadTree(struct TreeNode **rootNode){
   FILE * fp = fopen("binarytree.bin", "rb");
-  struct TreeNode *temp1 = NULL, *temp2 = NULL;
 
   if(fp == NULL){
     printf("Erro na abertura do arquivo!\n");
@@ -188,14 +176,15 @@ void loadTree(struct TreeNode **rootNode){
   }
 
   rewind(fp);
-  preOrderLoad(rootNode, &temp1, &temp2, 0, fp);
+  preOrderLoad(rootNode, rootNode, NULL, 0, fp);
 
   fclose(fp);
 }
 
 int main(){
   struct TreeNode *ptr = NULL;
+  loadTree(&ptr);
+  preOrderWay(ptr);
   
-
   return 0;
 }
