@@ -130,6 +130,7 @@ struct TreeNode* removeNode(struct TreeNode *root, int key){
 }
 
 void saveTree(struct TreeNode *rootNode){
+  remove("binarytree.bin");
   FILE * fp = fopen("binarytree.bin", "ab");
 
   if(fp == NULL){
