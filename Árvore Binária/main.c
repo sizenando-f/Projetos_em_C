@@ -101,6 +101,55 @@ struct TreeNode* findMax(struct TreeNode *node){
   return node;
 }
 
+struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
+  int feedback;
+  struct TreeNode * node = rootNode;
+  searchTree(x, &node, &feedback);
+  if(feedback == 2 || feedback == 3){
+    printf("O valor nao existe. ");
+    return NULL;
+  }
+
+  if(node->right != NULL){
+    struct TreeNode *temp = findMin(node->right);
+    return temp;
+  }
+
+  struct TreeNode * sucessor = NULL;
+  while(rootNode != NULL){
+    if(x < rootNode->key){
+      sucessor = rootNode;
+      rootNode = rootNode->left;
+    } else if(x > rootNode->key){
+      rootNode = rootNode->right;
+    } else {
+      break;
+    }
+  }
+  return sucessor;
+}
+
+struct TreeNode* findPredecessor(struct TreeNode *rootNode, int x){
+  if(rootNode->left != NULL){
+    struct TreeNode * temp = findMax(rootNode->left);
+    return temp;
+  }
+
+  struct TreeNode * predecessor = NULL;
+  while(rootNode != NULL){
+    if(x < rootNode->key){
+      rootNode = rootNode->left;
+    } else if(x > rootNode->key){
+      predecessor = rootNode;
+      rootNode = rootNode->right;
+    } else {
+      break;
+    }
+  }
+
+  return predecessor;
+}
+
 struct TreeNode* removeNode(struct TreeNode *root, int key){
   if(root == NULL) return NULL;
 
@@ -186,6 +235,12 @@ int main(){
   struct TreeNode *ptr = NULL;
   loadTree(&ptr);
   preOrderWay(ptr);
-  
+
+  struct TreeNode * temp = findSucessor(ptr, 0);
+  if(temp != NULL){
+    printf("O sucessor eh %d\n", temp->key);
+  } else {
+    printf("Nao existe sucessor\n");
+  }
   return 0;
 }
