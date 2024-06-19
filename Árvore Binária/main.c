@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 struct TreeNode{
   int key;
@@ -106,7 +107,7 @@ struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
   struct TreeNode * node = rootNode;
   searchTree(x, &node, &feedback);
   if(feedback == 2 || feedback == 3){
-    printf("O valor nao existe. ");
+    printf("O no nao existe. ");
     return NULL;
   }
 
@@ -130,8 +131,16 @@ struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
 }
 
 struct TreeNode* findPredecessor(struct TreeNode *rootNode, int x){
-  if(rootNode->left != NULL){
-    struct TreeNode * temp = findMax(rootNode->left);
+  int feedback;
+  struct TreeNode * node = rootNode;
+  searchTree(x, &node, &feedback);
+  if(feedback == 2 || feedback == 3){
+    printf("O no nao existe. ");
+    return NULL;
+  }
+
+  if(node->left != NULL){
+    struct TreeNode * temp = findMax(node->left);
     return temp;
   }
 
@@ -218,11 +227,18 @@ void preOrderLoad(struct TreeNode **rootNodePerm, struct TreeNode **rootNode, st
 }
 
 void loadTree(struct TreeNode **rootNode){
-  FILE * fp = fopen("binarytree.bin", "rb");
+  char archiveName[100];
+  printf("Insira o nome do arquivo que deseja abrir: ");
+  fgets(archiveName, sizeof(archiveName), stdin);
+  archiveName[strcspn(archiveName, "\n")] = '\0';
+
+  FILE * fp = fopen(archiveName, "rb");
 
   if(fp == NULL){
     printf("Erro na abertura do arquivo!\n");
-    exit(100);
+    return;
+  } else {
+    printf("Arquivo carregado com sucesso!\n");
   }
 
   rewind(fp);
@@ -236,11 +252,5 @@ int main(){
   loadTree(&ptr);
   preOrderWay(ptr);
 
-  struct TreeNode * temp = findSucessor(ptr, 0);
-  if(temp != NULL){
-    printf("O sucessor eh %d\n", temp->key);
-  } else {
-    printf("Nao existe sucessor\n");
-  }
   return 0;
 }
