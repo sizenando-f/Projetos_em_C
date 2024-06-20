@@ -1,4 +1,6 @@
-#include <stdio.h>
+// #include <unistd.h> /* sleep  */
+// #include "gfx.h"
+#include <stdio.h>  /* printf */
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -22,6 +24,10 @@ struct s_arq_no{
  * @param rootNode Cópia do ponteiro para nó raíz da árvore binária
 */
 void preOrderWay(struct TreeNode *rootNode){
+	if(rootNode == NULL){
+		printf("A arvore nao existe!\n");
+	}
+
   printf("-> %d ", rootNode->key);
 
   if(rootNode->left != NULL){
@@ -150,7 +156,7 @@ struct TreeNode* findMax(struct TreeNode *node){
  * operações consecutivas até que o sucessor seja encontrado, retornando NULL caso não haja um sucessor.
  * @param rootNode Cópia do ponteiro para o nó raiz da árvore
  * @param x Chave do nó a ser usado como referência
- * @return Sucessor do nó passado como referência, caso exista.
+ * @return Nó sucessor do nó passado como referência, caso exista.
  */
 struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
   int feedback;
@@ -186,7 +192,7 @@ struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
  * operações consecutivas até que o predecessor seja encontrado, retornando NULL caso não haja um predecessor.
  * @param rootNode Cópia do ponteiro para o nó raiz da árvore
  * @param x Chave do nó a ser usado como referência
- * @return Predecessor do nó passado como referência, caso exista.
+ * @return Nó predecessor do nó passado como referência, caso exista.
  */
 struct TreeNode* findPredecessor(struct TreeNode *rootNode, int x){
   int feedback;
@@ -336,10 +342,22 @@ void loadTree(struct TreeNode **rootNode){
   fclose(fp);
 }
 
+void freeTree(struct TreeNode **rootNode){
+	if((*rootNode)->left != NULL){
+		freeTree(&(*rootNode)->left);
+	}
+	if((*rootNode)->right != NULL){
+		freeTree(&(*rootNode)->right);
+	}
+	free((*rootNode));
+	(*rootNode) = NULL;
+}
+
 int main(){
-  struct TreeNode *ptr = NULL;
-  loadTree(&ptr);
-  preOrderWay(ptr);
+  struct TreeNode *rootNode = NULL;
+	loadTree(&rootNode);
+	preOrderWay(rootNode);
+	freeTree(&rootNode);
 
   return 0;
 }
