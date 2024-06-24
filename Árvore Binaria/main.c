@@ -1,9 +1,9 @@
-#include <unistd.h> /* sleep  */
-#include "gfx.h"
-#include <stdio.h>  /* printf */
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
+#include <unistd.h> /* sleep */
+#include "gfx.h"    /* gfx_init, gfx_paint, gfx_quit, gfx_set_color, gfx_filled_ractangle, gfx_rectangle, gfx_text, gfx_line*/
+#include <stdio.h>  /* printf, scanf, sprintf, fgets, fopen, fclose, fread, fwrite, rewind*/
+#include <stdlib.h> /* malloc, free*/
+#include <stdint.h> /* int32_t, uint32_t*/
+#include <string.h> /* strcspn */
 
 // Estrura básica da árvore binária
 struct TreeNode{
@@ -74,6 +74,15 @@ void printTree(struct TreeNode *rootNode) {
     gfx_paint();
 }
 
+/** @brief Monta a ávore binária de forma gráfica com destaque.
+ * Esse procedimento auxiliar exibe cada elemento da árvore binária em pré-ordem utilizando a biblioteca gfx, destacando um nó específico com uma
+ * cor diferente
+ * @param rootNode Cópia do ponteiro para nó raíz da árvore binária
+ * @param x Valor em pixel para posição do nó no eixo X
+ * @param y Valor em pixel para posição do nó no eixo Y
+ * @param control Valor em pixel para controle de distância entre os nós
+ * @param key Chave do nó a ser destacado
+*/
 void preOrderWayHighlight(struct TreeNode *rootNode, int x, int y, int control, int key) {
     if (rootNode == NULL) return;
 
@@ -109,6 +118,13 @@ void preOrderWayHighlight(struct TreeNode *rootNode, int x, int y, int control, 
     }
 }
 
+/**
+ *  @brief Exibe graficamente a árvore binária com destaque.
+ *  Esse procedimento inicializa a interface gfx e utiliza o procedimento auxiliar `preOrderWay` para exibir graficamente a árvore binária destacando
+ * um nó desejado
+ *  @param rootNode Cópia do ponteiro para o nó raíz da árvore binária
+ *  @param key Chave do nó a ser destacado
+*/
 void printTreeHiglight(struct TreeNode *rootNode, int key) {
     gfx_quit();
 
@@ -248,7 +264,7 @@ struct TreeNode* findSucessor(struct TreeNode *rootNode, int x){
   struct TreeNode * node = rootNode;
   searchTree(x, &node, &feedback);
   if(feedback == 2 || feedback == 3){
-    printf("O no nao existe.\n");
+    printf("[ ERRO -># ] O no procurado nao existe...\n");
     return NULL;
   }
 
@@ -284,7 +300,7 @@ struct TreeNode* findPredecessor(struct TreeNode *rootNode, int x){
   struct TreeNode * node = rootNode;
   searchTree(x, &node, &feedback);
   if(feedback == 2 || feedback == 3){
-    printf("O no nao existe.\n");
+    printf("[ ERRO -># ] O no procurado nao existe...\n");
     return NULL;
   }
 
@@ -360,8 +376,8 @@ void saveTree(struct TreeNode *rootNode){
   FILE * fp = fopen(archiveName, "ab");
 
   if(fp == NULL){
-    printf("[ ERRO -># ] Erro na abertura do arquivo!\n");
-    exit(100);
+    printf("[ ERRO -># ] Erro ao salvar o arquivo, tente novamente...\n");
+    return;
   }
 
   preOrderWaySave(rootNode, fp);
@@ -453,9 +469,10 @@ void freeTree(struct TreeNode **rootNode){
  * @param rootNode Ponteiro para o nó raíz da árvore binária
 */
 void manipulationMenu(struct TreeNode **rootNode){
-  int esc, key;
+  int esc, key, feedback;
+  struct TreeNode *temp;
   do{
-    printf("--- PAINEL DE CONTROLE ---\n");
+    printf("\n--- PAINEL DE CONTROLE ---\n");
     printf("|1. INSERIR NO NA ARVORE |\n");
     printf("|2. REMOVER NO NA ARVORE |\n");
     printf("|3. VOLTAR PARA O MENU   |\n");
@@ -468,7 +485,7 @@ void manipulationMenu(struct TreeNode **rootNode){
         printf("[ <- ] Insira a chave do no a ser inserido > ");
         scanf("%d", &key);
         if(insertTree(key, rootNode)){
-          printf("[ -> ] Insercao realiza com sucesso!\n");
+          printf("[ -> ] Insercao realizada com sucesso!\n");
         } else {
           printf("[ ERRO -># ] Chave invalida, tente novamente...\n");
         }
@@ -481,8 +498,16 @@ void manipulationMenu(struct TreeNode **rootNode){
         }
         printf("[ <- ] Insira a chave do no a ser removido > ");
         scanf("%d", &key);
-        *rootNode = removeNode(*rootNode, key);
-        printTree(*rootNode);
+
+        temp = (*rootNode);
+        searchTree(key, &temp, &feedback);
+        if(feedback == 2 || feedback == 3){
+          printf("[ ERRO -># ] A chave nao existe, nada foi removido.\n");
+        } else {
+          *rootNode = removeNode(*rootNode, key);
+          printf("%d", (*rootNode)->key);
+          printTree(*rootNode);
+        }
         break;
       case 3:
         break;
@@ -500,14 +525,13 @@ void manipulationMenu(struct TreeNode **rootNode){
 */
 void searchNodeMenu(struct TreeNode *rootNode){
   if(rootNode == NULL){
-    printf("[ ERRO -># ] Crie ou carrege uma arvore binaria antes de acessar esse menu\n");
+    printf("[ #<- ERRO ] Crie ou carrege uma arvore binaria antes de acessar esse menu\n");
     return;
   }
-
   struct TreeNode *temp = rootNode;
   int esc, key, feedback;
   do{
-    printf("---- BUSCA BINARIA ----\n");
+    printf("\n---- BUSCA BINARIA ----\n");
     printf("|1. CHAVE ESPECIFICA  |\n");
     printf("|2. MENOR CHAVE       |\n");
     printf("|3. MAIOR CHAVE       |\n");
@@ -524,7 +548,6 @@ void searchNodeMenu(struct TreeNode *rootNode){
         printf("[ <- ] Entre a chave do no a ser buscado > ");
         scanf("%d", &key);
         searchTree(key, &temp, &feedback);
-        printf("\n\n%d\n\n", key);
         if(feedback == 2 || feedback == 3){
           printf("[ ERRO -># ] A chave buscada nao existe, tente novamente...\n");
         } else {
@@ -576,9 +599,9 @@ void searchNodeMenu(struct TreeNode *rootNode){
 int main(){
   struct TreeNode *rootNode = NULL;
   int esc;
+  system("clear");
   do{
-    system("clear");
-    printf("--- ARVORE BINARIA ---\n");
+    printf("\n--- ARVORE BINARIA ---\n");
     printf("|1. MANIPULAR ARVORE |\n");
     printf("|2. BUSCAR NO        |\n");
     printf("|3. SALVAR ARVORE    |\n");
@@ -598,21 +621,29 @@ int main(){
         break;
       case 3:
         if(rootNode == NULL){
-          printf("[ ERRO -># ] Primeiro crie uma arvore binaria antes de tentar salvar.\n");
+          printf("[ #<- ERRO ] Primeiro crie uma arvore binaria antes de tentar salvar.\n");
         } else {
           saveTree(rootNode);
+          printf("[ -> ] O arquivo foi salvo com sucesso!\n");
         }
         break;
       case 4:
         loadTree(&rootNode);
-        printTree(rootNode);
+        if(rootNode != NULL){
+          printTree(rootNode);
+        }
         break;
       case 5:
         gfx_quit();
-        freeTree(&rootNode);
-        printf("[ -> ] A arvore foi desalocada!\n");
+        if(rootNode != NULL){
+          freeTree(&rootNode);
+          printf("[ -> ] A arvore foi desalocada!\n");
+        } else {
+          printf("[ -> ] Nenhuma arvore precisou ser desalocada\n");
+        }
         break;
       default:
+        printf("[ #<- ERRO ] Entrada invalida, tente novamente...\n");
         break;
     }
   }while(esc != 5);
