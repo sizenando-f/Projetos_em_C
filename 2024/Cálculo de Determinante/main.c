@@ -2,6 +2,34 @@
 #include <stdlib.h>
 
 /**
+ * @brief Descobre maior valor em módulo de uma coluna.
+ * Compara um valor de cada linha da coluna escolhida e compara qual é o maior em módulo.
+ * @param matriz Matriz onde estará os valores
+ * @param ordem Dimensão da matriz
+ * @param coluna Coluna a qual deve ser feito a comparação
+ * @return Linha com o maior valor em módulo
+ */
+int descobreMaior(int matriz[10][10], unsigned ordem, unsigned coluna){
+  int maior = matriz[0][coluna];
+  unsigned temp1, temp2, linha = 0;
+  for(unsigned i = 0; i < ordem; i++){
+    temp1 = matriz[i][coluna];
+    temp2 = maior;
+    if(matriz[i][coluna] < 0){
+      temp1 *= -1;
+    }
+    if(maior < 0){
+      temp2 *= -1;
+    }
+    if(temp1 > temp2){
+      maior = matriz[i][coluna];
+      linha = i;
+    }
+  }
+  return linha;
+}
+
+/**
  * @brief Exibe a matriz.
  * Será exibido a matriz no console
  * @param matriz Matriz de no máximo 10x10
