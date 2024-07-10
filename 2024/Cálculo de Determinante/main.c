@@ -2,34 +2,6 @@
 #include <stdlib.h>
 
 /**
- * @brief Descobre maior valor em módulo de uma coluna.
- * Compara um valor de cada linha da coluna escolhida e compara qual é o maior em módulo.
- * @param matriz Matriz onde estará os valores
- * @param ordem Dimensão da matriz
- * @param coluna Coluna a qual deve ser feito a comparação
- * @return Linha com o maior valor em módulo
- */
-int descobreMaior(int matriz[10][10], unsigned ordem, unsigned coluna){
-  int maior = matriz[0][coluna];
-  unsigned temp1, temp2, linha = 0;
-  for(unsigned i = 0; i < ordem; i++){
-    temp1 = matriz[i][coluna];
-    temp2 = maior;
-    if(matriz[i][coluna] < 0){
-      temp1 *= -1;
-    }
-    if(maior < 0){
-      temp2 *= -1;
-    }
-    if(temp1 > temp2){
-      maior = matriz[i][coluna];
-      linha = i;
-    }
-  }
-  return linha;
-}
-
-/**
  * @brief Exibe a matriz.
  * Será exibido a matriz no console
  * @param matriz Matriz de no máximo 10x10
@@ -39,11 +11,52 @@ void exibeMatriz(int matriz[10][10], unsigned ordem){
   for(unsigned i = 0; i < ordem; i++){
     printf("| ");
     for(unsigned j = 0; j < ordem; j++){
-    printf("%d ", matriz[i][j]);
+    printf("%4d", matriz[i][j]);
     }
     printf("|\n");
   }
 }
+
+/**
+ * @brief Deixa o pivô da coluna com o maior número.
+ * Compara um valor de cada linha da coluna escolhida e compara qual é o maior em módulo. Após isso, realiza a troca de linhas caso necessário
+ * para deixar o pivô da coluna sendo maior entre eles. Exibindo passo a passo.
+ * @param matriz Matriz onde estará os valores
+ * @param ordem Dimensão da matriz
+ * @param linhaPivo Linha onde o número pivô está
+ * @param colunaPivo Coluna onde o númeor pivô está
+ */
+void fixColunaPivo(int matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
+  int maior = matriz[linhaPivo][colunaPivo];
+  unsigned temp1, temp2, linha = 0;
+
+  for(unsigned i = 0; i < ordem; i++){
+    temp1 = matriz[i][colunaPivo];
+    temp2 = maior;
+    if(matriz[i][colunaPivo] < 0){
+      temp1 *= -1;
+    }
+    if(maior < 0){
+      temp2 *= -1;
+    }
+    if(temp1 > temp2){
+      maior = matriz[i][colunaPivo];
+      linha = i;
+    }
+  }
+
+  int temp;
+  if(maior != matriz[linhaPivo][colunaPivo]){
+    printf("[ -> ] Trocando linha [%d] com linha [%d]\n", linha+1, linhaPivo+1);
+    for(unsigned i = 0; i < ordem; i++){
+      temp = matriz[linhaPivo][i];
+      matriz[linhaPivo][i] = matriz[linha][i];
+      matriz[linha][i] = temp;
+    }
+    exibeMatriz(matriz, ordem);
+  }
+}
+
 /**
  * @brief Cria a matriz.
  * Usuário inicializa os valores da matriz seguido de uma confirmação onde será repetido indefinidas vezes até que o usuário aceite a matriz.
