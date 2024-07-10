@@ -7,11 +7,11 @@
  * @param matriz Matriz de no máximo 10x10
  * @param ordem Dimensão da matriz
  */
-void exibeMatriz(int matriz[10][10], unsigned ordem){
+void exibeMatriz(float matriz[10][10], unsigned ordem){
   for(unsigned i = 0; i < ordem; i++){
     printf("| ");
     for(unsigned j = 0; j < ordem; j++){
-    printf("%4d", matriz[i][j]);
+    printf("%4f", matriz[i][j]);
     }
     printf("|\n");
   }
@@ -20,15 +20,16 @@ void exibeMatriz(int matriz[10][10], unsigned ordem){
 /**
  * @brief Deixa o pivô da coluna com o maior número.
  * Compara um valor de cada linha da coluna escolhida e compara qual é o maior em módulo. Após isso, realiza a troca de linhas caso necessário
- * para deixar o pivô da coluna sendo maior entre eles. Exibindo passo a passo.
+ * para deixar o pivô da coluna sendo maior entre eles. Exibindo qual linha foi trocada.
  * @param matriz Matriz onde estará os valores
  * @param ordem Dimensão da matriz
  * @param linhaPivo Linha onde o número pivô está
  * @param colunaPivo Coluna onde o númeor pivô está
  */
-void fixColunaPivo(int matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
-  int maior = matriz[linhaPivo][colunaPivo];
-  unsigned temp1, temp2, linha = 0;
+void fixColunaPivo(float matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
+  float maior = matriz[linhaPivo][colunaPivo];
+  float temp2, temp1;
+  unsigned linha = 0;
 
   for(unsigned i = 0; i < ordem; i++){
     temp1 = matriz[i][colunaPivo];
@@ -45,7 +46,7 @@ void fixColunaPivo(int matriz[10][10], unsigned ordem, unsigned linhaPivo, unsig
     }
   }
 
-  int temp;
+  float temp;
   if(maior != matriz[linhaPivo][colunaPivo]){
     printf("[ -> ] Trocando linha [%d] com linha [%d]\n", linha+1, linhaPivo+1);
     for(unsigned i = 0; i < ordem; i++){
@@ -63,7 +64,7 @@ void fixColunaPivo(int matriz[10][10], unsigned ordem, unsigned linhaPivo, unsig
  * @param matriz Matriz de no máximo 10x10
  * @param ordem Ponteiro para armazenar a dimensão da matriz
  */
-void defineMatriz(int matriz[10][10], unsigned *ordem){
+void defineMatriz(float matriz[10][10], unsigned *ordem){
   char esc;
   printf("[ -> ] Inicialzando matriz...\n");
   do{
@@ -73,7 +74,7 @@ void defineMatriz(int matriz[10][10], unsigned *ordem){
       printf("------- Linha %d --------\n", i+1);
       for(unsigned j = 0; j < *ordem; j++){
         printf("Coluna %d >", j+1);
-        scanf("%d", &matriz[i][j]);
+        scanf("%f", &matriz[i][j]);
       }
     }
     system("cls");
@@ -84,8 +85,25 @@ void defineMatriz(int matriz[10][10], unsigned *ordem){
   } while(esc == 'N' || esc == 'n');
 }
 
+void operaMatriz(float matriz[10][10], unsigned ordem, float multiplicador, unsigned linhaPivo, unsigned linhaAlt){
+  for(unsigned i = 0; i < ordem; i++){
+    matriz[linhaAlt][i] = (multiplicador * matriz[linhaPivo][i]) + matriz[linhaAlt][i];
+  }
+}
+
+void transformaMatrizSuperior(float matriz[10][10], unsigned ordem){
+  float multiplicador;
+  for(unsigned coluna = 0; coluna < ordem-1; coluna++){
+    fixColunaPivo(matriz, ordem, coluna, coluna);
+    for(unsigned linha = coluna+1; linha < ordem; linha++){
+      multiplicador = -(matriz[linha][coluna]/matriz[coluna][coluna]);
+      operaMatriz(matriz, ordem, multiplicador, coluna, linha);
+    }
+  }
+}
+
 int main(){
-  int matriz[10][10];
+  float matriz[10][10];
   char esc;
   unsigned ordem;
   do{
