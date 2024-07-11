@@ -7,11 +7,11 @@
  * @param matriz Matriz de no máximo 10x10
  * @param ordem Dimensão da matriz
  */
-void exibeMatriz(float matriz[10][10], unsigned ordem){
+void exibeMatriz(double matriz[10][10], unsigned ordem){
   for(unsigned i = 0; i < ordem; i++){
     printf("| ");
     for(unsigned j = 0; j < ordem; j++){
-    printf("%4f", matriz[i][j]);
+    printf("%5.1f", matriz[i][j]);
     }
     printf("|\n");
   }
@@ -26,10 +26,10 @@ void exibeMatriz(float matriz[10][10], unsigned ordem){
  * @param linhaPivo Linha onde o número pivô está
  * @param colunaPivo Coluna onde o númeor pivô está
  */
-void fixColunaPivo(float matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
-  float maior = matriz[linhaPivo][colunaPivo];
-  float temp2, temp1;
-  unsigned linha = 0;
+void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
+  double maior = matriz[linhaPivo][colunaPivo];
+  double temp2, temp1;
+  unsigned linha = linhaPivo;
 
   for(unsigned i = 0; i < ordem; i++){
     temp1 = matriz[i][colunaPivo];
@@ -46,14 +46,17 @@ void fixColunaPivo(float matriz[10][10], unsigned ordem, unsigned linhaPivo, uns
     }
   }
 
-  float temp;
+  double temp;
   if(maior != matriz[linhaPivo][colunaPivo]){
-    printf("[ -> ] Trocando linha [%d] com linha [%d]\n", linha+1, linhaPivo+1);
+    printf("### Trocando linha [%d] com linha [%d] ###\n", linha+1, linhaPivo+1);
+    printf("Antes: \n");
+    exibeMatriz(matriz, ordem);
     for(unsigned i = 0; i < ordem; i++){
       temp = matriz[linhaPivo][i];
       matriz[linhaPivo][i] = matriz[linha][i];
       matriz[linha][i] = temp;
     }
+    printf("Depois: \n");
     exibeMatriz(matriz, ordem);
   }
 }
@@ -64,7 +67,7 @@ void fixColunaPivo(float matriz[10][10], unsigned ordem, unsigned linhaPivo, uns
  * @param matriz Matriz de no máximo 10x10
  * @param ordem Ponteiro para armazenar a dimensão da matriz
  */
-void defineMatriz(float matriz[10][10], unsigned *ordem){
+void defineMatriz(double matriz[10][10], unsigned *ordem){
   char esc;
   printf("[ -> ] Inicialzando matriz...\n");
   do{
@@ -74,7 +77,7 @@ void defineMatriz(float matriz[10][10], unsigned *ordem){
       printf("------- Linha %d --------\n", i+1);
       for(unsigned j = 0; j < *ordem; j++){
         printf("Coluna %d >", j+1);
-        scanf("%f", &matriz[i][j]);
+        scanf("%lf", &matriz[i][j]);
       }
     }
     system("cls");
@@ -85,29 +88,39 @@ void defineMatriz(float matriz[10][10], unsigned *ordem){
   } while(esc == 'N' || esc == 'n');
 }
 
-void operaMatriz(float matriz[10][10], unsigned ordem, float multiplicador, unsigned linhaPivo, unsigned linhaAlt){
+void operaMatriz(double matriz[10][10], unsigned ordem, double multiplicador, unsigned linhaPivo, unsigned linhaAlt){
+  printf("Aplicando multiplicador %lf na linha %d...\nAntes:\n", multiplicador, linhaAlt+1);
+  exibeMatriz(matriz, ordem);
   for(unsigned i = 0; i < ordem; i++){
     matriz[linhaAlt][i] = (multiplicador * matriz[linhaPivo][i]) + matriz[linhaAlt][i];
   }
+  printf("Depois:\n");
+  exibeMatriz(matriz, ordem);
 }
 
-void transformaMatrizSuperior(float matriz[10][10], unsigned ordem){
-  float multiplicador;
+void transformaMatrizSuperior(double matriz[10][10], unsigned ordem){
+  double multiplicador;
   for(unsigned coluna = 0; coluna < ordem-1; coluna++){
+    printf("\nOperacoes realizadas na coluna %d: \n", coluna+1);
     fixColunaPivo(matriz, ordem, coluna, coluna);
     for(unsigned linha = coluna+1; linha < ordem; linha++){
       multiplicador = -(matriz[linha][coluna]/matriz[coluna][coluna]);
+      printf("Multiplicador do indice [%d][%d] descoberto: %lf\n", linha+1, coluna+1, multiplicador);
       operaMatriz(matriz, ordem, multiplicador, coluna, linha);
     }
   }
+
 }
 
 int main(){
-  float matriz[10][10];
+  double matriz[10][10];
   char esc;
   unsigned ordem;
   do{
     defineMatriz(matriz, &ordem);
+    transformaMatrizSuperior(matriz, ordem);
+    printf("\n Resultado final: \n");
+    exibeMatriz(matriz, ordem);
     printf("[ <- ] Deseja testar outra matriz? (S/n) > ");
     scanf(" %c", &esc);
   }while(esc == 'S' || esc == 's');
