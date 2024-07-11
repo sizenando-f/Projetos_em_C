@@ -9,11 +9,11 @@
  */
 void exibeMatriz(double matriz[10][10], unsigned ordem){
   for(unsigned i = 0; i < ordem; i++){
-    printf("| ");
+    printf(" | ");
     for(unsigned j = 0; j < ordem; j++){
     printf("%5.1f", matriz[i][j]);
     }
-    printf("|\n");
+    printf(" |\n");
   }
 }
 
@@ -26,7 +26,7 @@ void exibeMatriz(double matriz[10][10], unsigned ordem){
  * @param linhaPivo Linha onde o número pivô está
  * @param colunaPivo Coluna onde o número pivô está
  */
-void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
+void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo, unsigned *trocas){
   double maior = matriz[linhaPivo][colunaPivo];
   double temp2, temp1;
   unsigned linha = linhaPivo;
@@ -48,6 +48,7 @@ void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, un
 
   double temp;
   if(maior != matriz[linhaPivo][colunaPivo]){
+    (*trocas) = (*trocas) + 1;
     printf("\n [ ! ] Trocando linha (%d) com linha (%d)\n", linha+1, linhaPivo+1);
     printf("\n [ -> ] Antes: \n");
     exibeMatriz(matriz, ordem);
@@ -114,33 +115,46 @@ void operaMatriz(double matriz[10][10], unsigned ordem, double multiplicador, un
  * @param matriz Matriz para ser transformada
  * @param ordem Dimensão da matriz
  */
-void transformaMatrizSuperior(double matriz[10][10], unsigned ordem){
+void transformaMatrizSuperior(double matriz[10][10], unsigned ordem, unsigned *trocas){
   double multiplicador;
   system("cls");
   for(unsigned coluna = 0; coluna < ordem-1; coluna++){
     printf("\n=-=-=-=-=-=-=-= Operacao numero: [%d] =-=-=-=-=-=-=-=", coluna+1);
-    fixColunaPivo(matriz, ordem, coluna, coluna);
+    fixColunaPivo(matriz, ordem, coluna, coluna, trocas);
     for(unsigned linha = coluna+1; linha < ordem; linha++){
       multiplicador = -(matriz[linha][coluna]/matriz[coluna][coluna]);
-      printf("\n [ -> ] Multiplicador do indice (%d)(%d) descoberto: (%lf)\n", linha+1, coluna+1, multiplicador);
+      printf("\n [ -> ] Multiplicador do indice (%d)(%d) descoberto: (%.2lf)\n", linha+1, coluna+1, multiplicador);
       operaMatriz(matriz, ordem, multiplicador, coluna, linha);
     }
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
   }
 }
 
+double achaDeterminante(double matriz[10][10], unsigned ordem, unsigned trocas){
+  double resultado = 1;
+  for(unsigned i = 0; i < ordem; i++){
+    resultado *= matriz[i][i];
+  }
+  if(trocas % 2 != 0){
+    resultado *= -1;
+  }
+  return resultado;
+}
+
 int main(){
   double matriz[10][10];
   char esc;
-  unsigned ordem;
+  unsigned ordem, trocas = 0;
   do{
     defineMatriz(matriz, &ordem);
-    transformaMatrizSuperior(matriz, ordem);
+    transformaMatrizSuperior(matriz, ordem, &trocas);
     printf("\n\n [ -> ] Resultado final: \n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     exibeMatriz(matriz, ordem);
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf(" [ <- ] Deseja testar outra matriz? (S/n) > ");
+    printf(" [ -> ] Determinante da matriz: (%.1lf)\n", achaDeterminante(matriz, ordem, trocas));
+    printf("\n [ <- ] Deseja testar outra matriz? (S/n) > ");
+    system("cls");
     scanf(" %c", &esc);
   }while(esc == 'S' || esc == 's');
   return 0;
