@@ -24,14 +24,14 @@ void exibeMatriz(double matriz[10][10], unsigned ordem){
  * @param matriz Matriz onde estará os valores
  * @param ordem Dimensão da matriz
  * @param linhaPivo Linha onde o número pivô está
- * @param colunaPivo Coluna onde o númeor pivô está
+ * @param colunaPivo Coluna onde o número pivô está
  */
 void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo){
   double maior = matriz[linhaPivo][colunaPivo];
   double temp2, temp1;
   unsigned linha = linhaPivo;
 
-  for(unsigned i = 0; i < ordem; i++){
+  for(unsigned i = linhaPivo; i < ordem; i++){
     temp1 = matriz[i][colunaPivo];
     temp2 = maior;
     if(matriz[i][colunaPivo] < 0){
@@ -48,15 +48,15 @@ void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, un
 
   double temp;
   if(maior != matriz[linhaPivo][colunaPivo]){
-    printf("### Trocando linha [%d] com linha [%d] ###\n", linha+1, linhaPivo+1);
-    printf("Antes: \n");
+    printf("\n [ ! ] Trocando linha (%d) com linha (%d)\n", linha+1, linhaPivo+1);
+    printf("\n [ -> ] Antes: \n");
     exibeMatriz(matriz, ordem);
     for(unsigned i = 0; i < ordem; i++){
       temp = matriz[linhaPivo][i];
       matriz[linhaPivo][i] = matriz[linha][i];
       matriz[linha][i] = temp;
     }
-    printf("Depois: \n");
+    printf("\n [ -> ] Depois: \n");
     exibeMatriz(matriz, ordem);
   }
 }
@@ -69,47 +69,64 @@ void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, un
  */
 void defineMatriz(double matriz[10][10], unsigned *ordem){
   char esc;
-  printf("[ -> ] Inicialzando matriz...\n");
   do{
-    printf("[ <- ] Insira a ordem da matriz > ");
+    printf(" [ <- ] Insira a ordem da matriz > ");
     scanf("%d", &(*ordem));
     for(unsigned i = 0; i < *ordem; i++){
-      printf("------- Linha %d --------\n", i+1);
+      system("cls");
+      printf("------- Linha (%d) --------\n", i+1);
       for(unsigned j = 0; j < *ordem; j++){
-        printf("Coluna %d >", j+1);
+        printf("[ <- ] Coluna %d > ", j+1);
         scanf("%lf", &matriz[i][j]);
       }
     }
     system("cls");
-    printf("[ -> ] A matriz criada foi: \n");
+    printf(" [ -> ] A matriz criada foi: \n");
     exibeMatriz(matriz, *ordem);
-    printf("[ <- ] Deseja continuar? (S/n) > ");
+    printf(" [ <- ] Deseja continuar? (S/n) > ");
     scanf(" %c", &esc);
   } while(esc == 'N' || esc == 'n');
 }
 
+/**
+ * @brief Multiplica os elementos de uma linha especifica.
+ * Utiliza o multiplicador e aplica em cada elemento de uma linha desejada.
+ * @param matriz Matriz para ser feita a operação
+ * @param ordem Dimensão da matriz
+ * @param multiplicador Multiplicador para ser aplicado nos elementos
+ * @param linhaPivo Linha onde se econtra o pivô
+ * @param linhaAlt Linha a qual deseja ser alterada 
+ */
 void operaMatriz(double matriz[10][10], unsigned ordem, double multiplicador, unsigned linhaPivo, unsigned linhaAlt){
-  printf("Aplicando multiplicador %lf na linha %d...\nAntes:\n", multiplicador, linhaAlt+1);
+  printf(" [ -> ] Aplicando multiplicador na linha (%d)...\n\n [ -> ] Antes:\n", linhaAlt+1);
   exibeMatriz(matriz, ordem);
   for(unsigned i = 0; i < ordem; i++){
     matriz[linhaAlt][i] = (multiplicador * matriz[linhaPivo][i]) + matriz[linhaAlt][i];
   }
-  printf("Depois:\n");
+  printf("\n [ -> ] Depois:\n");
   exibeMatriz(matriz, ordem);
 }
 
+/**
+ * @brief Transforma uma matriz numa matriz superior.
+ * Através de trocas consecutivas de linhas caso necessário usando a função auxiliar `fixColunaPivo` e aplica os multiplicadores nas linhas
+ * para que os valores da pirâmide inferior sejam zerados com a função `operaMatriz`.
+ * @param matriz Matriz para ser transformada
+ * @param ordem Dimensão da matriz
+ */
 void transformaMatrizSuperior(double matriz[10][10], unsigned ordem){
   double multiplicador;
+  system("cls");
   for(unsigned coluna = 0; coluna < ordem-1; coluna++){
-    printf("\nOperacoes realizadas na coluna %d: \n", coluna+1);
+    printf("\n=-=-=-=-=-=-=-= Operacao numero: [%d] =-=-=-=-=-=-=-=", coluna+1);
     fixColunaPivo(matriz, ordem, coluna, coluna);
     for(unsigned linha = coluna+1; linha < ordem; linha++){
       multiplicador = -(matriz[linha][coluna]/matriz[coluna][coluna]);
-      printf("Multiplicador do indice [%d][%d] descoberto: %lf\n", linha+1, coluna+1, multiplicador);
+      printf("\n [ -> ] Multiplicador do indice (%d)(%d) descoberto: (%lf)\n", linha+1, coluna+1, multiplicador);
       operaMatriz(matriz, ordem, multiplicador, coluna, linha);
     }
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
   }
-
 }
 
 int main(){
@@ -119,9 +136,11 @@ int main(){
   do{
     defineMatriz(matriz, &ordem);
     transformaMatrizSuperior(matriz, ordem);
-    printf("\n Resultado final: \n");
+    printf("\n\n [ -> ] Resultado final: \n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     exibeMatriz(matriz, ordem);
-    printf("[ <- ] Deseja testar outra matriz? (S/n) > ");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf(" [ <- ] Deseja testar outra matriz? (S/n) > ");
     scanf(" %c", &esc);
   }while(esc == 'S' || esc == 's');
   return 0;
