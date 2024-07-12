@@ -60,14 +60,6 @@ Calcula o determinante da matriz a partir dos valores da diagonal principal da m
 
 3. Siga as instruções no console para definir a matriz e calcular o determinante.
 
-## Exemplo
-
-Ao executar o programa, você poderá escolher entre definir a matriz manualmente ou gerar valores aleatórios. Após a confirmação da matriz, o programa exibirá o processo de transformação da matriz em uma matriz triangular superior e, por fim, calculará e exibirá o determinante.
-
-## Autor
-
-- [Seu Nome](seu-email@example.com)
-
 ## Exemplo de Saída
 
 ```plaintext
