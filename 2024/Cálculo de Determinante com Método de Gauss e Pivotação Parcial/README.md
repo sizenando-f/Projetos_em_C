@@ -1,64 +1,72 @@
-# Gerador de Matriz Aleatória e Cálculo do Determinante
+# Determinante de Matriz
 
-Este programa em C gera uma matriz quadrada com valores aleatórios ou definidos pelo usuário e calcula seu determinante. A matriz pode ter dimensão de até 10x10.
+Este projeto em C calcula o determinante de uma matriz quadrada de até 10x10, utilizando o método de eliminação Gaussiana para transformar a matriz em uma matriz triangular superior.
 
 ## Funcionalidades
 
-1. **Geração de Números Aleatórios:**
+- **Geração Aleatória de Matrizes**: Gera uma matriz com valores aleatórios entre -999 e 999.
+- **Exibição de Matrizes**: Exibe a matriz no console de uma forma organizada.
+- **Troca de Linhas**: Troca as linhas da matriz para garantir que o pivô da coluna tenha o maior valor absoluto.
+- **Transformação para Matriz Triangular Superior**: Aplica multiplicadores para zerar os valores abaixo da diagonal principal.
+- **Cálculo do Determinante**: Calcula o determinante da matriz a partir da matriz triangular superior.
 
-   - A função `numAleatorio(double min, double max)` gera números aleatórios do tipo double entre um valor mínimo e máximo especificado.
+## Funções Principais
 
-2. **Inicialização da Matriz:**
+### `double numAleatorio(double min, double max)`
 
-   - A função `defineMatriz(double matriz[10][10], unsigned *ordem)` permite ao usuário definir a matriz manualmente ou gerar valores aleatórios automaticamente.
+Gera um número aleatório do tipo double entre os valores `min` e `max`.
 
-3. **Exibição da Matriz:**
+### `void matrizAleatoria(double matriz[10][10], unsigned ordem)`
 
-   - A função `exibeMatriz(double matriz[10][10], unsigned ordem)` exibe a matriz no console.
+Preenche a matriz com valores aleatórios utilizando a função `numAleatorio`.
 
-4. **Transformação em Matriz Superior:**
+### `void exibeMatriz(double matriz[10][10], unsigned ordem)`
 
-   - A função `transformaMatrizSuperior(double matriz[10][10], unsigned ordem, unsigned *trocas)` transforma a matriz em uma matriz triangular superior usando operações de troca de linhas e multiplicação.
+Exibe a matriz no console de forma formatada.
 
-5. **Cálculo do Determinante:**
-   - A função `achaDeterminante(double matriz[10][10], unsigned ordem, unsigned trocas)` calcula o determinante da matriz triangular superior resultante.
+### `void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, unsigned colunaPivo, unsigned *trocas)`
+
+Garante que o valor pivô de uma coluna seja o maior em valor absoluto, trocando as linhas se necessário.
+
+### `void defineMatriz(double matriz[10][10], unsigned *ordem)`
+
+Permite ao usuário definir os valores da matriz manualmente ou gerar aleatoriamente.
+
+### `void operaMatriz(double matriz[10][10], unsigned ordem, double multiplicador, unsigned linhaPivo, unsigned linhaAlt)`
+
+Aplica um multiplicador em uma linha específica para zerar os valores abaixo da diagonal principal.
+
+### `void transformaMatrizSuperior(double matriz[10][10], unsigned ordem, unsigned *trocas)`
+
+Transforma a matriz em uma matriz triangular superior, utilizando as funções auxiliares `fixColunaPivo` e `operaMatriz`.
+
+### `double achaDeterminante(double matriz[10][10], unsigned ordem, unsigned trocas)`
+
+Calcula o determinante da matriz a partir dos valores da diagonal principal da matriz triangular superior.
 
 ## Como Usar
 
-### Compilação e Execução
+1. Compile o código com o comando:
 
-1. **Compilação:**
+   ```sh
+   gcc -o determinante main.c
+   ```
 
-   - Compile o código usando um compilador C. Por exemplo, com `gcc`:
-     ```bash
-     gcc -o matriz matriz.c
-     ```
+2. Execute o programa:
 
-2. **Execução:**
-   - Execute o programa:
-     ```bash
-     ./matriz
-     ```
+   ```sh
+   ./determinante
+   ```
 
-### Passo a Passo
+3. Siga as instruções no console para definir a matriz e calcular o determinante.
 
-1. **Definição da Matriz:**
+## Exemplo
 
-   - O usuário escolhe a dimensão da matriz (entre 1 e 10).
-   - O usuário escolhe se deseja preencher a matriz manualmente ou automaticamente.
+Ao executar o programa, você poderá escolher entre definir a matriz manualmente ou gerar valores aleatórios. Após a confirmação da matriz, o programa exibirá o processo de transformação da matriz em uma matriz triangular superior e, por fim, calculará e exibirá o determinante.
 
-2. **Exibição da Matriz:**
+## Autor
 
-   - A matriz gerada é exibida no console.
-
-3. **Transformação e Cálculo:**
-
-   - O programa transforma a matriz em uma matriz triangular superior.
-   - Exibe cada operação de troca de linha e aplicação de multiplicador.
-   - Calcula e exibe o determinante da matriz.
-
-4. **Repetição:**
-   - O usuário pode optar por testar outra matriz.
+- [Seu Nome](seu-email@example.com)
 
 ## Exemplo de Saída
 
