@@ -193,6 +193,13 @@ void transformaMatrizSuperior(double matriz[10][10], unsigned ordem, unsigned *t
   }
 }
 
+/**
+ * @brief Encontra determinante da matriz.
+ * Através da multiplicação dos valores da diagonal principal
+ * @param matriz Matriz a ser descoberta o determinante
+ * @param ordem Dimensão da matriz
+ * @param trocas Número de trocas feitas
+ */
 double achaDeterminante(double matriz[10][10], unsigned ordem, unsigned trocas){
   double resultado = 1;
   for(unsigned i = 0; i < ordem; i++){
