@@ -21,7 +21,7 @@ Este é um projeto em C para gerenciar um banco de dados de clientes com funcion
 Para compilar e executar o programa, use os seguintes comandos:
 
 ```sh
-gcc -o banco banco.c
+gcc -o banco main.c
 ./banco
 ```
 
