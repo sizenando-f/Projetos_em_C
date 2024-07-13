@@ -35,7 +35,9 @@ void matrizAleatoria(double matriz[10][10], unsigned ordem){
 void exibeMatriz(double matriz[10][10], unsigned ordem){
   for(int i = -1; i < (int) ordem; i++){
     if(i >= 0){
+      printf("\e[0;34m");
       printf("        [%2d]  | ", i+1);
+      printf("\e[0;37m");
     } else {
       printf("              ");
     }
@@ -43,12 +45,16 @@ void exibeMatriz(double matriz[10][10], unsigned ordem){
       if(i >= 0){
         printf("%7.1f", matriz[i][j]);
       } else {
+        printf("\e[0;34m");
         printf("   [%d] ", j+1);
+        printf("\e[0;37m");
       }
     }
+    printf("\e[0;34m");
     if(i >= 0){
       printf(" |");
     }
+    printf("\e[0;37m");
     printf("\n");
   }
 }
@@ -85,7 +91,7 @@ void fixColunaPivo(double matriz[10][10], unsigned ordem, unsigned linhaPivo, un
   double temp;
   if(maior != matriz[linhaPivo][colunaPivo]){
     (*trocas) = (*trocas) + 1;
-    printf("\n [ ! ] Trocando linha (%d) com linha (%d)\n", linha+1, linhaPivo+1);
+    printf("\n [\e[0;31m ! \e[0;37m] Trocando linha (%d) com linha (%d)\n", linha+1, linhaPivo+1);
     printf("\n [ -> ] Antes: \n");
     exibeMatriz(matriz, ordem);
     for(unsigned i = 0; i < ordem; i++){
@@ -110,7 +116,7 @@ void defineMatriz(double matriz[10][10], unsigned *ordem){
   do{
     do{
       printf(" [ <- ] Insira a ordem da matriz > ");
-      scanf("%d", &(*ordem));
+      scanf(" %d", &(*ordem));
       if(*ordem < 1 || *ordem > 10){
         printf("[ #<- ERRO ] A ordem precisa ser entre 1 e 10, tente novamente...\n");
       }
@@ -118,19 +124,23 @@ void defineMatriz(double matriz[10][10], unsigned *ordem){
     system("cls");
     do{
       printf("-----------------------\n");
-      printf(" [ 1 ] Manualmente\n");
-      printf(" [ 2 ] Automaticamente\n");
+      printf(" [\e[0;34m 1 \e[0;37m] Manualmente\n");
+      printf(" [\e[0;34m 2 \e[0;37m] Automaticamente\n");
       printf("-----------------------\n");
       printf(" [ <- ] Como deseja preencher a matriz? > ");
+      printf("\e[0;34m");
       scanf("%d", &forma);
+      printf("\e[0;37m");
       switch (forma) {
       case 1:
         for(unsigned i = 0; i < *ordem; i++){
           system("cls");
-          printf("------- Linha (%d) --------\n", i+1);
+          printf("------- Linha (\e[0;33m %d \e[0;37m) --------\n", i+1);
           for(unsigned j = 0; j < *ordem; j++){
             printf("[ <- ] Coluna %d > ", j+1);
+            printf("\e[0;34m");
             scanf("%lf", &matriz[i][j]);
+            printf("\e[0;37m");
           }
         }
         break;
@@ -139,7 +149,9 @@ void defineMatriz(double matriz[10][10], unsigned *ordem){
         break;
       default:
         system("cls");
+        printf("\e[0;31m");
         printf("[ #<- ERRO ] Escolha invalida, tente novamente...\n");
+        printf("\e[0;37m");
         break;
       }
     }while(forma != 1 && forma != 2);
@@ -147,7 +159,10 @@ void defineMatriz(double matriz[10][10], unsigned *ordem){
     printf(" [ -> ] A matriz criada foi: \n");
     exibeMatriz(matriz, *ordem);
     printf(" [ <- ] Deseja continuar? (S/n) > ");
+    printf("\e[0;34m");
     scanf(" %c", &esc);
+    printf("\e[0;37m");
+    system("cls");
   } while(esc == 'N' || esc == 'n');
 }
 
@@ -180,7 +195,7 @@ void transformaMatrizSuperior(double matriz[10][10], unsigned ordem, unsigned *t
   double multiplicador;
   system("cls");
   for(unsigned coluna = 0; coluna < ordem-1; coluna++){
-    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Operacao numero: [%d] =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", coluna+1);
+    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= Operacao numero: [\e[0;33m %d \e[0;37m] =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", coluna+1);
     fixColunaPivo(matriz, ordem, coluna, coluna, trocas);
     printf("-----------------------------------------------------------------------------------------------------\n");
     for(unsigned linha = coluna+1; linha < ordem; linha++){
@@ -212,19 +227,44 @@ double achaDeterminante(double matriz[10][10], unsigned ordem, unsigned trocas){
 }
 
 int main(){
-  double matriz[10][10];
+  double matriz[10][10], tempo_gasto, determinante;
   char esc;
   unsigned ordem = 0, trocas = 0;
+  struct timespec inicio, fim;
+  printf("=========================================================\n");
+  printf("*                                                       *\n");
+  printf("*              CALCULADORA DE DETERMINANTE              *\n");
+  printf("*                                                       *\n");
+  printf("=========================================================\n");
+  printf("*                                                       *\n");
+  printf("*       Calculadora de Determinante de Matrizes         *\n");
+  printf("*     usando o Metodo de Gauss com Pivotacao Parcial    *\n");
+  printf("*                                                       *\n");
+  printf("=========================================================\n");
+  printf("*                                                       *\n");
+  printf("*    Instrucoes:                                        *\n");
+  printf("*    1. Insira a ordem da matriz (n x n).               *\n");
+  printf("*    2. Insira os elementos da matriz.                  *\n");
+  printf("*    3. O programa calculara o determinante.            *\n");
+  printf("*                                                       *\n");
+  printf("=========================================================\n");
   do{
     defineMatriz(matriz, &ordem);
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     transformaMatrizSuperior(matriz, ordem, &trocas);
+    determinante = achaDeterminante(matriz, ordem, trocas);
+    clock_gettime(CLOCK_MONOTONIC, &fim);
+    tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
     printf("\n\n [ -> ] Resultado final: \n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     exibeMatriz(matriz, ordem);
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf(" [ -> ] Determinante da matriz: (%.1lf)\n", achaDeterminante(matriz, ordem, trocas));
+    printf(" [ -> ] Determinante da matriz: (\e[0;33m %.1lf \e[0;37m)\n", determinante);
+    printf(" [ -> ] Tempo gasto para realizar todas as operacoes: (\e[0;33m %f segundos \e[0;37m)\n", tempo_gasto); 
     printf("\n [ <- ] Deseja testar outra matriz? (S/n) > ");
+    printf("\e[0;34m");
     scanf(" %c", &esc);
+    printf("\e[0;37m");
     system("cls");
   }while(esc == 'S' || esc == 's');
   return 0;
