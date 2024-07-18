@@ -106,9 +106,26 @@ void defineMatriz(double matriz[10][10], unsigned *ordem, double termoInd[]){
   } while(esc == 'N' || esc == 'n');
 }
 
+void inicializaSolucao(double solucao[10], unsigned int ordem){
+  char esc;
+  do{
+    system("cls");
+    printf(" --- Solucao Inicial ---\n");
+    for(unsigned i = 0; i < ordem; i++){
+      printf("[ <- ] x%d > ", i + 1);
+      scanf("%lf", &solucao[i]);
+    }
+    printf("[ <- ] Deseja continuar? (S/n) > ");
+    scanf(" %c", &esc);
+  }while(esc == 'N' || esc == 'n');
+}
+
 int main(){
-  double matriz[10][10], termoInd[10];
+  double matriz[10][10], termoInd[10], precisao, solucao[10];
   unsigned ordem;
   defineMatriz(matriz, &ordem, termoInd);
+  printf("[ <- ] Insira a precisao desejada > ");
+  scanf("%lf", &precisao);
+  inicializaSolucao(solucao, ordem);
   return 0;
 }
