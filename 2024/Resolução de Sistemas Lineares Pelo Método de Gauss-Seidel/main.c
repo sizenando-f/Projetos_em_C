@@ -27,6 +27,12 @@ void matrizAleatoria(double matriz[10][10], unsigned ordem, double termoInd[]){
   }
 }
 
+/**
+ * @brief Exibe a matriz.
+ * Será exibido a matriz no console
+ * @param matriz Matriz de no máximo 10x10
+ * @param ordem Dimensão da matriz
+ */
 void exibeMatriz(double matriz[10][10], unsigned ordem, double termoInd[]){
   for(unsigned i = 0; i < ordem; i++){
     for(unsigned j = 0; j < ordem; j++){
@@ -48,6 +54,12 @@ void exibeMatriz(double matriz[10][10], unsigned ordem, double termoInd[]){
   }
 }
 
+/**
+ * @brief Cria a matriz.
+ * Usuário inicializa os valores da matriz seguido de uma confirmação onde será repetido indefinidas vezes até que o usuário aceite a matriz.
+ * @param matriz Matriz de no máximo 10x10
+ * @param ordem Ponteiro para armazenar a dimensão da matriz
+ */
 void defineMatriz(double matriz[10][10], unsigned *ordem, double termoInd[]){
   char esc;
   int forma;
@@ -106,6 +118,13 @@ void defineMatriz(double matriz[10][10], unsigned *ordem, double termoInd[]){
   } while(esc == 'N' || esc == 'n');
 }
 
+
+/**
+ * @brief Inicializa solução inicial.
+ * O usuário insere por iteração cada xn da solução inicial.
+ * @param solucao Vetor onde será armazenado cada xn
+ * @param ordem Dimensão do sistema linear para saber xn existirão
+ */
 void inicializaSolucao(double solucao[10], unsigned int ordem){
   char esc;
   do{
