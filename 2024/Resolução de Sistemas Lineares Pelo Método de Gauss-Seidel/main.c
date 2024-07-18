@@ -139,6 +139,29 @@ void inicializaSolucao(double solucao[10], unsigned int ordem){
   }while(esc == 'N' || esc == 'n');
 }
 
+void solucionaSistema(double matriz[10][10], double termoInd[10], double solucao[10], unsigned ordem){
+  double temp, multiplicador;
+  for(unsigned i = 0; i < ordem; i++){
+    printf("i = %d\n", i);
+    multiplicador = 1/matriz[i][i];
+    printf("multiplicador = %lf\n", multiplicador);
+    temp = multiplicador * termoInd[i];
+    printf("temp = %lf\n", temp);
+    for(unsigned j = 0; j < ordem; j++){
+      printf("j = %d\n", j);
+      if(j == i){
+        continue;
+      }
+      temp += (multiplicador*(matriz[i][j]*-1))*solucao[j];
+      printf("temp = %lf\n", temp);
+      printf("---------------\n");
+    }
+    solucao[i] = temp;
+    printf("solucao[%d] = %lf\n", i, solucao[i]);
+    printf("==================\n");
+  }
+}
+
 int main(){
   double matriz[10][10], termoInd[10], precisao, solucao[10];
   unsigned ordem;
@@ -146,5 +169,9 @@ int main(){
   printf("[ <- ] Insira a precisao desejada > ");
   scanf("%lf", &precisao);
   inicializaSolucao(solucao, ordem);
+  solucionaSistema(matriz, termoInd, solucao, ordem);
+  for(unsigned i = 0; i < ordem; i++){
+    printf("%lf\n", solucao[i]);
+  }
   return 0;
 }
