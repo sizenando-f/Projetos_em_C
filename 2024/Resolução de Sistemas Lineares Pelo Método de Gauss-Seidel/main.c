@@ -176,24 +176,34 @@ double descobrePrecisao(double solucaoAnt[10], double solucaoPost[10], unsigned 
 
 int main(){
   double matriz[10][10], termoInd[10], precisao, solucaoAnt[10], solucaoPost[10], resp;
-  unsigned ordem;
+  unsigned ordem, cont = 1;
+  system("cls");
   defineMatriz(matriz, &ordem, termoInd);
-  printf("[ <- ] Insira a precisao desejada > ");
+  printf(" [ <- ] Insira a precisao desejada > ");
   scanf("%lf", &precisao);
   inicializaSolucao(solucaoAnt, ordem);
+  system("cls");
   do{
     solucionaSistema(matriz, termoInd, solucaoAnt, solucaoPost, ordem);
+    printf("\n ---- SOLUCAO [X%d] ----\n", cont++);
+    for(unsigned i = 0; i < ordem; i++){
+      printf(" | %10.7lf |\n", solucaoPost[i]);
+    }
+    printf(" ------------------------\n");
     resp = descobrePrecisao(solucaoAnt, solucaoPost, ordem);
+    printf(" [ -> ] Precisao descoberta: [%.7lf]\n", resp);
     if(resp > precisao){
       for(unsigned i = 0; i < ordem; i++){
         solucaoAnt[i] = solucaoPost[i];
       }
+      printf(" [ -> ] Nova tentativa...\n");
     }
-    printf("Precisao: %lf\n", resp);
   }while(resp > precisao);
 
+  printf(" ---- SOLUCAO FINAL ----\n");
   for(unsigned i = 0; i < ordem; i++){
-    printf("%lf \n", solucaoPost[i]);
+    printf(" | %10.7lf |\n", solucaoPost[i]);
   }
+  printf(" -----------------------\n");
   return 0;
 }
