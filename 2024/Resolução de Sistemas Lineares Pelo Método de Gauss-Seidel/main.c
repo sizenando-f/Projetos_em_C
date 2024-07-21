@@ -139,6 +139,15 @@ void inicializaSolucao(double solucao[10], unsigned int ordem){
   }while(esc == 'N' || esc == 'n');
 }
 
+/**
+ * @brief Soluciona o sistema passado.
+ * Armazena o resultado da solução do vetor de solução
+ * @param matriz Sistema linear para ser aplicado as operações
+ * @param termoInd Vetor com os termos independentes
+ * @param solucao Vetor de solução anterior ou inicial
+ * @param solucaoPost Vetor onde será armazenado a solução descoberta
+ * @param ordem Dimensão do sistema linear
+ */
 void solucionaSistema(double matriz[10][10], double termoInd[10], double solucao[10], double solucaoPost[10], unsigned ordem){
   double temp, multiplicador;
 
@@ -159,6 +168,13 @@ void solucionaSistema(double matriz[10][10], double termoInd[10], double solucao
   }
 }
 
+/**
+ * @brief Descobre a precisão de duas soluções.
+ * Cálula o maior em módulo da diferença entre a solução anterior e atual e divide pelo maior em módulo da solução atual.
+ * @param solucaoAnt Vetor com a solução anterior
+ * @param solucaoPost Vetor com a solução atual
+ * @param ordem Dimensão da matriz
+ */
 double descobrePrecisao(double solucaoAnt[10], double solucaoPost[10], unsigned ordem){
   double maiorModulo = 0, maiorSolucao = 0, temp;
   for(unsigned i = 0; i < ordem; i++){
