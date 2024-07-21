@@ -139,39 +139,61 @@ void inicializaSolucao(double solucao[10], unsigned int ordem){
   }while(esc == 'N' || esc == 'n');
 }
 
-void solucionaSistema(double matriz[10][10], double termoInd[10], double solucao[10], unsigned ordem){
+void solucionaSistema(double matriz[10][10], double termoInd[10], double solucao[10], double solucaoPost[10], unsigned ordem){
   double temp, multiplicador;
+
   for(unsigned i = 0; i < ordem; i++){
-    printf("i = %d\n", i);
+    solucaoPost[i] = solucao[i];
+  }
+
+  for(unsigned i = 0; i < ordem; i++){
     multiplicador = 1/matriz[i][i];
-    printf("multiplicador = %lf\n", multiplicador);
     temp = multiplicador * termoInd[i];
-    printf("temp = %lf\n", temp);
     for(unsigned j = 0; j < ordem; j++){
-      printf("j = %d\n", j);
       if(j == i){
         continue;
       }
-      temp += (multiplicador*(matriz[i][j]*-1))*solucao[j];
-      printf("temp = %lf\n", temp);
-      printf("---------------\n");
+      temp += (multiplicador*(matriz[i][j]*-1))*solucaoPost[j];
     }
-    solucao[i] = temp;
-    printf("solucao[%d] = %lf\n", i, solucao[i]);
-    printf("==================\n");
+    solucaoPost[i] = temp;
   }
 }
 
+double descobrePrecisao(double solucaoAnt[10], double solucaoPost[10], unsigned ordem){
+  double maiorModulo = 0, maiorSolucao = 0, temp;
+  for(unsigned i = 0; i < ordem; i++){
+    temp = solucaoAnt[i] - solucaoPost[i];
+    if(temp < 0) temp *= -1;
+    maiorModulo = temp > maiorModulo ? temp : maiorModulo;
+  }
+  for(unsigned i = 0; i < ordem; i++){
+    temp = solucaoPost[i];
+    if(temp < 0) temp *= -1;
+    maiorSolucao = temp > maiorSolucao ? temp : maiorSolucao;
+  }
+  return maiorModulo/maiorSolucao;
+}
+
 int main(){
-  double matriz[10][10], termoInd[10], precisao, solucao[10];
+  double matriz[10][10], termoInd[10], precisao, solucaoAnt[10], solucaoPost[10], resp;
   unsigned ordem;
   defineMatriz(matriz, &ordem, termoInd);
   printf("[ <- ] Insira a precisao desejada > ");
   scanf("%lf", &precisao);
-  inicializaSolucao(solucao, ordem);
-  solucionaSistema(matriz, termoInd, solucao, ordem);
+  inicializaSolucao(solucaoAnt, ordem);
+  do{
+    solucionaSistema(matriz, termoInd, solucaoAnt, solucaoPost, ordem);
+    resp = descobrePrecisao(solucaoAnt, solucaoPost, ordem);
+    if(resp > precisao){
+      for(unsigned i = 0; i < ordem; i++){
+        solucaoAnt[i] = solucaoPost[i];
+      }
+    }
+    printf("Precisao: %lf\n", resp);
+  }while(resp > precisao);
+
   for(unsigned i = 0; i < ordem; i++){
-    printf("%lf\n", solucao[i]);
+    printf("%lf \n", solucaoPost[i]);
   }
   return 0;
 }
