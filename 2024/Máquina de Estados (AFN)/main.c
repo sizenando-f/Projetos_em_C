@@ -46,12 +46,13 @@ int verificaPalavra(char palavra[100], char alfabeto[2], int tamPalavra){
 }
 
 // Recebe o alfabeto do usuario
-void getAlfabeto(char alfabeto[2]){
+void getAlfabeto(char alfabeto[3]){
   printf("[ <- ] Insira a primeira letra do alfabeto > ");
   scanf(" %c", &alfabeto[0]);
   printf("[ <- ] Insira a segunda letra do alfabeto > ");
   scanf(" %c", &alfabeto[1]);
-  alfabeto[2] = '\0';
+  alfabeto[2] = 'e';
+  alfabeto[3] = '\0';
   getchar();
   printf("-----------------------------------------------------------------------\n");
 }
@@ -151,20 +152,21 @@ void getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int nu
 }
 
 // Recebe a função de funcionamento da máquina
-void getFuncao(char funcao[20][2], char estados[20], int numEstados, char alfabeto[2]){
+void getFuncao(char funcao[20][3], char estados[20], int numEstados, char alfabeto[3]){
   char temp;
-  for(int i = 0; i < numEstados; i++){
-    for(int j = 0; j < 2; j++){
-      printf("[ <- ] Delta(%c, %c) > ", estados[i], alfabeto[j]);
-      scanf(" %c", &temp);
-      if(!verificaEstado(estados, temp, numEstados) && temp != '-'){
-        printf("[ -># ERRO ] Utilize '-' para representar estado parcial\n");
-        j--;
-      } else {
-        funcao[i][j] = temp;
+    for(int i = 0; i < numEstados; i++){
+      for(int j = 0; j < 3; j++){
+        printf("[ <- ] Delta(%c, %c) > ",  estados[i], alfabeto[j]);
+        scanf(" %c", &temp);
+        if(!verificaEstado(estados, temp, numEstados) && temp != '-' && temp != 'e'){
+          printf("[ -># ERRO ] Estado nao reconhecido pelo programa! Tente novamente...\n");
+          j--;
+        } else {
+          funcao[i][j] = temp;
+        }
       }
     }
-  }
+  
   getchar();
   printf("-----------------------------------------------------------------------\n");
 }
@@ -188,7 +190,7 @@ void getPalavra(char palavra[100], char alfabeto[2]){
 }
 
 // Executa a máquina por completo
-int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], char palavra[100]){
+int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][3], char palavra[100]){
   int tamPalavra = strlen(palavra);
   limpa_tela();
   printf("Palavra %s", palavra);
@@ -218,7 +220,7 @@ int executaMaquina(char estadoInicial, char estados[20], char alfabeto[], char e
 }
 
 // Usuário escolhe ou não continuar com os dados entrados
-void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][2], int numEstados){
+void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][3], int numEstados){
   printf("            [# VISAO GERAL #]\n");
   printf("[ @ ] Estados da maquina   -> ");
   for(int i = 0; i < numEstados; i++){
@@ -231,21 +233,21 @@ void exibeVisaoGeral(char estadoInicial, char estados[20], char alfabeto[], char
     printf("[%c] ", estadosDeAceitacao[i]);
   }
   printf("\n\n  { FUNCAO }\n");
-  printf("--------------\n");
-  printf("|   | %c    %c |\n", alfabeto[0], alfabeto[1]);
-  printf("--------------\n");
+  printf("-------------------\n");
+  printf("|   | %c    %c    %c |\n", alfabeto[0], alfabeto[1], alfabeto[2]);
+  printf("-------------------\n");
   for(int i = 0; i < numEstados; i++){
     printf("| %c ", estados[i]);
-    for(int j = 0; j < 2; j++){
+    for(int j = 0; j < 3; j++){
       printf("| %c |", funcao[i][j]);
     }
     printf("\n");
-    printf("--------------\n");
+    printf("-------------------\n");
   }
 }
 
 // Realiza todos os passos de montagem da máquina
-void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20], char *estadoInicial, char funcao[20][2], int *numEstados){
+void inicializa(char estados[20], char alfabeto[3], char estadosDeAceitacao[20], char *estadoInicial, char funcao[20][3], int *numEstados){
   int numEstadosTemp = 0;
   char estadoInicialTemp;
   getEstados(estados, &numEstadosTemp);
@@ -258,7 +260,7 @@ void inicializa(char estados[20], char alfabeto[2], char estadosDeAceitacao[20],
 }
 
 int main(){
-  char estadoInicial, alfabeto[2] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][2], palavra[100] = "", esc;
+  char estadoInicial, alfabeto[3] = "", estados[20] = "", estadosDeAceitacao[20] = "", funcao[20][3], palavra[100] = "", esc;
   int check = 1;
 
   // Processo de inserção de dados na máquina e verificação
