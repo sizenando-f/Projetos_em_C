@@ -1,110 +1,107 @@
-# Máquina de Estados
+# Simulação de Máquina de Estados Finitos Não-Determinística (AFN)
 
-## Descrição
-
-Este projeto implementa uma simulação de uma Máquina de Estados determinística. A máquina é configurada pelo usuário com um conjunto de estados, alfabeto, estado inicial, estados de aceitação e uma função de transição. Após a configuração, o programa permite testar palavras para verificar se são aceitas ou não pela máquina.
-
-- **Versão**: 1.2.2
-- **Autor**: Sizenando S. França
-- **Data de criação**: 19/05/24
-- **Última modificação**: 23/05/24
+Este projeto implementa uma simulação de uma Máquina de Estados Finitos Não-Determinística (AFN) em C. A máquina aceita ou rejeita palavras de acordo com as transições definidas e os estados de aceitação fornecidos pelo usuário.
 
 ## Funcionalidades
 
-- **Configuração da Máquina**: O usuário insere os estados, alfabeto, estado inicial, estados de aceitação e função de transição.
-- **Verificação de Entradas**: O programa verifica se os estados e letras inseridos pertencem ao conjunto definido.
-- **Execução da Máquina**: O usuário pode testar palavras para ver se são aceitas pela máquina, exibindo o caminho percorrido e indicando se a palavra foi aceita ou não.
-- **Interface de Usuário Intuitiva**: Utiliza limpeza de tela automática de acordo com o sistema operacional para melhor experiência do usuário.
+- **Configuração do Alfabeto:** O usuário define um alfabeto de duas letras.
+- **Definição de Estados:** O usuário insere os estados da máquina, o estado inicial, e os estados de aceitação.
+- **Função de Transição:** A função de transição é configurada para cada par de estado e letra do alfabeto, incluindo transições epsilon (transições sem consumir caracteres da palavra).
+- **Execução da Máquina:** A máquina processa palavras de entrada e determina se são aceitas ou rejeitadas com base nas transições e nos estados de aceitação.
 
-## Bibliotecas Utilizadas
+## Como Executar
 
-- **stdio.h**: Para funções de entrada e saída padrão.
-- **stdlib.h**: Para a função `system()` utilizada na limpeza de tela.
-- **string.h**: Para manipulação de strings e funções como `strcpy()` e `strlen()`.
+### Pré-requisitos
 
-## Compilação e Execução
+- **Compilador C**: GCC ou similar.
 
-Para compilar o programa, utilize o seguinte comando:
+### Compilação
 
-```bash
-gcc -o maquina_de_estados main.c
-```
-
-Para executar o programa compilado:
+Compile o código com o comando:
 
 ```bash
-./maquina_de_estados
+gcc -o afn_simulator main.c
 ```
 
-## Como Usar
+### Execução
 
-1. **Configuração da Máquina**:
+Execute o programa com o comando:
 
-   - Insira os estados da máquina separados por vírgulas.
-   - Defina o alfabeto da máquina inserindo duas letras.
-   - Especifique o estado inicial da máquina.
-   - Informe os estados de aceitação separados por vírgulas.
-   - Para cada estado e letra do alfabeto, defina a transição utilizando '-' para representar um estado parcial.
+```bash
+./afn_simulator
+```
 
-2. **Teste de Palavras**:
+### Interação com o Programa
 
-   - Após configurar a máquina, insira uma palavra para testar se é aceita pela máquina.
-   - O programa mostrará o caminho percorrido pela palavra na máquina e indicará se a palavra foi aceita ou não.
+1. **Definir o Alfabeto**: O programa solicitará ao usuário que insira duas letras que compõem o alfabeto da máquina.
 
-3. **Continuação e Encerramento**:
-   - Após testar uma palavra, o usuário pode optar por testar outra palavra ou encerrar o programa.
+2. **Inserir os Estados da Máquina**: O usuário deve inserir todos os estados da máquina, separados por vírgulas (e.g., `q0,q1,q2`).
+
+3. **Definir o Estado Inicial**: O programa solicitará que o usuário insira o estado inicial da máquina.
+
+4. **Definir os Estados de Aceitação**: O usuário deve inserir os estados de aceitação, separados por vírgulas.
+
+5. **Configurar a Função de Transição**: O usuário será solicitado a inserir as transições para cada estado e símbolo do alfabeto, incluindo transições epsilon. Use `-` para indicar a ausência de transição.
+
+6. **Testar Palavras**: O usuário pode inserir palavras para verificar se são aceitas pela máquina. Para sair, digite `sair`.
 
 ## Exemplo de Uso
 
-```bash
-            ==== MAQUINA DE ESTADOS ====
-[ <- ] Insira os estados da maquina (separe por virgulas) > A,B,C,D
+```text
 [ <- ] Insira a primeira letra do alfabeto > a
 [ <- ] Insira a segunda letra do alfabeto > b
 -----------------------------------------------------------------------
-[ <- ] Insira os estados de aceitacao da maquina (separe por virgulas) > C,D
+[ <- ] Insira os estados da maquina (separe por virgulas) > q0,q1,q2
 -----------------------------------------------------------------------
-[ <- ] Insira o estado inicial da maquina > A
+[ <- ] Insira o estado inicial da maquina > q0
 -----------------------------------------------------------------------
-[ <- ] Delta(A, a) > B
-[ <- ] Delta(A, b) > C
-[ <- ] Delta(B, a) > D
-[ <- ] Delta(B, b) > -
-[ <- ] Delta(C, a) > -
-[ <- ] Delta(C, b) > C
-[ <- ] Delta(D, a) > -
-[ <- ] Delta(D, b) > C
+[ <- ] Insira os estados de aceitacao da maquina (separe por virgulas) > q2
+-----------------------------------------------------------------------
+[ <- ] Delta(q0, a) > q1
+[ <- ] Delta(q0, b) > -
+[ <- ] Delta(q0, e) > -
+[ <- ] Delta(q1, a) > -
+[ <- ] Delta(q1, b) > q2
+[ <- ] Delta(q1, e) > -
+[ <- ] Delta(q2, a) > -
+[ <- ] Delta(q2, b) > -
+[ <- ] Delta(q2, e) > -
 -----------------------------------------------------------------------
             [# VISAO GERAL #]
-[ @ ] Estados da maquina   -> [A] [B] [C] [D]
+[ @ ] Estados da maquina   -> [q0] [q1] [q2]
 [ @ ] Alfabeto             -> [a] [b]
-[ @ ] Estado inicial       -> [A]
-[ @ ] Estados de aceitacao -> [C] [D]
+[ @ ] Estado inicial       -> [q0]
+[ @ ] Estados de aceitacao -> [q2]
 
   { FUNCAO }
 --------------
-|   | a    b |
+|   | a    b    e |
 --------------
-| A | B |C |
+| q0 | q1    -    - |
+| q1 | -    q2    - |
+| q2 | -    -    - |
 --------------
-| B | D |- |
---------------
-| C |- |C |
---------------
-| D |- |C |
---------------
-[ <- ] Deseja continuar? [S/n] > S
 
-[ <- ] Insira a palavra > abab
------------------------------------------------------------------------
-Palavra abab
-< Estados de aceitacao [C] [D] >
- -> [A] -> [B] -> [D] -> [C] -> [C]
-[ -> ] A maquina terminou em um estado aceitacao, a palavra foi aceita
-[ <- ] Deseja tentar outra palavra? [S/n] > n
-[ -> ] PROGRAMA ENCERRADO
+[ <- ] Insira a palavra para ser testada (ou "sair" para sair) > ab
+[# RESULTADO #] A palavra foi aceita pela maquina!
 ```
 
-## Contribuições
+## Explicação das Funções
 
-Contribuições são bem-vindas! Para sugestões de melhorias ou correções, entre em contato com o autor ou abra uma issue no repositório do projeto.
+### Funções de Entrada
+
+- **`getAlfabeto(char alfabeto[2])`**: Solicita ao usuário as duas letras do alfabeto.
+- **`getEstados(char estados[20], int *numEstados)`**: Recebe os estados da máquina.
+- **`getEstadoInicial(char estados[20], char *estadoInicial, int numEstados)`**: Define o estado inicial.
+- **`getEstadosDeAceitacao(char estados[20], char estadosDeAceitacao[20], int numEstados)`**: Define os estados de aceitação.
+- **`getFuncao(char funcao[20][3][20], char estados[20], int numEstados, char alfabeto[2])`**: Recebe a função de transição.
+
+### Funções de Execução
+
+- **`executaAFN(char estadoAtual, char estados[20], char alfabeto[], char estadosDeAceitacao[20], char funcao[20][3][20], char palavra[100], int tamPalavra, int posicao)`**: Processa a palavra na máquina, retornando se é aceita ou rejeitada.
+
+### Funções de Verificação
+
+- **`verificaEstado(char estados[20], char estado, int numEstados)`**: Verifica se um estado existe no conjunto de estados.
+- **`verificaPalavra(char palavra[100], char alfabeto[2], int tamPalavra)`**: Verifica se todas as letras da palavra estão no alfabeto.
+- **`verificaEstados(char estados[20], char palavra[20], int numEstados, int numEstadosAceitacao)`**: Verifica se os estados de aceitação são válidos.
