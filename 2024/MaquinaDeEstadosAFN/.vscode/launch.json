@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/TIL/Máquina de Estados",
-      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/TIL/Máquina de Estados/build/Debug/outDebug",
+      "cwd": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/Máquina de Estados (AFN)",
+      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/Máquina de Estados (AFN)/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
