@@ -175,11 +175,12 @@ int executaAFN(char estadoAtual, char estados[20], char alfabeto[], char estados
 
   if(posicao < tamPalavra){
     // Transições normais (baseadas no alfabeto)
-    int indiceEstado = encontraEstado(estados, estadoAtual, strlen(estados));
+    int indiceEstado = encontraEstado(estados, estadoAtual, (int) strlen(estados));
     int indiceLetra = encontraLetra(alfabeto, palavra[posicao]);
     if(strlen(funcao[indiceEstado][indiceLetra]) > 0){
       for(size_t i = 0; i < strlen(funcao[indiceEstado][indiceLetra]); i++){
         if(executaAFN(funcao[indiceEstado][indiceLetra][i], estados, alfabeto, estadosDeAceitacao, funcao, palavra, tamPalavra, posicao + 1)){
+          printf("[%c] (%c) <-", funcao[indiceEstado][indiceLetra][i], palavra[posicao]);
           return 1;
         }
       }
@@ -187,10 +188,11 @@ int executaAFN(char estadoAtual, char estados[20], char alfabeto[], char estados
   }
 
   // Transições epsilon
-  int indiceEstado = encontraEstado(estados, estadoAtual, strlen(estados));
+  int indiceEstado = encontraEstado(estados, estadoAtual, (int) strlen(estados));
   if(strlen(funcao[indiceEstado][2]) > 0){
     for(size_t i = 0; i < strlen(funcao[indiceEstado][2]); i++){
       if(executaAFN(funcao[indiceEstado][2][i], estados, alfabeto, estadosDeAceitacao, funcao, palavra, tamPalavra, posicao)){
+        printf("[%c] (e) <- ", funcao[indiceEstado][2][i]);
         return 1;
       }
     }
@@ -253,7 +255,7 @@ int main() {
   while (1) {
     printf("[ <- ] Insira a palavra para ser testada (ou \"sair\" para sair) > ");
     fgets(palavra, sizeof(palavra), stdin);
-    palavra[strcspn(palavra, "\n")] = '\0'; // Remove newline character
+    palavra[strcspn(palavra, "\n")] = '\0'; 
 
     // Verifica se o usuário deseja sair
     if (strcmp(palavra, "sair") == 0) {
@@ -261,11 +263,11 @@ int main() {
     }
 
     // Verifica se a palavra é válida
-    if (verificaPalavra(palavra, alfabeto, strlen(palavra))) {
-      if (executaAFN(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra, strlen(palavra), 0)) {
-        printf("[# RESULTADO #] A palavra foi aceita pela maquina!\n");
+    if (verificaPalavra(palavra, alfabeto, (int) strlen(palavra))) {
+      if (executaAFN(estadoInicial, estados, alfabeto, estadosDeAceitacao, funcao, palavra, (int) strlen(palavra), 0)) {
+        printf("\n[# RESULTADO #] A palavra foi aceita pela maquina!\n");
       } else {
-        printf("[# RESULTADO #] A palavra foi rejeitada pela maquina.\n");
+        printf("\n[# RESULTADO #] A palavra foi rejeitada pela maquina.\n");
       }
     } else {
       printf("[ -># ERRO ] A palavra inserida contem simbolos que nao pertencem ao alfabeto.\n");
