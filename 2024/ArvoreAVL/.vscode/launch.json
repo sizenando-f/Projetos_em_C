@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/MaquinaDeEstadosAFN",
-      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/MaquinaDeEstadosAFN/build/Release/outRelease",
+      "cwd": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/ArvoreAVL",
+      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/ArvoreAVL/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
