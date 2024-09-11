@@ -14,7 +14,7 @@ void execute(unsigned n, int a, int b, double constantes[]){
   double resultAnt = 0, result;
   int cont = 0, check = 0;
 
-  printf("[ -> ] Analisando...\n");
+  printf("\n[ -> ] Analisando...\n");
   for(int i = a; i <= b; i++){
     result = 0;
     for(unsigned j = 0; j < n; j++){
@@ -23,7 +23,8 @@ void execute(unsigned n, int a, int b, double constantes[]){
     if(cont++){
       if(resultAnt*result < 0){ // f(a).f(b) < 0
         check = 1;
-        printf("[ -> ] Raiz no intervalo: (%d, %d)\n", i-1, i);
+        printf("[ ! ] Raiz no intervalo: (%d, %d)\n", i-1, i);
+        printf("[ -> ] f(%d) = %.7lf | f(%d) = %.7lf\n\n", i-1, resultAnt, i, result);
       }
     }
     resultAnt = result;
