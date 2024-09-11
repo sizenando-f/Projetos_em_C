@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 void execute(double p, double m){
   double X, Xant = 1;
@@ -20,8 +21,15 @@ void start(double *p, double *m){
 }
 
 int main(){
-  double p, m;
+  double p, m, tempo_gasto;
+  struct timespec inicio, fim;
   start(&p, &m);
+
+  clock_gettime(CLOCK_MONOTONIC, &inicio);
   execute(p, m);
+  clock_gettime(CLOCK_MONOTONIC, &fim);
+  tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
+  printf("[ info ] Tempo de execucao: %lfs\n", tempo_gasto);
+
   return 0;
 }
