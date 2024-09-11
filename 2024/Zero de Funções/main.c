@@ -10,21 +10,27 @@
  * @param b Segundo valor do intervalo
  * @param constantes Constantes da função polinomial
  */
-void execute(unsigned n, int a, int b, float constantes[]){
-  float resultAnt, result;
-  int cont = 0;
+void execute(unsigned n, int a, int b, double constantes[]){
+  double resultAnt = 0, result;
+  int cont = 0, check = 0;
 
+  printf("[ -> ] Analisando...\n");
   for(int i = a; i <= b; i++){
     result = 0;
-    for(int j = 0; j < n; j++){
+    for(unsigned j = 0; j < n; j++){
       result += constantes[j]*pow(i, j);  // f(x) = Cn*x^n
     }
     if(cont++){
       if(resultAnt*result < 0){ // f(a).f(b) < 0
+        check = 1;
         printf("[ -> ] Raiz no intervalo: (%d, %d)\n", i-1, i);
       }
     }
     resultAnt = result;
+  }
+
+  if(!check){
+    printf("[ -> ] Nenhuma raiz foi encontrado\n");
   }
 }
 
@@ -37,15 +43,15 @@ void execute(unsigned n, int a, int b, float constantes[]){
  * @param constantes Constantes da função 
  * @param erro Condição de parada
  */
-void start(unsigned *n, int *a, int *b, float **constantes){
+void start(unsigned *n, int *a, int *b, double **constantes){
   printf("[ <- ] Entre com o numero de constantes (n) > ");
   scanf("%u", n);
   getchar();
 
-  *constantes = (float*) malloc((*n) * sizeof(float));
+  *constantes = (double*) malloc((*n) * sizeof(double));
   for(unsigned i = 0; i < (*n); i++){
     printf("[ <- ] Entre com a constante C%d > ", i);
-    scanf("%f", &(*constantes)[i]);
+    scanf("%lf", &(*constantes)[i]);
   }
   getchar();
 
@@ -56,7 +62,7 @@ void start(unsigned *n, int *a, int *b, float **constantes){
 int main(){
   unsigned n;
   int a, b;
-  float *constantes;
+  double *constantes;
 
   start(&n, &a, &b, &constantes);
   execute(n, a, b, constantes);
