@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 /**
  * @brief Itera sobre todos valores dentro do intervalo
@@ -63,11 +64,16 @@ void start(unsigned *n, int *a, int *b, double **constantes){
 int main(){
   unsigned n;
   int a, b;
-  double *constantes;
+  double *constantes, tempo_gasto;
+  struct timespec inicio, fim;
 
   start(&n, &a, &b, &constantes);
-  execute(n, a, b, constantes);
 
+  clock_gettime(CLOCK_MONOTONIC, &inicio);
+  execute(n, a, b, constantes);
+  clock_gettime(CLOCK_MONOTONIC, &fim);
+  tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
+  printf("[ info ] Tempo de execucao: %lfs\n", tempo_gasto);
   free(constantes);
   return 0;
 }
