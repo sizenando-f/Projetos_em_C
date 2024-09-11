@@ -2,8 +2,30 @@
 #include <stdlib.h>
 #include <math.h>
 
-void execute(unsigned n, float a, float b, float constantes[]){
-  
+/**
+ * @brief Itera sobre todos valores dentro do intervalo
+ * 
+ * @param n Numero de constantes
+ * @param a Primeiro valor do intervalo
+ * @param b Segundo valor do intervalo
+ * @param constantes Constantes da função polinomial
+ */
+void execute(unsigned n, int a, int b, float constantes[]){
+  float resultAnt, result;
+  int cont = 0;
+
+  for(int i = a; i <= b; i++){
+    result = 0;
+    for(int j = 0; j < n; j++){
+      result += constantes[j]*pow(i, j);  // f(x) = Cn*x^n
+    }
+    if(cont++){
+      if(resultAnt*result < 0){ // f(a).f(b) < 0
+        printf("[ -> ] Raiz no intervalo: (%d, %d)\n", i-1, i);
+      }
+    }
+    resultAnt = result;
+  }
 }
 
 /**
@@ -15,7 +37,7 @@ void execute(unsigned n, float a, float b, float constantes[]){
  * @param constantes Constantes da função 
  * @param erro Condição de parada
  */
-void start(unsigned *n, float *a, float *b, float **constantes){
+void start(unsigned *n, int *a, int *b, float **constantes){
   printf("[ <- ] Entre com o numero de constantes (n) > ");
   scanf("%u", n);
   getchar();
@@ -28,14 +50,16 @@ void start(unsigned *n, float *a, float *b, float **constantes){
   getchar();
 
   printf("[ <- ] Entre com o intervalo no formato '[a,b]' > ");
-  scanf("[%f,%f]", a, b);
+  scanf("[%d,%d]", a, b);
 }
 
 int main(){
   unsigned n;
-  float a, b, *constantes;
+  int a, b;
+  float *constantes;
 
   start(&n, &a, &b, &constantes);
+  execute(n, a, b, constantes);
 
   free(constantes);
   return 0;
