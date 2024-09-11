@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/Zero de Funções",
-      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/Zero de Funções/build/Debug/outDebug",
+      "program": "c:/Users/sizen/OneDrive/Área de Trabalho/Ciencia da Computação/Projetos em C/2024/Zero de Funções/build/Release/outRelease",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
