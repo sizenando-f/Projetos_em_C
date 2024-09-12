@@ -123,6 +123,13 @@ void mergeSort(int arr[], int l, int r)
     }
 }
 
+int mediana(int vet[], int ini, int fim){
+    int meio = ini + (fim - ini)/2;
+    if(vet[meio] > vet[ini] && vet[meio] < vet[fim]) return meio;
+    if(vet[ini] > vet[meio] && vet[ini] < vet[fim]) return ini;
+    return fim;
+}
+
 int main(){
   // int vetor[] = {1,5,6,2,4,8,3,4,98,0, 87, 23, 54, 76, 88, 22};
   int n = 50;
