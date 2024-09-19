@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <conio.h>
 #include <math.h>
 #include <time.h>
@@ -205,29 +206,19 @@ void heapsort(int vetor[], int n){
   }
 }
 
-int main(){
-  int n = 50;
-  int *vetor = (int*) malloc(n * sizeof(int));
-  // int vetor[] = {2, 1, 3};
-  srand(time(NULL));
-  geraNaleatorio(vetor, n);
-
-  printf("Antes:\n");
-  for(int i = 0; i < n; i++){
-    printf("%d ", vetor[i]);
+int main(int argc, char* argv[]){
+  // int32_t *vetor = NULL;
+  if(argc < 4 || argc > 4){
+    printf("[ #<- ERRO ] Numero invalido de entradas\n");
+    return;
   }
-
   // bubbleSortOriginal(vetor, n);
   // bubbleSortMelhorado(vetor, n);
   // insertionSort(vetor, n);
   // mergeSort(vetor, 0, n-1);
   // quicksort(vetor, 0, n-1);
-  heapsort(vetor, n);
-
-  printf("\nDepois:\n");
-  for(int i = 0; i < n; i++){
-    printf("%d\n", vetor[i]);
-  }
-  free(vetor);
+  // heapsort(vetor, n);
+  // free(vetor);
+  system("pause");
   return 0;
 }
