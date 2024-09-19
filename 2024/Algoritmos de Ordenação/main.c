@@ -60,22 +60,20 @@ void insertionSort(int *vetor, unsigned n){
   }
 }
 
+// Função auxiliar de opção 4
 void merge(int arr[], int l, int m, int r)
 {
     int i, j, k;
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    // Create temp arrays
     int L[n1], R[n2];
 
-    // Copy data to temp arrays L[] and R[]
     for (i = 0; i < n1; i++)
         L[i] = arr[l + i];
     for (j = 0; j < n2; j++)
         R[j] = arr[m + 1 + j];
 
-    // Merge the temp arrays back into arr[l..r
     i = 0;
     j = 0;
     k = l;
@@ -91,16 +89,12 @@ void merge(int arr[], int l, int m, int r)
         k++;
     }
 
-    // Copy the remaining elements of L[],
-    // if there are any
     while (i < n1) {
         arr[k] = L[i];
         i++;
         k++;
     }
 
-    // Copy the remaining elements of R[],
-    // if there are any
     while (j < n2) {
         arr[k] = R[j];
         j++;
@@ -108,26 +102,47 @@ void merge(int arr[], int l, int m, int r)
     }
 }
 
-// l is for left index and r is right index of the
-// sub-array of arr to be sorted
-void mergeSort(int arr[], int l, int r)
+// Opção 4
+void mergeSort(int arr[], int esq, int dir)
 {
-    if (l < r) {
-        int m = l + (r - l) / 2;
+    if (esq < dir) {
+        int m = esq + (dir - esq) / 2;
 
-        // Sort first and second halves
-        mergeSort(arr, l, m);
-        mergeSort(arr, m + 1, r);
+        mergeSort(arr, esq, m);
+        mergeSort(arr, m + 1, dir);
 
-        merge(arr, l, m, r);
+        merge(arr, esq, m, dir);
     }
 }
 
+int mediana(int vet[], int ini, int fim){
+  int meio = ini + (fim+1 - ini)/2;
+  if(vet[meio] > vet[ini] && vet[meio] < vet[fim]) return meio;
+  if(vet[ini] > vet[meio] && vet[ini] < vet[fim]) return ini; 
+  return fim;
+}
+
+// Opção 5
+void quicksort(int vetor[], int ini, int fim){
+  int i = ini, j = fim, pivo = vetor[mediana(vetor, ini, fim)];
+  while(i <= j){
+    while(vetor[i] < pivo) i++;
+    while(vetor[j] > pivo) j--;
+    if(i <= j){
+      int aux = vetor[j];
+      vetor[j] = vetor[i];
+      vetor[i] = aux;
+      i++; j--;
+    }
+  }
+  if(ini < j) quicksort(vetor, ini, j);
+  if(i < fim) quicksort(vetor, i, fim);
+}
+
 int main(){
-  // int vetor[] = {1,5,6,2,4,8,3,4,98,0, 87, 23, 54, 76, 88, 22};
   int n = 50;
   int *vetor = (int*) malloc(n * sizeof(int));
-
+  // int vetor[] = {2, 1, 3};
   srand(time(NULL));
   geraNaleatorio(vetor, n);
 
@@ -139,7 +154,8 @@ int main(){
   // bubbleSortOriginal(vetor, n);
   // bubbleSortMelhorado(vetor, n);
   // insertionSort(vetor, n);
-  mergeSort(vetor, 0, n-1);
+  // mergeSort(vetor, 0, n-1);
+  quicksort(vetor, 0, n-1);
 
   printf("\nDepois:\n");
   for(int i = 0; i < n; i++){
