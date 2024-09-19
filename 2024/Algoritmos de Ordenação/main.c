@@ -10,7 +10,7 @@ void geraNaleatorio(int *vetor, int n){
   }
 }
 
-// Opção 1
+// Opção 1 : Bubble-sort original
 void bubbleSortOriginal(int vetor[], unsigned n){
   for(unsigned i = 0; i < n; i++){
     for(unsigned j = 0; j < n-1; j++){
@@ -23,7 +23,7 @@ void bubbleSortOriginal(int vetor[], unsigned n){
   }
 }
 
-// Opção 2
+// Opção 2 : Bubble-sort melhorado
 void bubbleSortMelhorado(int vetor[], unsigned n){
   int mudou = 1;
   unsigned nLinha = n, guarda = n;
@@ -45,7 +45,7 @@ void bubbleSortMelhorado(int vetor[], unsigned n){
   }
 }
 
-// Opção 3
+// Opção 3 : Insertion-sort
 void insertionSort(int *vetor, unsigned n){
   for(int i = 1; i < (int) n; i++){
     int prov = vetor[i];
@@ -102,7 +102,7 @@ void merge(int arr[], int l, int m, int r)
     }
 }
 
-// Opção 4
+// Opção 4 : Mergesort
 void mergeSort(int arr[], int esq, int dir)
 {
     if (esq < dir) {
@@ -115,6 +115,7 @@ void mergeSort(int arr[], int esq, int dir)
     }
 }
 
+// Função auxiliar para opções 5, 6 e 7
 int mediana(int vet[], int ini, int fim){
   int meio = ini + (fim+1 - ini)/2;
   if(vet[meio] > vet[ini] && vet[meio] < vet[fim]) return meio;
@@ -122,8 +123,44 @@ int mediana(int vet[], int ini, int fim){
   return fim;
 }
 
-// Opção 5
-void quicksort(int vetor[], int ini, int fim){
+// Opção 5 : Quicksort com pivô sendo o último elemento
+void quicksort1(int vetor[], int ini, int fim){
+  int i = ini, j = fim, pivo = vetor[fim];
+  while(i <= j){
+    while(vetor[i] < pivo) i++;
+    while(vetor[j] > pivo) j--;
+    if(i <= j){
+      int aux = vetor[j];
+      vetor[j] = vetor[i];
+      vetor[i] = aux;
+      i++; j--;
+    }
+  }
+  if(ini < j) quicksort1(vetor, ini, j);
+  if(i < fim) quicksort1(vetor, i, fim);
+}
+
+// Opção 6 : Quicksort com pivô sendo um elemento aleatório
+void quicksort2(int vetor[], int ini, int fim){
+  srand(time(NULL));
+  int i = ini, j = fim, pivo = vetor[rand()%fim];
+  while(i <= j){
+    while(vetor[i] < pivo) i++;
+    while(vetor[j] > pivo) j--;
+    if(i <= j){
+      int aux = vetor[j];
+      vetor[j] = vetor[i];
+      vetor[i] = aux;
+      i++; j--;
+    }
+  }
+  if(ini < j) quicksort2(vetor, ini, j);
+  if(i < fim) quicksort2(vetor, i, fim);
+}
+
+
+// Opção 7 : Quicksort com pivô sendo a mediana de três
+void quicksort3(int vetor[], int ini, int fim){
   int i = ini, j = fim, pivo = vetor[mediana(vetor, ini, fim)];
   while(i <= j){
     while(vetor[i] < pivo) i++;
@@ -135,8 +172,37 @@ void quicksort(int vetor[], int ini, int fim){
       i++; j--;
     }
   }
-  if(ini < j) quicksort(vetor, ini, j);
-  if(i < fim) quicksort(vetor, i, fim);
+  if(ini < j) quicksort3(vetor, ini, j);
+  if(i < fim) quicksort3(vetor, i, fim);
+}
+
+// Opção 8 : Heapsort
+void heapsort(int vetor[], int n){
+  int i = n/2, pai, filho, t;
+  while(1){
+    if(i > 0){
+      i--;
+      t = vetor[i];
+    } else {
+      n--;
+      if(n <= 0) return;
+      t = vetor[n];
+      vetor[n] = vetor[0];
+    }
+    pai = i;
+    filho = i * 2 + 1;
+    while(filho < n){
+      if((filho + 1 < n) && (vetor[filho+1] > vetor[filho])) filho++;
+      if(vetor[filho] > t){
+        vetor[pai] = vetor[filho];
+        pai = filho;
+        filho = pai * 2 + 1;
+      } else {
+        break;
+      }
+    }
+    vetor[pai] = t;
+  }
 }
 
 int main(){
@@ -155,7 +221,8 @@ int main(){
   // bubbleSortMelhorado(vetor, n);
   // insertionSort(vetor, n);
   // mergeSort(vetor, 0, n-1);
-  quicksort(vetor, 0, n-1);
+  // quicksort(vetor, 0, n-1);
+  heapsort(vetor, n);
 
   printf("\nDepois:\n");
   for(int i = 0; i < n; i++){
