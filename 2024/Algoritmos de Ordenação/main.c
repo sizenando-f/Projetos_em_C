@@ -206,19 +206,43 @@ void heapsort(int vetor[], int n){
   }
 }
 
+// Argc 1 = Programa (ignora)
+// Argc 2 = Qual algoritmo será executado (1 a 8)
+// Argc 3 = Nome do arquivo de entrada
+// Argc 4 = Nome do arquivo de saída
+// Não deve ter interação com usuário mas pode mostrar feedbacks
+// Tem que mostrar o tempo de execução do algoritmo escolhido
 int main(int argc, char* argv[]){
-  // int32_t *vetor = NULL;
   if(argc < 4 || argc > 4){
     printf("[ #<- ERRO ] Numero invalido de entradas\n");
-    return;
+    return 1;
   }
+  FILE *fp = fopen(argv[2], "rb");
+  if(fp == NULL){
+    printf("Nao foi possivel abrir o arquivo, verifique o nome ou se o arquivo esta na mesma pasta que o executavel\n");
+    return 1;
+  }
+
+  fseek(fp, 0, SEEK_END);
+  long size = ftell(fp)/sizeof(int32_t);
+  printf("O arquivo possui %lu elementos", size);
+  fseek(fp, 0, SEEK_SET);
+
+  int32_t *vetor = (int32_t*) malloc(size * sizeof(int32_t));
+  fread(vetor, sizeof(int32_t), size, fp);
+  fclose(fp);
+  
+  for(int i = 0; i < size; i++){
+    printf("%d\n", vetor[i]);
+  }
+  free(vetor);
+
   // bubbleSortOriginal(vetor, n);
   // bubbleSortMelhorado(vetor, n);
   // insertionSort(vetor, n);
   // mergeSort(vetor, 0, n-1);
   // quicksort(vetor, 0, n-1);
   // heapsort(vetor, n);
-  // free(vetor);
-  system("pause");
+  // system("pause");
   return 0;
 }
