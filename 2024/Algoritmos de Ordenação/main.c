@@ -206,15 +206,18 @@ void heapsort(int vetor[], int n){
   }
 }
 
-// Argc 1 = Programa (ignora)
-// Argc 2 = Qual algoritmo será executado (1 a 8)
-// Argc 3 = Nome do arquivo de entrada
-// Argc 4 = Nome do arquivo de saída
+// Argc 0 = Programa (ignora)
+// Argc 1 = Qual algoritmo será executado (1 a 8)
+// Argc 2 = Nome do arquivo de entrada
+// Argc 3 = Nome do arquivo de saída
 // Não deve ter interação com usuário mas pode mostrar feedbacks
 // Tem que mostrar o tempo de execução do algoritmo escolhido
 int main(int argc, char* argv[]){
+  struct timespec inicio, fim;
+  double tempo_gasto;
+
   if(argc < 4 || argc > 4){
-    printf("[ #<- ERRO ] Numero invalido de entradas\n");
+    printf("Numero invalido de entradas\n");
     return 1;
   }
   FILE *fp = fopen(argv[2], "rb");
@@ -222,27 +225,61 @@ int main(int argc, char* argv[]){
     printf("Nao foi possivel abrir o arquivo, verifique o nome ou se o arquivo esta na mesma pasta que o executavel\n");
     return 1;
   }
-
   fseek(fp, 0, SEEK_END);
-  long size = ftell(fp)/sizeof(int32_t);
-  printf("O arquivo possui %lu elementos", size);
+  long n = ftell(fp)/sizeof(int32_t);
+  printf("O arquivo possui %lu elementos", n);
   fseek(fp, 0, SEEK_SET);
 
-  int32_t *vetor = (int32_t*) malloc(size * sizeof(int32_t));
-  fread(vetor, sizeof(int32_t), size, fp);
+  int32_t *vetor = (int32_t*) malloc(n * sizeof(int32_t));
+  printf("Lendo o arquivo...\n");
+  fread(vetor, sizeof(int32_t), n, fp);
   fclose(fp);
   
-  for(int i = 0; i < size; i++){
+  printf("Ordenando...\n");
+  clock_gettime(CLOCK_MONOTONIC, &inicio);
+  switch (atoi(argv[1])){
+  case 1:
+    bubbleSortOriginal(vetor, n);
+    break;
+  case 2:
+    bubbleSortMelhorado(vetor, n);
+    break;
+  case 3:
+    insertionSort(vetor, n);
+    break;
+  case 4:
+    mergeSort(vetor, 0, n-1);
+    break;
+  case 5:
+    quicksort1(vetor, 0, n-1);
+    break;
+  case 6:
+    quicksort2(vetor, 0, n-1);
+    break;
+  case 7:
+    quicksort3(vetor, 0, n-1);
+    break;
+  case 8:
+    heapsort(vetor, n);
+    break;
+  default:
+    printf("Algoritmo invalido\n");
+    free(vetor);
+    return 1;
+  }
+  clock_gettime(CLOCK_MONOTONIC, &fim);
+  tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
+
+  printf("Exibindo numeros ordenados...\n");
+  for(int i = 0; i < n; i++){
     printf("%d\n", vetor[i]);
   }
-  free(vetor);
 
-  // bubbleSortOriginal(vetor, n);
-  // bubbleSortMelhorado(vetor, n);
-  // insertionSort(vetor, n);
-  // mergeSort(vetor, 0, n-1);
-  // quicksort(vetor, 0, n-1);
-  // heapsort(vetor, n);
-  // system("pause");
+  fp = fopen(argv[4], "w");
+  printf("Gravando ordenacao em novo arquivo...\n");
+  fwrite(vetor, sizeof(int32_t), n, fp);
+  fclose(fp);
+  printf("O tempo para ordenacao foi %fs\n", tempo_gasto);
+  system("pause");
   return 0;
 }
