@@ -217,7 +217,7 @@ int main(int argc, char* argv[]){
   double tempo_gasto;
 
   if(argc < 4 || argc > 4){
-    printf("Numero invalido de entradas\n");
+    printf("Uso: %s 1-8 arquivo-in arquivo-out\n", argv[0]);
     return 1;
   }
   FILE *fp = fopen(argv[2], "rb");
@@ -227,12 +227,13 @@ int main(int argc, char* argv[]){
   }
   fseek(fp, 0, SEEK_END);
   long n = ftell(fp)/sizeof(int32_t);
-  printf("O arquivo possui %lu elementos", n);
+  printf("O arquivo possui %lu elementos\n\n", n);
   fseek(fp, 0, SEEK_SET);
 
   int32_t *vetor = (int32_t*) malloc(n * sizeof(int32_t));
   printf("Lendo o arquivo...\n");
   fread(vetor, sizeof(int32_t), n, fp);
+  printf("Leitura concluida\n\n");
   fclose(fp);
   
   printf("Ordenando...\n");
@@ -269,17 +270,12 @@ int main(int argc, char* argv[]){
   }
   clock_gettime(CLOCK_MONOTONIC, &fim);
   tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
+  printf("Ordenacao concluida, tempo gasto para ordenacao: %f segundos\n\n", tempo_gasto);
 
-  printf("Exibindo numeros ordenados...\n");
-  for(int i = 0; i < n; i++){
-    printf("%d\n", vetor[i]);
-  }
-
-  fp = fopen(argv[4], "w");
+  fp = fopen(argv[3], "w");
   printf("Gravando ordenacao em novo arquivo...\n");
   fwrite(vetor, sizeof(int32_t), n, fp);
   fclose(fp);
-  printf("O tempo para ordenacao foi %fs\n", tempo_gasto);
-  system("pause");
+  printf("Gravacao concluida\n");
   return 0;
 }
