@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <conio.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 void geraNaleatorio(int *vetor, int n){
   for(int i = 0; i < n; i++){
@@ -143,8 +143,8 @@ void quicksort1(int vetor[], int ini, int fim){
 
 // Opção 6 : Quicksort com pivô sendo um elemento aleatório
 void quicksort2(int vetor[], int ini, int fim){
-  srand(time(NULL));
-  int i = ini, j = fim, pivo = vetor[rand()%fim];
+  int nAleatorio = rand()%fim;
+  int i = ini, j = fim, pivo = vetor[nAleatorio];
   while(i <= j){
     while(vetor[i] < pivo) i++;
     while(vetor[j] > pivo) j--;
@@ -215,6 +215,7 @@ void heapsort(int vetor[], int n){
 int main(int argc, char* argv[]){
   struct timespec inicio, fim;
   double tempo_gasto;
+  char alg_extenso[30];
 
   if(argc < 4 || argc > 4){
     printf("Uso: %s 1-8 arquivo-in arquivo-out\n", argv[0]);
@@ -241,27 +242,35 @@ int main(int argc, char* argv[]){
   switch (atoi(argv[1])){
   case 1:
     bubbleSortOriginal(vetor, n);
+    strcpy(alg_extenso, "Bubblesort Original");
     break;
   case 2:
     bubbleSortMelhorado(vetor, n);
+    strcpy(alg_extenso, "Bubblesort Melhorado");
     break;
   case 3:
     insertionSort(vetor, n);
+    strcpy(alg_extenso, "Insertion Sort");
     break;
   case 4:
     mergeSort(vetor, 0, n-1);
+    strcpy(alg_extenso, "Mergesort");
     break;
   case 5:
     quicksort1(vetor, 0, n-1);
+    strcpy(alg_extenso, "Quicksort Ultimo Elemento");
     break;
   case 6:
     quicksort2(vetor, 0, n-1);
+    strcpy(alg_extenso, "Quicksort Elemento Aleatorio");
     break;
   case 7:
     quicksort3(vetor, 0, n-1);
+    strcpy(alg_extenso, "Quicksort Pivo Mediana");
     break;
   case 8:
     heapsort(vetor, n);
+    strcpy(alg_extenso, "Heapsort");
     break;
   default:
     printf("Algoritmo invalido\n");
@@ -277,5 +286,19 @@ int main(int argc, char* argv[]){
   fwrite(vetor, sizeof(int32_t), n, fp);
   fclose(fp);
   printf("Gravacao concluida\n");
+
+  // Extra
+  char tempo_gasto_str[10];
+  char n_str[12];
+  sprintf(tempo_gasto_str, "%f", tempo_gasto);
+  sprintf(n_str, "%ld", n);
+  FILE *arquivo = fopen("resultados.txt", "a");
+  if(arquivo == NULL){
+    printf("Falha ao abrir o arquivo para armazenar os resultados...\n");
+    return 1;
+  }
+  fprintf(arquivo, "Algoritmo(%s): %s, nElementos: %s, TempoGasto: %s\n", argv[1], alg_extenso, n_str, tempo_gasto_str);
+  fclose(arquivo);
+  printf("\nResultado salvo com sucesso\n");
   return 0;
 }
