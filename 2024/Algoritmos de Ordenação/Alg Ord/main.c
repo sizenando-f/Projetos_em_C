@@ -143,7 +143,7 @@ void quicksort1(int vetor[], int ini, int fim){
 
 // Opção 6 : Quicksort com pivô sendo um elemento aleatório
 void quicksort2(int vetor[], int ini, int fim){
-  int nAleatorio = rand()%fim;
+  int nAleatorio = rand() % (fim - ini + 1) + ini;
   int i = ini, j = fim, pivo = vetor[nAleatorio];
   while(i <= j){
     while(vetor[i] < pivo) i++;
