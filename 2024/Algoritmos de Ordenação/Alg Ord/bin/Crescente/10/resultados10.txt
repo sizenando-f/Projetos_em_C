@@ -1,0 +1,24 @@
+Algoritmo(1): Bubblesort Original, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(1): Bubblesort Original, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(1): Bubblesort Original, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(2): Bubblesort Melhorado, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(2): Bubblesort Melhorado, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(2): Bubblesort Melhorado, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(3): Insertion Sort, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(3): Insertion Sort, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(3): Insertion Sort, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(4): Mergesort, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(4): Mergesort, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(4): Mergesort, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(5): Quicksort Ultimo Elemento, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(5): Quicksort Ultimo Elemento, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(5): Quicksort Ultimo Elemento, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(6): Quicksort Elemento Aleatorio, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(6): Quicksort Elemento Aleatorio, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(6): Quicksort Elemento Aleatorio, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(7): Quicksort Pivo Mediana, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(7): Quicksort Pivo Mediana, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(7): Quicksort Pivo Mediana, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(8): Heapsort, nElementos: 10, TempoGasto: 0.000004
+Algoritmo(8): Heapsort, nElementos: 10, TempoGasto: 0.000003
+Algoritmo(8): Heapsort, nElementos: 10, TempoGasto: 0.000003
