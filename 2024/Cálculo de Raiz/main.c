@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 
 void execute(double p, double m){
   double X, Xant = 1;
   unsigned cont = 0;
   do{
     printf("[ -> ] X%d: %.16lf\n", cont++, X);
-    X = (1/m)*(Xant + (p/Xant));
+    X = (1/m)*((m-1)*Xant + (p/pow(Xant, m-1)));
     if(X == Xant) break;
     Xant = X;
   }while(1);
