@@ -68,7 +68,8 @@ void merge(int arr[], int l, int m, int r)
     int n1 = m - l + 1;
     int n2 = r - m;
 
-    int L[n1], R[n2];
+    int *L = (int*) malloc(n1 * sizeof(int));
+    int *R = (int*) malloc(n2 * sizeof(int));
 
     for (i = 0; i < n1; i++)
         L[i] = arr[l + i];
@@ -101,6 +102,9 @@ void merge(int arr[], int l, int m, int r)
         j++;
         k++;
     }
+
+    free(L);
+    free(R);
 }
 
 // Opção 4 : Mergesort
@@ -215,7 +219,6 @@ void heapsort(int vetor[], int n){
 int main(int argc, char* argv[]){
   struct timespec inicio, fim;
   double tempo_gasto;
-  char alg_extenso[30];
 
   if(argc < 4 || argc > 4){
     printf("Uso: %s 1-8 arquivo-in arquivo-out\n", argv[0]);
@@ -238,46 +241,52 @@ int main(int argc, char* argv[]){
   fclose(fp);
   
   printf("Ordenando...\n");
-  clock_gettime(CLOCK_MONOTONIC, &inicio);
   switch (atoi(argv[1])){
   case 1:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     bubbleSortOriginal(vetor, n);
-    strcpy(alg_extenso, "Bubblesort Original");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 2:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     bubbleSortMelhorado(vetor, n);
-    strcpy(alg_extenso, "Bubblesort Melhorado");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 3:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     insertionSort(vetor, n);
-    strcpy(alg_extenso, "Insertion Sort");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 4:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     mergeSort(vetor, 0, n-1);
-    strcpy(alg_extenso, "Mergesort");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 5:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     quicksort1(vetor, 0, n-1);
-    strcpy(alg_extenso, "Quicksort Ultimo Elemento");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 6:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     quicksort2(vetor, 0, n-1);
-    strcpy(alg_extenso, "Quicksort Elemento Aleatorio");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 7:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     quicksort3(vetor, 0, n-1);
-    strcpy(alg_extenso, "Quicksort Pivo Mediana");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   case 8:
+    clock_gettime(CLOCK_MONOTONIC, &inicio);
     heapsort(vetor, n);
-    strcpy(alg_extenso, "Heapsort");
+    clock_gettime(CLOCK_MONOTONIC, &fim);
     break;
   default:
     printf("Algoritmo invalido\n");
     free(vetor);
     return 1;
   }
-  clock_gettime(CLOCK_MONOTONIC, &fim);
   tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
   printf("Ordenacao concluida, tempo gasto para ordenacao: %f segundos\n\n", tempo_gasto);
 
@@ -286,23 +295,5 @@ int main(int argc, char* argv[]){
   fwrite(vetor, sizeof(int32_t), n, fp);
   fclose(fp);
   printf("Gravacao concluida\n");
-
-  // Extra
-  char tempo_gasto_str[10];
-  char n_str[12];
-  char nome_arquivo[30];
-  sprintf(tempo_gasto_str, "%f", tempo_gasto);
-  sprintf(n_str, "%ld", n);
-  strcpy(nome_arquivo, "resultados");
-  strcat(nome_arquivo, n_str);
-  strcat(nome_arquivo, ".txt");
-  FILE *arquivo = fopen(nome_arquivo, "a");
-  if(arquivo == NULL){
-    printf("Falha ao abrir o arquivo para armazenar os resultados...\n");
-    return 1;
-  }
-  fprintf(arquivo, "Algoritmo(%s): %s, nElementos: %s, TempoGasto: %s\n", argv[1], alg_extenso, n_str, tempo_gasto_str);
-  fclose(arquivo);
-  printf("\nResultado salvo com sucesso\n");
   return 0;
 }
