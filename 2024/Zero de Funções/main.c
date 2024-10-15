@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <windows.h>
 
 /**
  * @brief Itera sobre todos valores dentro do intervalo
@@ -75,5 +76,6 @@ int main(){
   tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
   printf("[ info ] Tempo de execucao: %lfs\n", tempo_gasto);
   free(constantes);
+  system("pause");
   return 0;
 }

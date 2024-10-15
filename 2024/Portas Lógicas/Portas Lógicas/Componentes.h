@@ -23,6 +23,8 @@ public:
 	string getEntrada2() const;
 	string getSaida() const;
 
+	bool calcula(int e1, int e2) const;
+
 	Base* alocar() override;
 };
 
@@ -39,6 +41,8 @@ public:
 	string getEntrada2() const;
 	string getSaida(const string s);
 
+	bool calcula(int e1, int e2) const;
+
 	Base* alocar() override;
 };
 
@@ -52,6 +56,8 @@ public:
 
 	string getEntrada() const;
 	string getSaida() const;
+
+	bool calcula(int e) const;
 
 	Base* alocar() override;
 };

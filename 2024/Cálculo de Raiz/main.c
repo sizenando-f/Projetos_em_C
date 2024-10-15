@@ -1,13 +1,13 @@
 #include <stdio.h>
+#include <windows.h>
 #include <time.h>
-#include <math.h>
 
 void execute(double p, double m){
   double X, Xant = 1;
   unsigned cont = 0;
   do{
     printf("[ -> ] X%d: %.16lf\n", cont++, X);
-    X = (1/m)*((m-1)*Xant + (p/pow(Xant, m-1)));
+    X = (1/m)*(Xant + (p/Xant));
     if(X == Xant) break;
     Xant = X;
   }while(1);
@@ -31,6 +31,6 @@ int main(){
   clock_gettime(CLOCK_MONOTONIC, &fim);
   tempo_gasto = (fim.tv_sec - inicio.tv_sec) + (fim.tv_nsec - inicio.tv_nsec)/1E9;
   printf("[ info ] Tempo de execucao: %lfs\n", tempo_gasto);
-
+  system("pause");
   return 0;
 }

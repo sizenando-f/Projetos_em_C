@@ -38,6 +38,11 @@ string And::getSaida() const
 	return saida;
 }
 
+bool And::calcula(int e1, int e2) const
+{
+	return e1 and e2; 
+}
+
 Base* And::alocar()
 {
 	return new And(this->entrada1, this->entrada2, this->saida);
@@ -77,6 +82,11 @@ string Or::getSaida(const string s)
 	return saida;
 }
 
+bool Or::calcula(int e1, int e2) const
+{
+	return e1 or e2;
+}
+
 Base* Or::alocar()
 {
 	return new Or(this->entrada1, this->entrada2, this->saida);
@@ -104,6 +114,11 @@ string Not::getEntrada() const
 string Not::getSaida() const
 {
 	return saida;
+}
+
+bool Not::calcula(int e) const
+{
+	return not e;
 }
 
 Base* Not::alocar()
