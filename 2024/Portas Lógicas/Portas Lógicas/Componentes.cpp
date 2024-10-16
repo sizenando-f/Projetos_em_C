@@ -4,6 +4,10 @@ Base::~Base()
 {
 }
 
+And::And()
+{
+}
+
 And::And(string e1, string e2, string s): entrada1(e1), entrada2(e2), saida(s)
 {
 }
@@ -38,14 +42,37 @@ string And::getSaida() const
 	return saida;
 }
 
-bool And::calcula(int e1, int e2) const
+vector<bool> And::calcula(vector<int> entradas) const
 {
-	return e1 and e2; 
+	bool result = true;
+	for (int i = 0; i < entradas.size(); i++) {
+		result = result and entradas[i];
+	}
+	vector<bool> temp = { result };
+
+	return temp;
 }
+
+vector<string> And::retornaEntradas() const
+{
+	vector<string> temp = { entrada1, entrada2 };
+	return temp;
+}
+
+vector<string> And::retornaSaidas() const
+{
+	vector<string> temp = { saida };
+	return temp;
+}
+
 
 Base* And::alocar()
 {
 	return new And(this->entrada1, this->entrada2, this->saida);
+}
+
+Or::Or()
+{
 }
 
 Or::Or(string e1, string e2, string s) : entrada1(e1), entrada2(e2), saida(s)
@@ -82,14 +109,37 @@ string Or::getSaida(const string s)
 	return saida;
 }
 
-bool Or::calcula(int e1, int e2) const
+vector<bool> Or::calcula(vector<int> entradas) const
 {
-	return e1 or e2;
+	bool result = false;
+	for (int i = 0; i < entradas.size(); i++) {
+		result = result or entradas[i];
+	}
+	vector<bool> temp = { result };
+
+	return temp;
 }
+
+vector<string> Or::retornaEntradas() const
+{
+	vector<string> temp = { entrada1, entrada2 };
+	return temp;
+}
+
+vector<string> Or::retornaSaidas() const
+{
+	vector<string> temp = { saida };
+	return temp;
+}
+
 
 Base* Or::alocar()
 {
 	return new Or(this->entrada1, this->entrada2, this->saida);
+}
+
+Not::Not()
+{
 }
 
 Not::Not(string e, string s): entrada(e), saida(s)
@@ -116,10 +166,24 @@ string Not::getSaida() const
 	return saida;
 }
 
-bool Not::calcula(int e) const
+vector<bool> Not::calcula(vector<int> entradas) const
 {
-	return not e;
+	vector<bool> result = { not entradas[0] };
+	return result;
 }
+
+vector<string> Not::retornaEntradas() const
+{
+	vector<string> temp = { entrada };
+	return temp;
+}
+
+vector<string> Not::retornaSaidas() const
+{
+	vector<string> temp = { saida };
+	return temp;
+}
+
 
 Base* Not::alocar()
 {
