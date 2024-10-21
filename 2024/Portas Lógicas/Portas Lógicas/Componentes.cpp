@@ -104,7 +104,7 @@ string Or::getEntrada2() const
 	return entrada2;
 }
 
-string Or::getSaida(const string s)
+string Or::getSaida()
 {
 	return saida;
 }

@@ -3,7 +3,10 @@
 
 class ComponentesApp
 {
+	string nome;
 public:
+	string getNome() const;
+	void setNome(string nome);
 	virtual void leEntradasESaidas() = 0;
 	virtual ComponentesApp* alocarApp() = 0;
 };

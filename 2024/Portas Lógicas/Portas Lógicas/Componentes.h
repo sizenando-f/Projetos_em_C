@@ -47,7 +47,7 @@ public:
 
 	string getEntrada1() const;
 	string getEntrada2() const;
-	string getSaida(const string s);
+	string getSaida();
 
 	vector<bool> calcula(vector<int> entradas) const override;
 

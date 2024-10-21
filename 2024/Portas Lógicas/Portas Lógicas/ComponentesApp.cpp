@@ -5,6 +5,7 @@ using namespace std;
 
 AndApp::AndApp()
 {
+	setNome("and");
 }
 
 void AndApp::leEntradasESaidas()
@@ -30,6 +31,7 @@ ComponentesApp* AndApp::alocarApp()
 
 OrApp::OrApp()
 {
+	setNome("or");
 }
 
 void OrApp::leEntradasESaidas()
@@ -55,6 +57,7 @@ ComponentesApp* OrApp::alocarApp()
 
 NotApp::NotApp()
 {
+	setNome("not");
 }
 
 void NotApp::leEntradasESaidas()
@@ -72,4 +75,15 @@ void NotApp::leEntradasESaidas()
 ComponentesApp* NotApp::alocarApp()
 {
 	return new NotApp;
+}
+
+
+string ComponentesApp::getNome() const
+{
+	return nome;
+}
+
+void ComponentesApp::setNome(string nome)
+{
+	this->nome = nome;
 }

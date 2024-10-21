@@ -11,6 +11,8 @@ class Resolve
 public:
 	void insere(Base*);
 	void resolveTotal();
+	void exibeCampo() const;
+	void editaEntradas(string entradas);
 	~Resolve();
 };
 

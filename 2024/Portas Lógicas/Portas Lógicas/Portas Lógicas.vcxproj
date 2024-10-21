@@ -131,11 +131,13 @@
     <ClCompile Include="ComponentesApp.cpp" />
     <ClCompile Include="Portas Lógicas.cpp" />
     <ClCompile Include="Resolve.cpp" />
+    <ClCompile Include="ResolveApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Componentes.h" />
     <ClInclude Include="ComponentesApp.h" />
     <ClInclude Include="Resolve.h" />
+    <ClInclude Include="ResolveApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
