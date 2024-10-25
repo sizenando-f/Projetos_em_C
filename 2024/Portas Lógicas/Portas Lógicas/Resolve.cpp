@@ -22,6 +22,7 @@ void Resolve::insere(Base* componente)
 
 void Resolve::resolveTotal()
 {
+	ordenaComponentes();
 	for (const auto& componente : componentes) {
 		vector<string> entradasIndices = componente->getEntradas(); // Recebe as entradas a quais os componentes estão conectados
 		vector<string> saidasIndices = componente->getSaidas();	// Recebe as saídas a quais os componentes estão conectados
@@ -110,40 +111,82 @@ void Resolve::editaEntradas(string entradas)
 		}
 	}
 }
-void Resolve::editaComponente()
+void Resolve::editaComponente(int indice)
 {
-	int i = 1, esc;
-	for (const auto& componente : componentes) {
-		cout << i++ << ". " << componente->getNome() << " ";
-		for (const auto& indices : componente->getEntradas()) {
-			cout << indices << " ";
-		}
-		for (const auto& indices : componente->getSaidas()) {
-			cout << indices << " ";
-		}
-		cout << endl;
-	}
-	cout << "Escolha: ";
-	cin >> esc;
+	if (indice > 0 && indice <= componentes.size()) {
+		vector<string> ent = componentes[indice - 1]->getSaidas();
 
-	vector<string> ent = componentes[esc - 1]->getSaidas();
-
-	if (ent.size() != 0) {
-		for (const auto& indices : ent) {
-			if (indices[0] == 'e') {
-				entrada[indices[1] - '0'] = 0;
-			}
-			else if (indices[0] == 's') {
-				saida[indices[1] - '0'] = 0;
-			}
-			else {
-				campo[7 - (indices[0] - '0')][indices[1] - '0'] = 0;
+		if (ent.size() != 0) {
+			for (const auto& indices : ent) {
+				if (indices[0] == 'e') {
+					entrada[indices[1] - '0'] = 0;
+				}
+				else if (indices[0] == 's') {
+					saida[indices[1] - '0'] = 0;
+				}
+				else {
+					campo[7 - (indices[0] - '0')][indices[1] - '0'] = 0;
+				}
 			}
 		}
+
+		componentes[indice - 1]->editaEntradasSaidas();
 	}
-	if (esc > 0 && esc <= componentes.size()) {
-		componentes[esc - 1]->editaEntradasSaidas();
+}
+
+void Resolve::removeComponente(int indice)
+{
+	if (indice > 0 && indice <= componentes.size()) {
+		vector<string> ent = componentes[indice - 1]->getSaidas();
+
+		if (ent.size() != 0) {
+			for (const auto& indices : ent) {
+				if (indices[0] == 'e') {
+					entrada[indices[1] - '0'] = 0;
+				}
+				else if (indices[0] == 's') {
+					saida[indices[1] - '0'] = 0;
+				}
+				else {
+					campo[7 - (indices[0] - '0')][indices[1] - '0'] = 0;
+				}
+			}
+		}
+
+		componentes.erase(next(componentes.begin(), indice - 1));
 	}
+
+}
+
+vector<Base*> Resolve::getComponentes()
+{
+	return componentes;
+}
+
+void Resolve::ordenaComponentes()
+{
+	sort(componentes.begin(), componentes.end(), [](Base* a, Base* b) {
+		auto saidasA = a->getSaidas();
+		auto saidasB = b->getSaidas();
+
+		// Função auxiliar para obter o menor índice numérico
+		auto obterMenorIndice = [](const vector<string>& saidas) -> int {
+			int menorIndice = INT_MAX;
+			for (const auto& saida : saidas) {
+				if (saida[0] != 'e' && saida[0] != 's') {  // Se não for 'e' ou 's'
+					int indiceNumerico = saida[1] - '0';    // Converte o segundo caractere para inteiro
+					menorIndice = min(menorIndice, indiceNumerico);
+				}
+			}
+			return menorIndice;
+			};
+
+		int menorIndiceA = obterMenorIndice(saidasA);
+		int menorIndiceB = obterMenorIndice(saidasB);
+
+		// Comparação baseada no menor índice de saída
+		return menorIndiceA < menorIndiceB;
+		});
 }
 
 Resolve::~Resolve()

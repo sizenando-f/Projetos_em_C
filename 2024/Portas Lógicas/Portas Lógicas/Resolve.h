@@ -1,6 +1,7 @@
 #pragma once
 #include "Componentes.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -14,6 +15,9 @@ public:
 	void resolveTotal();
 	void exibeCampo() const;
 	void editaEntradas(string entradas);
-	void editaComponente();
+	void editaComponente(int indice);
+	void removeComponente(int indice);
+	vector<Base*> getComponentes();
+	void ordenaComponentes();
 	~Resolve();
 };

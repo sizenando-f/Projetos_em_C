@@ -172,3 +172,46 @@ Base* Not::alocar()
 {
 	return new Not(getEntradas(), getSaidas());
 }
+
+Wire::Wire()
+{
+}
+
+Wire::Wire(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNome("wire");
+}
+
+void Wire::editaEntradasSaidas()
+{
+	vector<string> temp;
+	string e;
+	cout << "Entre com os indices da entrada: ";
+	cin >> e;
+	temp.push_back(e);
+	this->setEntradas(temp);
+
+	cout << "Entre com os indices da saida: ";
+	cin >> e;
+
+	temp.clear();
+	temp.push_back(e);
+
+	this->setSaidas(temp);
+}
+
+vector<bool> Wire::calcula(vector<int> entradas) const
+{
+	vector<bool> vetor = { 0 };
+	if (entradas[0] == 1) {
+		vetor = { 1 };
+	}
+	return vetor;
+}
+
+Base* Wire::alocar()
+{
+	return new Wire(getEntradas(), getSaidas());
+}

@@ -35,3 +35,12 @@ public:
 
 	ComponentesApp* alocarApp() override;
 };
+
+class WireApp : public Wire, public ComponentesApp {
+public:
+	WireApp();
+
+	void leEntradasESaidas() override;
+
+	ComponentesApp* alocarApp() override;
+};

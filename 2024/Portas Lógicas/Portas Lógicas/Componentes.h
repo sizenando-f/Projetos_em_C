@@ -57,3 +57,15 @@ public:
 
 	Base* alocar() override;
 };
+
+class Wire : public Base {
+public:
+	Wire();
+	Wire(vector<string> e, vector<string> s);
+
+	void editaEntradasSaidas() override;
+
+	vector<bool> calcula(vector<int> entradas) const override;
+
+	Base* alocar() override;
+};

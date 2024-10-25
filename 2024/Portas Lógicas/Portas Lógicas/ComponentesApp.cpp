@@ -106,3 +106,31 @@ void ComponentesApp::setNomeApp(string nome)
 {
 	this->nome = nome;
 }
+
+WireApp::WireApp()
+{
+	setNomeApp("wire");
+}
+
+void WireApp::leEntradasESaidas()
+{
+	vector<string> temp;
+	string e;
+	cout << "Entre com os indices da entrada: ";
+	cin >> e;
+	temp.push_back(e);
+	this->setEntradas(temp);
+
+	cout << "Entre com os indices da saida: ";
+	cin >> e;
+
+	temp.clear();
+	temp.push_back(e);
+
+	this->setSaidas(temp);
+}
+
+ComponentesApp* WireApp::alocarApp()
+{
+	return new WireApp;
+}
