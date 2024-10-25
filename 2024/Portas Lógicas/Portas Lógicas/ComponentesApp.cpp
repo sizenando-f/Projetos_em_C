@@ -5,24 +5,31 @@ using namespace std;
 
 AndApp::AndApp()
 {
-	setNome("and");
+	setNomeApp("and");
 }
 
 void AndApp::leEntradasESaidas()
 {
+	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
-	this->setEntrada1(e);
-
+	temp.push_back(e);
+	
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
-	this->setEntrada2(e);
+	temp.push_back(e);
+	this->setEntradas(temp);
 
 	cout << "Entre com a saida: ";
 	cin >> e;
-	this->setSaida(e);
+
+	temp.clear();
+	temp.push_back(e);
+	
+	this->setSaidas(temp);
 }
+
 
 ComponentesApp* AndApp::alocarApp()
 {
@@ -31,23 +38,29 @@ ComponentesApp* AndApp::alocarApp()
 
 OrApp::OrApp()
 {
-	setNome("or");
+	setNomeApp("or");
 }
 
 void OrApp::leEntradasESaidas()
 {
+	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
-	this->setEntrada1(e);
+	temp.push_back(e);
 
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
-	this->setEntrada2(e);
+	temp.push_back(e);
+	this->setEntradas(temp);
 
 	cout << "Entre com a saida: ";
 	cin >> e;
-	this->setSaida(e);
+
+	temp.clear();
+	temp.push_back(e);
+
+	this->setSaidas(temp);
 }
 
 ComponentesApp* OrApp::alocarApp()
@@ -57,19 +70,25 @@ ComponentesApp* OrApp::alocarApp()
 
 NotApp::NotApp()
 {
-	setNome("not");
+	setNomeApp("not");
 }
 
 void NotApp::leEntradasESaidas()
 {
+	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da entrada: ";
 	cin >> e;
-	this->setEntrada(e);
+	temp.push_back(e);
+	this->setEntradas(temp);
 
-	cout << "Entre com a saida: ";
+	cout << "Entre com os indices da saida: ";
 	cin >> e;
-	this->setSaida(e);
+
+	temp.clear();
+	temp.push_back(e);
+
+	this->setSaidas(temp);
 }
 
 ComponentesApp* NotApp::alocarApp()
@@ -83,7 +102,7 @@ string ComponentesApp::getNome() const
 	return nome;
 }
 
-void ComponentesApp::setNome(string nome)
+void ComponentesApp::setNomeApp(string nome)
 {
 	this->nome = nome;
 }

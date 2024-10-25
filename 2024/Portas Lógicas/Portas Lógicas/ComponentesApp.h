@@ -6,20 +6,21 @@ class ComponentesApp
 	string nome;
 public:
 	string getNome() const;
-	void setNome(string nome);
+	void setNomeApp(string n);
 	virtual void leEntradasESaidas() = 0;
 	virtual ComponentesApp* alocarApp() = 0;
+	virtual ~ComponentesApp() {};
 };
 
-class AndApp : private And, public ComponentesApp {
+class AndApp : public And, public ComponentesApp {
 public:
 	AndApp();
 	void leEntradasESaidas();
 
-	ComponentesApp *alocarApp() override;
+	ComponentesApp* alocarApp() override;
 };
 
-class OrApp : private Or, public ComponentesApp {
+class OrApp : public Or, public ComponentesApp {
 public:
 	OrApp();
 	void leEntradasESaidas();
@@ -27,7 +28,7 @@ public:
 	ComponentesApp* alocarApp() override;
 };
 
-class NotApp : private Not, public ComponentesApp {
+class NotApp : public Not, public ComponentesApp {
 public:
 	NotApp();
 	void leEntradasESaidas();

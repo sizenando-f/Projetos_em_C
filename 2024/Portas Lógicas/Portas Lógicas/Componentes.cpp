@@ -4,188 +4,171 @@ Base::~Base()
 {
 }
 
+string Base::getNome() const {
+	return nome;
+}
+
+void Base::setNome(string n)
+{
+	nome = n;
+}
+
+vector<string> Base::getEntradas() const
+{
+	return entradas;
+}
+
+vector<string> Base::getSaidas() const
+{
+	return saidas;
+}
+
+void Base::setEntradas(vector<string> e)
+{
+	entradas = e;
+}
+
+void Base::setSaidas(vector<string> s)
+{
+	saidas = s;
+}
+
 And::And()
 {
 }
 
-And::And(string e1, string e2, string s): entrada1(e1), entrada2(e2), saida(s)
+And::And(vector<string> e, vector<string> s)
 {
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNome("and");
 }
 
-void And::setEntrada1(const string e1)
+void And::editaEntradasSaidas()
 {
-	entrada1 = e1;
-}
+	vector<string> temp;
+	string e;
+	cout << "Entre com os indices da primeira entrada: ";
+	cin >> e;
+	temp.push_back(e);
 
-void And::setEntrada2(const string e2)
-{
-	entrada2 = e2;
-}
+	cout << "Entre com os indices da segunda entrada: ";
+	cin >> e;
+	temp.push_back(e);
+	this->setEntradas(temp);
 
-void And::setSaida(const string s)
-{
-	saida = s;
-}
+	cout << "Entre com a saida: ";
+	cin >> e;
 
-string And::getEntrada1() const
-{
-	return entrada1;
-}
+	temp.clear();
+	temp.push_back(e);
 
-string And::getEntrada2() const
-{
-	return entrada2;
-}
-
-string And::getSaida() const
-{
-	return saida;
+	this->setSaidas(temp);
 }
 
 vector<bool> And::calcula(vector<int> entradas) const
 {
 	bool result = true;
 	for (int i = 0; i < entradas.size(); i++) {
-		result = result and entradas[i];
+		result = result && entradas[i];
 	}
 	vector<bool> temp = { result };
 
 	return temp;
 }
 
-vector<string> And::retornaEntradas() const
-{
-	vector<string> temp = { entrada1, entrada2 };
-	return temp;
-}
-
-vector<string> And::retornaSaidas() const
-{
-	vector<string> temp = { saida };
-	return temp;
-}
-
-
 Base* And::alocar()
 {
-	return new And(this->entrada1, this->entrada2, this->saida);
+	return new And(getEntradas(), getSaidas());
 }
 
 Or::Or()
 {
 }
 
-Or::Or(string e1, string e2, string s) : entrada1(e1), entrada2(e2), saida(s)
+Or::Or(vector<string> e, vector<string> s)
 {
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNome("or");
 }
 
-void Or::setEntrada1(const string e1)
+void Or::editaEntradasSaidas()
 {
-	entrada1 = e1;
-}
+	vector<string> temp;
+	string e;
+	cout << "Entre com os indices da primeira entrada: ";
+	cin >> e;
+	temp.push_back(e);
 
-void Or::setEntrada2(const string e2)
-{
-	entrada2 = e2;
-}
+	cout << "Entre com os indices da segunda entrada: ";
+	cin >> e;
+	temp.push_back(e);
+	this->setEntradas(temp);
 
-void Or::setSaida(const string s)
-{
-	saida = s;
-}
+	cout << "Entre com a saida: ";
+	cin >> e;
 
-string Or::getEntrada1() const
-{
-	return entrada1;
-}
+	temp.clear();
+	temp.push_back(e);
 
-string Or::getEntrada2() const
-{
-	return entrada2;
-}
-
-string Or::getSaida()
-{
-	return saida;
+	this->setSaidas(temp);
 }
 
 vector<bool> Or::calcula(vector<int> entradas) const
 {
 	bool result = false;
 	for (int i = 0; i < entradas.size(); i++) {
-		result = result or entradas[i];
+		result = result || entradas[i];
 	}
 	vector<bool> temp = { result };
 
 	return temp;
 }
 
-vector<string> Or::retornaEntradas() const
-{
-	vector<string> temp = { entrada1, entrada2 };
-	return temp;
-}
-
-vector<string> Or::retornaSaidas() const
-{
-	vector<string> temp = { saida };
-	return temp;
-}
-
 
 Base* Or::alocar()
 {
-	return new Or(this->entrada1, this->entrada2, this->saida);
+	return new Or(getEntradas(), getSaidas());
 }
 
 Not::Not()
 {
 }
 
-Not::Not(string e, string s): entrada(e), saida(s)
+Not::Not(vector<string> e, vector<string> s)
 {
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNome("not");
 }
 
-void Not::setEntrada(const string e)
+void Not::editaEntradasSaidas()
 {
-	entrada = e;
+	vector<string> temp;
+	string e;
+	cout << "Entre com os indices da entrada: ";
+	cin >> e;
+	temp.push_back(e);
+	this->setEntradas(temp);
+
+	cout << "Entre com os indices da saida: ";
+	cin >> e;
+
+	temp.clear();
+	temp.push_back(e);
+
+	this->setSaidas(temp);
 }
 
-void Not::setSaida(const string s)
-{
-	saida = s;
-}
-
-string Not::getEntrada() const
-{
-	return entrada;
-}
-
-string Not::getSaida() const
-{
-	return saida;
-}
 
 vector<bool> Not::calcula(vector<int> entradas) const
 {
-	vector<bool> result = { not entradas[0] };
+	vector<bool> result = { !entradas[0] };
 	return result;
 }
 
-vector<string> Not::retornaEntradas() const
-{
-	vector<string> temp = { entrada };
-	return temp;
-}
-
-vector<string> Not::retornaSaidas() const
-{
-	vector<string> temp = { saida };
-	return temp;
-}
-
-
 Base* Not::alocar()
 {
-	return new Not(this->entrada, this->saida);
+	return new Not(getEntradas(), getSaidas());
 }
