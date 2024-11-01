@@ -37,11 +37,12 @@ And::And()
 {
 }
 
-And::And(vector<string> e, vector<string> s)
+And::And(vector<string> e, vector<string> s, unsigned nEntradas)
 {
 	this->setEntradas(e);
 	this->setSaidas(s);
 	this->setNome("and");
+	this->setNumeroEntradas(nEntradas);
 }
 
 void And::editaEntradasSaidas()
@@ -50,20 +51,45 @@ void And::editaEntradasSaidas()
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 	temp.push_back(e);
 
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 	temp.push_back(e);
 	this->setEntradas(temp);
 
 	cout << "Entre com a saida: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+}
+
+void And::setNumeroEntradas(unsigned n)
+{
+	this->nEntradas = n;
+}
+
+unsigned And::getNumeroEntradas() const
+{
+	return this->nEntradas;
 }
 
 vector<bool> And::calcula(vector<int> entradas) const
@@ -79,18 +105,19 @@ vector<bool> And::calcula(vector<int> entradas) const
 
 Base* And::alocar()
 {
-	return new And(getEntradas(), getSaidas());
+	return new And(getEntradas(), getSaidas(), getNumeroEntradas());
 }
 
 Or::Or()
 {
 }
 
-Or::Or(vector<string> e, vector<string> s)
+Or::Or(vector<string> e, vector<string> s, unsigned nEntradas)
 {
 	this->setEntradas(e);
 	this->setSaidas(s);
 	this->setNome("or");
+	this->setNumeroEntradas(nEntradas);
 }
 
 void Or::editaEntradasSaidas()
@@ -99,20 +126,45 @@ void Or::editaEntradasSaidas()
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 	temp.push_back(e);
 
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 	temp.push_back(e);
 	this->setEntradas(temp);
 
 	cout << "Entre com a saida: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+}
+
+void Or::setNumeroEntradas(unsigned n)
+{
+	this->nEntradas = n;
+}
+
+unsigned Or::getNumeroEntradas() const
+{
+	return this->nEntradas;
 }
 
 vector<bool> Or::calcula(vector<int> entradas) const
@@ -129,18 +181,19 @@ vector<bool> Or::calcula(vector<int> entradas) const
 
 Base* Or::alocar()
 {
-	return new Or(getEntradas(), getSaidas());
+	return new Or(getEntradas(), getSaidas(), getNumeroEntradas());
 }
 
 Not::Not()
 {
 }
 
-Not::Not(vector<string> e, vector<string> s)
+Not::Not(vector<string> e, vector<string> s, unsigned nEntradas)
 {
 	this->setEntradas(e);
 	this->setSaidas(s);
 	this->setNome("not");
+	this->setNumeroEntradas(nEntradas);
 }
 
 void Not::editaEntradasSaidas()
@@ -149,16 +202,37 @@ void Not::editaEntradasSaidas()
 	string e;
 	cout << "Entre com os indices da entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
+
 	temp.push_back(e);
 	this->setEntradas(temp);
 
 	cout << "Entre com os indices da saida: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+}
+
+void Not::setNumeroEntradas(unsigned n)
+{
+	this->nEntradas = n;
+}
+
+unsigned Not::getNumeroEntradas() const
+{
+	return this->nEntradas;
 }
 
 
@@ -170,18 +244,19 @@ vector<bool> Not::calcula(vector<int> entradas) const
 
 Base* Not::alocar()
 {
-	return new Not(getEntradas(), getSaidas());
+	return new Not(getEntradas(), getSaidas(), getNumeroEntradas());
 }
 
 Wire::Wire()
 {
 }
 
-Wire::Wire(vector<string> e, vector<string> s)
+Wire::Wire(vector<string> e, vector<string> s, unsigned nEntradas)
 {
 	this->setEntradas(e);
 	this->setSaidas(s);
 	this->setNome("wire");
+	this->setNumeroEntradas(nEntradas);
 }
 
 void Wire::editaEntradasSaidas()
@@ -190,16 +265,36 @@ void Wire::editaEntradasSaidas()
 	string e;
 	cout << "Entre com os indices da entrada: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 	temp.push_back(e);
 	this->setEntradas(temp);
 
 	cout << "Entre com os indices da saida: ";
 	cin >> e;
+	if (e.size() != 2) return;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+}
+
+void Wire::setNumeroEntradas(unsigned n)
+{
+	this->nEntradas = n;
+}
+
+unsigned Wire::getNumeroEntradas() const
+{
+	return this->nEntradas;
 }
 
 vector<bool> Wire::calcula(vector<int> entradas) const
@@ -213,5 +308,5 @@ vector<bool> Wire::calcula(vector<int> entradas) const
 
 Base* Wire::alocar()
 {
-	return new Wire(getEntradas(), getSaidas());
+	return new Wire(getEntradas(), getSaidas(), getNumeroEntradas());
 }

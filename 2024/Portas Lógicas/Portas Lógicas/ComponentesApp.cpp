@@ -8,26 +8,56 @@ AndApp::AndApp()
 	setNomeApp("and");
 }
 
-void AndApp::leEntradasESaidas()
+int AndApp::leEntradasESaidas()
 {
 	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if(e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 	temp.push_back(e);
 	
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 	temp.push_back(e);
+
 	this->setEntradas(temp);
+	this->setNumeroEntradas(static_cast<int>(temp.size()));
 
 	cout << "Entre com a saida: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 
 	temp.clear();
 	temp.push_back(e);
 	
 	this->setSaidas(temp);
+	return 1;
+}
+
+unsigned AndApp::getNentradas()
+{
+	return this->getNumeroEntradas();
+}
+
+void AndApp::carregaComponentes(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNumeroEntradas(static_cast<int>(e.size()));
 }
 
 
@@ -41,26 +71,55 @@ OrApp::OrApp()
 	setNomeApp("or");
 }
 
-void OrApp::leEntradasESaidas()
+int OrApp::leEntradasESaidas()
 {
 	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da primeira entrada: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 	temp.push_back(e);
 
 	cout << "Entre com os indices da segunda entrada: ";
 	cin >> e;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+
 	temp.push_back(e);
 	this->setEntradas(temp);
+	this->setNumeroEntradas(static_cast<int>(temp.size()));
 
 	cout << "Entre com a saida: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+	return 1;
+}
+
+unsigned OrApp::getNentradas()
+{
+	return this->getNumeroEntradas();
+}
+
+void OrApp::carregaComponentes(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNumeroEntradas(static_cast<int>(e.size()));
 }
 
 ComponentesApp* OrApp::alocarApp()
@@ -73,22 +132,47 @@ NotApp::NotApp()
 	setNomeApp("not");
 }
 
-void NotApp::leEntradasESaidas()
+int NotApp::leEntradasESaidas()
 {
 	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da entrada: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 	temp.push_back(e);
+
 	this->setEntradas(temp);
+	this->setNumeroEntradas(static_cast<int>(temp.size()));
 
 	cout << "Entre com os indices da saida: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+	return 1;
+}
+
+unsigned NotApp::getNentradas()
+{
+	return this->getNumeroEntradas();
+}
+
+void NotApp::carregaComponentes(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNumeroEntradas(static_cast<int>(e.size()));
 }
 
 ComponentesApp* NotApp::alocarApp()
@@ -112,22 +196,47 @@ WireApp::WireApp()
 	setNomeApp("wire");
 }
 
-void WireApp::leEntradasESaidas()
+int WireApp::leEntradasESaidas()
 {
 	vector<string> temp;
 	string e;
 	cout << "Entre com os indices da entrada: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 	temp.push_back(e);
+
 	this->setEntradas(temp);
+	this->setNumeroEntradas(static_cast<int>(temp.size()));
 
 	cout << "Entre com os indices da saida: ";
 	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
 
 	temp.clear();
 	temp.push_back(e);
 
 	this->setSaidas(temp);
+	return 1;
+}
+
+unsigned WireApp::getNentradas()
+{
+	return this->getNumeroEntradas();
+}
+
+void WireApp::carregaComponentes(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNumeroEntradas(static_cast<int>(e.size()));
 }
 
 ComponentesApp* WireApp::alocarApp()

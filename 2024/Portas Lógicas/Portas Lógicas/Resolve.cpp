@@ -5,6 +5,12 @@ using namespace std;
 
 Resolve::Resolve()
 {
+	/*
+		Inicializa campos, entradas e saídas
+		- Zera entrada
+		- Zera saida
+		- Zera campo
+	*/
 	for (int i = 0; i < 8; ++i) {
 		entrada[i] = 0;
 		saida[i] = 0;
@@ -22,10 +28,17 @@ void Resolve::insere(Base* componente)
 
 void Resolve::resolveTotal()
 {
+	/*
+		Faz o cálculo geral dos componentes inseridos
+		- Ordena componentes garantindo fidelidade nos resultados
+		- Realiza o cálculo componente por componente
+		- Exibe resultado no campo ou saída
+	*/
+
 	ordenaComponentes();
 	for (const auto& componente : componentes) {
-		vector<string> entradasIndices = componente->getEntradas(); // Recebe as entradas a quais os componentes estão conectados
-		vector<string> saidasIndices = componente->getSaidas();	// Recebe as saídas a quais os componentes estão conectados
+		vector<string> entradasIndices = componente->getEntradas(); // Recebe as entradas a qual o componente está conectado
+		vector<string> saidasIndices = componente->getSaidas();	// Recebe as saídas a qual componente está conectado
 		vector<int> entradas;
 
 		for (const auto& indices : entradasIndices) {
@@ -63,6 +76,10 @@ void Resolve::resolveTotal()
 
 void Resolve::exibeCampo() const
 {
+	/*
+		Exibe o campo de forma gráfica e intuitiva
+	*/
+
 	cout << "s | ";
 	for (int i = 0; i < 8; i++) {
 		cout << i << " ";
@@ -102,6 +119,11 @@ void Resolve::exibeCampo() const
 
 void Resolve::editaEntradas(string entradas)
 {
+	/*
+		Edita a entrada de bits
+		- Verifica se foi entrado 8 bits
+		- Insere os bits que forem 0 ou 1
+	*/
 	if (entradas.size() != 8) {
 		return;
 	}
@@ -113,6 +135,11 @@ void Resolve::editaEntradas(string entradas)
 }
 void Resolve::editaComponente(int indice)
 {
+	/*
+		Realiza a edição de entrada e saída do componente
+		- Zera a saída a qual o componente está conectado, seja no campo, entrada ou saída
+		- Edita entrada e saída
+	*/
 	if (indice > 0 && indice <= componentes.size()) {
 		vector<string> ent = componentes[indice - 1]->getSaidas();
 
@@ -136,6 +163,12 @@ void Resolve::editaComponente(int indice)
 
 void Resolve::removeComponente(int indice)
 {
+	/*
+		Remove um componente desejado
+		- Zera a saída a qual o componente está conectado
+		- Remove o componente do vetor de componentes
+	*/
+
 	if (indice > 0 && indice <= componentes.size()) {
 		vector<string> ent = componentes[indice - 1]->getSaidas();
 
@@ -165,6 +198,12 @@ vector<Base*> Resolve::getComponentes()
 
 void Resolve::ordenaComponentes()
 {
+	/*
+		Ordena componentes garantindo integridade nos resultados
+		- Os componentes que tiverem a saída mais próxima do vetor de entrada são colocados no ínicio do vetor
+		- É utilizado a ideía de funções lambda apresentadas na aula de Lisp
+	*/
+
 	sort(componentes.begin(), componentes.end(), [](Base* a, Base* b) {
 		auto saidasA = a->getSaidas();
 		auto saidasB = b->getSaidas();
@@ -187,6 +226,49 @@ void Resolve::ordenaComponentes()
 		// Comparação baseada no menor índice de saída
 		return menorIndiceA < menorIndiceB;
 		});
+}
+
+void Resolve::salvaComponentes(string nome)
+{
+	/*
+		Gravação de cada componente no arquivo com suas respectivas saídas e entradas
+	*/
+
+	ofstream arquivo(nome);
+	if (arquivo.is_open()) {
+		for (const auto& componente : componentes) {
+			vector<string> entradas = componente->getEntradas();
+			vector<string> saidas = componente->getSaidas();
+			arquivo << componente->getNome() << " ";
+			for (const auto& indice : entradas) {
+				arquivo << indice << " ";
+			}
+			for (const auto& indice : saidas) {
+				arquivo << indice << " ";
+			}
+			arquivo << endl;
+		}
+		arquivo.close();
+	}
+	else {
+		return;
+	}
+}
+
+void Resolve::reinicia()
+{
+	/*
+		Reinicia todos os vetores
+	*/
+
+	componentes.clear();
+	componentes.shrink_to_fit();
+	for (int i = 0; i < 8; ++i) {
+		saida[i] = 0;
+		for (int j = 0; j < 8; ++j) {
+			campo[i][j] = 0;
+		}
+	}
 }
 
 Resolve::~Resolve()

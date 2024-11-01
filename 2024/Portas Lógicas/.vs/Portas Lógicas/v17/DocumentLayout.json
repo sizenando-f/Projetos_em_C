@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ResolveApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ComponentesApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Resolve.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -11,32 +23,20 @@
       "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Componentes.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Resolve.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ComponentesApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ResolveApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ComponentesApp.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ComponentesApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Resolve.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\Componentes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{747B9439-2952-4077-9BF8-8F73719F21C7}|Portas L\u00F3gicas\\Portas L\u00F3gicas.vcxproj|solutionrelative:Portas L\u00F3gicas\\ResolveApp.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,102 +46,76 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Resolve.cpp",
-              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.cpp",
-              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Resolve.cpp",
-              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.cpp",
-              "RelativeToolTip": "Portas L\u00F3gicas\\Resolve.cpp",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAtwCwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-15T14:32:02.327Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Resolve.h",
-              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h",
-              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Resolve.h",
-              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h",
-              "RelativeToolTip": "Portas L\u00F3gicas\\Resolve.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAUAAAAAAAAAA==",
+              "Title": "ComponentesApp.h",
+              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h",
+              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\ComponentesApp.h",
+              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h",
+              "RelativeToolTip": "Portas L\u00F3gicas\\ComponentesApp.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFEAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-10-15T14:29:53.762Z",
+              "WhenOpened": "2024-10-29T15:28:50.775Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Componentes.cpp",
               "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.cpp",
               "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Componentes.cpp",
               "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.cpp",
               "RelativeToolTip": "Portas L\u00F3gicas\\Componentes.cpp",
-              "ViewState": "AgIAAMUAAAAAAAAAAAAtwNAAAAACAAAAAAAAAA==",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-10T15:34:07.475Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Componentes.h",
-              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.h",
-              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Componentes.h",
-              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.h",
-              "RelativeToolTip": "Portas L\u00F3gicas\\Componentes.h",
-              "ViewState": "AgIAADMAAAAAAAAAAAAowEUAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-10-10T15:33:33.162Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "ComponentesApp.h",
-              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h",
-              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\ComponentesApp.h",
-              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.h",
-              "RelativeToolTip": "Portas L\u00F3gicas\\ComponentesApp.h",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAC0AAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-10-10T16:19:28.017Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
               "Title": "ComponentesApp.cpp",
               "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.cpp",
               "RelativeDocumentMoniker": "Portas L\u00F3gicas\\ComponentesApp.cpp",
               "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ComponentesApp.cpp",
               "RelativeToolTip": "Portas L\u00F3gicas\\ComponentesApp.cpp",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAtwF0AAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAAAH0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-15T12:47:31.277Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
+              "Title": "Resolve.h",
+              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h",
+              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Resolve.h",
+              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.h",
+              "RelativeToolTip": "Portas L\u00F3gicas\\Resolve.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-10-15T14:29:53.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "ResolveApp.h",
               "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.h",
               "RelativeDocumentMoniker": "Portas L\u00F3gicas\\ResolveApp.h",
               "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.h",
               "RelativeToolTip": "Portas L\u00F3gicas\\ResolveApp.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-10-21T11:44:10.114Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "Portas L\u00F3gicas.cpp",
               "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp",
               "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Portas L\u00F3gicas.cpp",
@@ -154,15 +128,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 3,
+              "Title": "Resolve.cpp",
+              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.cpp",
+              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Resolve.cpp",
+              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Resolve.cpp",
+              "RelativeToolTip": "Portas L\u00F3gicas\\Resolve.cpp",
+              "ViewState": "AgIAAPQAAAAAAAAAAAAAwAYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-10-15T14:32:02.327Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "ResolveApp.cpp",
               "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.cpp",
               "RelativeDocumentMoniker": "Portas L\u00F3gicas\\ResolveApp.cpp",
               "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\ResolveApp.cpp",
               "RelativeToolTip": "Portas L\u00F3gicas\\ResolveApp.cpp",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAAAF0AAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-21T11:46:28.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Componentes.h",
+              "DocumentMoniker": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.h",
+              "RelativeDocumentMoniker": "Portas L\u00F3gicas\\Componentes.h",
+              "ToolTip": "C:\\Users\\sizen\\OneDrive\\\u00C1rea de Trabalho\\Ciencia da Computa\u00E7\u00E3o\\Projetos em C\\2024\\Portas L\u00F3gicas\\Portas L\u00F3gicas\\Componentes.h",
+              "RelativeToolTip": "Portas L\u00F3gicas\\Componentes.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-10-10T15:33:33.162Z",
               "EditorCaption": ""
             }
           ]
