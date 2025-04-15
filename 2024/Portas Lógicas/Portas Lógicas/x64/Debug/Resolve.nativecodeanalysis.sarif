@@ -1,0 +1,51 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.41.34123.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/sizen/onedrive/área de trabalho/ciencia da computação/projetos em c/2024/portas lógicas/portas lógicas/resolve.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "25854658c663ca98aa57e76b1f256ac0c67acb0766792edbd42dc3c3d18c7c42"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/sizen/onedrive/área de trabalho/ciencia da computação/projetos em c/2024/portas lógicas/portas lógicas/resolve.h"
+          },
+          "hashes": {
+            "sha-256": "82dd15de0b7d3b155f5d4fe424e7336282d64d6d6ebeb9cfb222cd85dfb47690"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/sizen/onedrive/área de trabalho/ciencia da computação/projetos em c/2024/portas lógicas/portas lógicas/componentes.h"
+          },
+          "hashes": {
+            "sha-256": "523a5842fa0b32ae5d97bde8dce75676c4152c470e774d0fac42e8de76876f69"
+          }
+        }
+      ]
+    }
+  ]
+}

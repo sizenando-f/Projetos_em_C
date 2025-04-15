@@ -35,7 +35,7 @@ public:
 	int leEntradasESaidas() override;
 
 	unsigned getNentradas() override;
-	
+
 	void carregaComponentes(vector<string> e, vector<string> s) override;
 
 	ComponentesApp* alocarApp() override;
@@ -81,6 +81,21 @@ public:
 
 	unsigned getNentradas() override;
 	
+	void carregaComponentes(vector<string> e, vector<string> s) override;
+
+	ComponentesApp* alocarApp() override;
+};
+
+class AndOrApp : public AndOr, public ComponentesApp {
+public:
+	// Construtor
+	AndOrApp();
+
+	// Funções sobrescritas
+	int leEntradasESaidas() override;
+
+	unsigned getNentradas() override;
+
 	void carregaComponentes(vector<string> e, vector<string> s) override;
 
 	ComponentesApp* alocarApp() override;

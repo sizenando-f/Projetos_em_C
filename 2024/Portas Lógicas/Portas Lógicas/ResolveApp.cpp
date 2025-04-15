@@ -1,5 +1,4 @@
 #include "ResolveApp.h"
-#include <iostream>
 
 void ResolveApp::insereComponente(ComponentesApp* comp)
 {
@@ -55,7 +54,7 @@ void ResolveApp::mainDoApp()
 		case 3: {
 			vector<Base*> comp = resolve.getComponentes();
 			if (comp.size() != 0) {
-				int i = 1, esc;
+				int i = 1;
 				for (const auto& componente : comp) {
 					cout << i++ << ". " << componente->getNome() << " ";
 					for (const auto& indices : componente->getEntradas()) {
@@ -68,9 +67,19 @@ void ResolveApp::mainDoApp()
 				}
 				cout << i << ". voltar" << endl;
 				cout << "escolha: ";
-				cin >> esc;
+				cin >> esc2;
 
-				if (esc >= 1 && esc <= i) resolve.editaComponente(esc);
+				if (esc2 >= 1 && esc2 < i) {
+					resolve.removeComponente(esc2); // Apaga componente escolhido
+					for (int j = 0; j < registroDeComponentes.size(); j++) {
+						if (registroDeComponentes.at(j)->getNome() == comp.at(esc2 - 1)->getNome()) {
+							if (registroDeComponentes.at(j)->leEntradasESaidas()) {	// Reinicia a inserção
+								resolve.insere(dynamic_cast<Base*>(registroDeComponentes.at(j)));
+								break;
+							}
+						}
+					}
+				}
 			}
 			break;
 		}
@@ -78,7 +87,7 @@ void ResolveApp::mainDoApp()
 		// Remove componente
 		case 4: {
 			vector<Base*> comp = resolve.getComponentes();
-			if (comp.size() == 0) return;
+			if (comp.size() == 0) break;
 			int i = 1, esc;
 			for (const auto& componente : comp) {
 				cout << i++ << ". " << componente->getNome() << " ";
@@ -129,7 +138,7 @@ void ResolveApp::mainDoApp()
 
 					for (int i = 0; i < registroDeComponentes.size(); i++) {
 						if (registroDeComponentes.at(i)->getNome() == cursor) {
-							for (int j = 0; j < registroDeComponentes[i]->getNentradas(); j++) {
+							for (int j = 0; j < registroDeComponentes.at(i)->getNentradas(); j++) {
 								palavra >> cursor;
 
 								if (cursor.size() != 2) break;
@@ -174,7 +183,7 @@ void ResolveApp::mainDoApp()
 
 		// Calcula todos os componenntes após cada escolha
 		resolve.resolveTotal();
-	} while (esc != 7);
+	}while (esc != 7);
 }
 
 ResolveApp::~ResolveApp()

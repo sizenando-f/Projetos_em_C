@@ -1,5 +1,4 @@
 #include "ComponentesApp.h"
-#include <iostream>
 
 using namespace std;
 
@@ -242,4 +241,93 @@ void WireApp::carregaComponentes(vector<string> e, vector<string> s)
 ComponentesApp* WireApp::alocarApp()
 {
 	return new WireApp;
+}
+
+AndOrApp::AndOrApp()
+{
+	setNomeApp("andor");
+}
+
+int AndOrApp::leEntradasESaidas()
+{
+	vector<string> temp;
+	// Leitura das entradas
+	string e;
+	cout << "Entre com os indices da primeira entrada: ";
+	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+	temp.push_back(e);
+
+	cout << "Entre com os indices da segunda entrada: ";
+	cin >> e;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+	temp.push_back(e);
+
+	cout << "Entre com os indices da terceira entrada: ";
+	cin >> e;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+	temp.push_back(e);
+
+	cout << "Entre com os indices da quarta entrada: ";
+	cin >> e;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+	temp.push_back(e);
+
+	this->setEntradas(temp);
+	this->setNumeroEntradas(static_cast<int>(temp.size()));
+
+	// Leitura das saída
+	cout << "Entre com indice da primeira saida (saida AND): ";
+	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+
+	temp.clear();
+	temp.push_back(e);
+
+	cout << "Entre com índice da segunda saida (saida OR): ";
+	cin >> e;
+	if (e.size() != 2) return 0;
+	if (e[0] != 's' && e[0] != 'e') {
+		if (e[0] - '0' < 0 || e[0] - '0' > 7) return 0;
+	}
+	if (e[1] - '0' < 0 || e[1] - '0' > 7) return 0;
+
+	temp.push_back(e);
+
+	this->setSaidas(temp);
+	return 1;
+}
+
+unsigned AndOrApp::getNentradas()
+{
+	return this->getNumeroEntradas();
+}
+
+void AndOrApp::carregaComponentes(vector<string> e, vector<string> s)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNumeroEntradas(static_cast<int>(e.size()));
+}
+
+ComponentesApp* AndOrApp::alocarApp()
+{
+	return new AndOrApp;
 }

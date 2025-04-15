@@ -45,43 +45,6 @@ And::And(vector<string> e, vector<string> s, unsigned nEntradas)
 	this->setNumeroEntradas(nEntradas);
 }
 
-void And::editaEntradasSaidas()
-{
-	vector<string> temp;
-	string e;
-	cout << "Entre com os indices da primeira entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-	temp.push_back(e);
-
-	cout << "Entre com os indices da segunda entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-	temp.push_back(e);
-	this->setEntradas(temp);
-
-	cout << "Entre com a saida: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-
-	temp.clear();
-	temp.push_back(e);
-
-	this->setSaidas(temp);
-}
-
 void And::setNumeroEntradas(unsigned n)
 {
 	this->nEntradas = n;
@@ -118,43 +81,6 @@ Or::Or(vector<string> e, vector<string> s, unsigned nEntradas)
 	this->setSaidas(s);
 	this->setNome("or");
 	this->setNumeroEntradas(nEntradas);
-}
-
-void Or::editaEntradasSaidas()
-{
-	vector<string> temp;
-	string e;
-	cout << "Entre com os indices da primeira entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-	temp.push_back(e);
-
-	cout << "Entre com os indices da segunda entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-	temp.push_back(e);
-	this->setEntradas(temp);
-
-	cout << "Entre com a saida: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-
-	temp.clear();
-	temp.push_back(e);
-
-	this->setSaidas(temp);
 }
 
 void Or::setNumeroEntradas(unsigned n)
@@ -196,35 +122,6 @@ Not::Not(vector<string> e, vector<string> s, unsigned nEntradas)
 	this->setNumeroEntradas(nEntradas);
 }
 
-void Not::editaEntradasSaidas()
-{
-	vector<string> temp;
-	string e;
-	cout << "Entre com os indices da entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-
-	temp.push_back(e);
-	this->setEntradas(temp);
-
-	cout << "Entre com os indices da saida: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-
-	temp.clear();
-	temp.push_back(e);
-
-	this->setSaidas(temp);
-}
-
 void Not::setNumeroEntradas(unsigned n)
 {
 	this->nEntradas = n;
@@ -234,7 +131,6 @@ unsigned Not::getNumeroEntradas() const
 {
 	return this->nEntradas;
 }
-
 
 vector<bool> Not::calcula(vector<int> entradas) const
 {
@@ -259,37 +155,10 @@ Wire::Wire(vector<string> e, vector<string> s, unsigned nEntradas)
 	this->setNumeroEntradas(nEntradas);
 }
 
-void Wire::editaEntradasSaidas()
-{
-	vector<string> temp;
-	string e;
-	cout << "Entre com os indices da entrada: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-	temp.push_back(e);
-	this->setEntradas(temp);
-
-	cout << "Entre com os indices da saida: ";
-	cin >> e;
-	if (e.size() != 2) return;
-	if (e[0] != 's' && e[0] != 'e') {
-		if (e[0] - '0' < 0 || e[0] - '0' > 7) return;
-	}
-	if (e[1] - '0' < 0 || e[1] - '0' > 7) return;
-
-	temp.clear();
-	temp.push_back(e);
-
-	this->setSaidas(temp);
-}
-
 void Wire::setNumeroEntradas(unsigned n)
 {
 	this->nEntradas = n;
+
 }
 
 unsigned Wire::getNumeroEntradas() const
@@ -309,4 +178,53 @@ vector<bool> Wire::calcula(vector<int> entradas) const
 Base* Wire::alocar()
 {
 	return new Wire(getEntradas(), getSaidas(), getNumeroEntradas());
+}
+
+AndOr::AndOr()
+{
+}
+
+AndOr::AndOr(vector<string> e, vector<string> s, unsigned nEntradas)
+{
+	this->setEntradas(e);
+	this->setSaidas(s);
+	this->setNome("andor");
+	this->setNumeroEntradas(nEntradas);
+}
+
+void AndOr::setNumeroEntradas(unsigned n)
+{
+	this->nEntradas = n;
+}
+
+unsigned AndOr::getNumeroEntradas() const
+{
+	return this->nEntradas;
+}
+
+vector<bool> AndOr::calcula(vector<int> entradas) const
+{
+	bool result = true;
+	vector<bool> temp;
+	// Teste AND
+	for (int i = 0; i < entradas.size(); i++) {
+		result = result && entradas[i];
+	}
+	
+	temp.push_back(result);
+
+	// Teste OR
+	result = false;
+	for (int i = 0; i < entradas.size(); i++) {
+		result = result || entradas[i];
+	}
+
+	temp.push_back(result);
+
+	return temp;
+}
+
+Base* AndOr::alocar()
+{
+	return new AndOr(getEntradas(), getSaidas(), getNumeroEntradas());
 }

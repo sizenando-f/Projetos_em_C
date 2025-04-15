@@ -1,5 +1,4 @@
 #include "Resolve.h"
-#include <iostream>
 
 using namespace std;
 
@@ -131,33 +130,6 @@ void Resolve::editaEntradas(string entradas)
 		if (entradas[i] - '0' == 0 or entradas[i] - '0' == 1) {
 			entrada[i] = entradas[i] - '0';
 		}
-	}
-}
-void Resolve::editaComponente(int indice)
-{
-	/*
-		Realiza a edição de entrada e saída do componente
-		- Zera a saída a qual o componente está conectado, seja no campo, entrada ou saída
-		- Edita entrada e saída
-	*/
-	if (indice > 0 && indice <= componentes.size()) {
-		vector<string> ent = componentes[indice - 1]->getSaidas();
-
-		if (ent.size() != 0) {
-			for (const auto& indices : ent) {
-				if (indices[0] == 'e') {
-					entrada[indices[1] - '0'] = 0;
-				}
-				else if (indices[0] == 's') {
-					saida[indices[1] - '0'] = 0;
-				}
-				else {
-					campo[7 - (indices[0] - '0')][indices[1] - '0'] = 0;
-				}
-			}
-		}
-
-		componentes[indice - 1]->editaEntradasSaidas();
 	}
 }
 

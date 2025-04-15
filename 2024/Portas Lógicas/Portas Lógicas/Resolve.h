@@ -29,9 +29,6 @@ public:
 	// Edita entrada de bits
 	void editaEntradas(string entradas);
 
-	// Edita componente do campo
-	void editaComponente(int indice);
-
 	// Remove componente do campo
 	void removeComponente(int indice);
 
