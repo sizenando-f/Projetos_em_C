@@ -69,11 +69,7 @@ int main(int argc, char* argv[]){
         printf("[ -># ] Erro ao abrir o arquivo\n");
         return -1;
     }
-
-    struct stat info;   // Estrutura para armazenar informações sobre o arquivo
-    stat(argv[1], &info); // Obtém informações sobre o arquivo
-    tamanho = info.st_size / sizeof(int); // Calcula o tamanho do vetor de números
-
+ 
     // Verifica se o tamanho de threads requisitada pelo usuário é maior que o tamanho do vetor de números
     if(num_threads > tamanho){
         printf("[ #<- ] O número de threads é maior que o número de elementos, limitando o número de threads para %d\n", tamanho);
