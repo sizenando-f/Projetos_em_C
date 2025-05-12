@@ -1,16 +1,9 @@
-////////////////////////////////////////////////////////////////////////////////////        
-// canvas.cpp
-//
-// This program allows the user to draw simple shapes on a canvas.
-//
-// Interaction:
-// Left click on a box on the left to select a primitive.
-// Then left click on the drawing area: once for point, twice for line or rectangle,
-// three times for sector.
-// Right click for menu options.
-//
-//  Updated version with additional features.
-//////////////////////////////////////////////////////////////////////////////////// 
+/**
+ * @file main.cpp
+ * @brief Desenho de figuras geométricas com OpenGL (Com setores circulares)
+ * @author Sizenando S. França - 50575
+ * @date 10-05-2025
+*/
 
 #include <cstdlib>
 #include <cstring>
@@ -36,49 +29,56 @@ using namespace std;
 
 #define PI 3.14159265358979323846
 
-// Use the STL extension of C++.
 using namespace std;
 
-// Globals.
-static GLsizei width, height; // OpenGL window size.
-static float pointSize = 3.0; // Size of point
-static int primitive = INACTIVE; // Current drawing primitive.
-static int pointCount = 0; // Number of specified points.
-static int tempX, tempY; // Co-ordinates of clicked point.
-static int temp2X, temp2Y; // Additional co-ordinates for sector.
-static int isGrid = 1; // Is there grid?
-static int gridSize = 10; // Grid size (10 divisions by default)
-static float currentRed = 0.0, currentGreen = 0.0, currentBlue = 0.0; // Current drawing color
-static int isFilled = 0; // Is current shape filled?
-static int isStippled = 0; // Is current line stippled?
-static char inputText[100] = ""; // Text to be drawn
-static int textSize = 12; // Text size
-static int currentX = 0, currentY = 0;
+// Variáveis globais
+static GLsizei width, height; // Tamanho da janela do OpenGL
+static float pointSize = 3.0; // Tamanho do ponto
+static int primitive = INACTIVE; // Primitiva selecionada
+static int pointCount = 0; // Número de pontos especifificados
+static int tempX, tempY; // Coordenadas do ponto clicado
+static int temp2X, temp2Y; // Coordenadas adicionais para o setor
+static int isGrid = 1; // Exibir grade?
+static int gridSize = 10; //Tamanho do grid (10 divisões por padrão)
+static float currentRed = 0.0, currentGreen = 0.0, currentBlue = 0.0; // Cor de desenho atual
+static int isFilled = 0; // A primitiva atual é preenchida?
+static int isStippled = 0; // A linha atual é pontilhada?
+static char inputText[100] = ""; // Texto para ser desenhado
+static int textSize = 12; // Tamanho do texto
+static int currentX = 0, currentY = 0; // Coordenadas do mouse
 
 
-// Point class.
+/**
+ * @brief Classe que representa um ponto no espaço 2D.
+ * 
+ * Esta classe é usada para armazenar as coordenadas de um ponto, bem como sua cor.
+ * Ela também possui um método para desenhar o ponto na tela.
+*/
 class Point
 {
 public:
+   //xVal = coordenada x, yVal = coordenada y, r = vermelho, g = verde, b = azul
    Point(int xVal, int yVal, float r = 0.0, float g = 0.0, float b = 0.0)
    {
       x = xVal; y = yVal;
       red = r; green = g; blue = b;
    }
-   void drawPoint(void); // Function to draw a point.
+   void drawPoint(void); // Função para desenhar o ponto
 public:
-   static void setSize(float newSize) { size = newSize; } // Setter for size.
-   static float size; // Size of point.
+   static void setSize(float newSize) { size = newSize; } // Setter para o tamanho do ponto
+   static float size; // Tamanho do ponto
 
 private:
-   int x, y; // x and y co-ordinates of point.
-   float red, green, blue; // Color of point
+   int x, y; // Coordenadas do ponto
+   float red, green, blue; // Cor do ponto
 
 };
 
-float Point::size = pointSize; // Set point size.
+float Point::size = pointSize; // Seta o tamanho do ponto
 
-// Function to draw a point.
+/**
+ * @brief Desenha o ponto na tela.
+*/
 void Point::drawPoint()
 {  
    glPointSize(size);
@@ -88,16 +88,20 @@ void Point::drawPoint()
    glEnd();   
 }
 
-// Vector of points.
+// Vetor para os pontos
 vector<Point> points;
 
-// Iterator to traverse a Point array.
+// Iterador para percorrer o vetor de pontos
 vector<Point>::iterator pointsIterator; 
 
-// Function to draw all points in the points array.
+/**
+ * @brief Desenha todos os pontos armazenados no vetor de pontos.
+ * 
+ * Esta função itera sobre o vetor de pontos e chama o método drawPoint() de cada ponto.
+*/
 void drawPoints(void)
 {
-   // Loop through the points array drawing each point.
+   // Loop através de cada ponto do vetor e desenha o ponto.
    pointsIterator = points.begin();
    while(pointsIterator != points.end() )
    {
@@ -106,10 +110,13 @@ void drawPoints(void)
    }
 }
 
-// Line class.
+/**
+ * @brief Classe que representa uma linha no espaço 2D.
+*/
 class Line
 {
 public:
+   // x1Val = coordenada x1, y1Val = coordenada y1, x2Val = coordenada x2, y2Val = coordenada y2, r = vermelho, g = verde, b = azul, stip = pontilhada?
    Line(int x1Val, int y1Val, int x2Val, int y2Val, 
         float r = 0.0, float g = 0.0, float b = 0.0, int stip = 0)
    {
@@ -119,12 +126,14 @@ public:
    }
    void drawLine();
 private:
-   int x1, y1, x2, y2; // x and y co-ordinates of endpoints.
-   float red, green, blue; // Color of line
-   int stippled; // Is line stippled
+   int x1, y1, x2, y2; // Coordenadas começo e fim da linha
+   float red, green, blue; // Cor da linha
+   int stippled; // A linha é pontilhada?
 };
 
-// Function to draw a line.
+/**
+ * @brief Desenha a linha na tela.
+*/
 void Line::drawLine()
 {
    glColor3f(red, green, blue);
@@ -146,16 +155,18 @@ void Line::drawLine()
    }
 }
 
-// Vector of lines.
+// Vetor de linhas
 vector<Line> lines;
 
-// Iterator to traverse a Line array.
+// Iterador para percorrer o vetor de linhas
 vector<Line>::iterator linesIterator;
 
-// Function to draw all lines in the lines array.
+/**
+ * @brief Desenha todas as linhas armazenadas no vetor de linhas.
+*/
 void drawLines(void)
 {
-   // Loop through the lines array drawing each line.
+   // Loop através de cada linha do vetor e desenha a linha.
    linesIterator = lines.begin();
    while(linesIterator != lines.end() )
    {
@@ -164,10 +175,16 @@ void drawLines(void)
    }
 }
 
-// Rectangle class.
+/**
+ * @brief Classe que representa um retângulo no espaço 2D.
+ * 
+ * Esta classe é usada para armazenar as coordenadas de um retângulo, bem como sua cor e se ele é preenchido ou não.
+ * Ela também possui um método para desenhar o retângulo na tela.
+*/
 class Rectangle
 {
 public:
+   // x1Val = coordenada x1, y1Val = coordenada y1, x2Val = coordenada x2, y2Val = coordenada y2, r = vermelho, g = verde, b = azul, fill = preenchido?
    Rectangle(int x1Val, int y1Val, int x2Val, int y2Val, 
              float r = 0.0, float g = 0.0, float b = 0.0, int fill = 0)
    {
@@ -177,12 +194,14 @@ public:
    }
    void drawRectangle();
 private:
-   int x1, y1, x2, y2; // x and y co-ordinates of diagonally opposite vertices.
-   float red, green, blue; // Color of rectangle
-   int filled; // Is rectangle filled
+   int x1, y1, x2, y2; // Coordenadas x e y diagonalmente opostas ao vértice
+   float red, green, blue; // Cor do retângulo
+   int filled; // O retângulo é preenchido?
 };
 
-// Function to draw a rectangle.
+/**
+ * @brief Desenha o retângulo na tela.
+*/
 void Rectangle::drawRectangle()
 {
    glColor3f(red, green, blue);
@@ -199,16 +218,18 @@ void Rectangle::drawRectangle()
    }
 }
 
-// Vector of rectangles.
+// Vetor de retângulos
 vector<Rectangle> rectangles;
 
-// Iterator to traverse a Rectangle array.
+// Iterador para percorrer o vetor de retângulos
 vector<Rectangle>::iterator rectanglesIterator;
 
-// Function to draw all rectangles in the rectangles array.
+/**
+ * @brief Desenha todos os retângulos armazenados no vetor de retângulos.
+*/
 void drawRectangles(void)
 {
-   // Loop through the rectangles array drawing each rectangle.
+   // Loop através de cada retângulo do vetor e desenha o retângulo.
    rectanglesIterator = rectangles.begin();
    while(rectanglesIterator != rectangles.end() )
    {
@@ -217,40 +238,50 @@ void drawRectangles(void)
    }
 }
 
-// Sector class (for circular sectors)
+/**
+ * @brief Classe que representa um setor circular no espaço 2D.
+ * 
+ * Esta classe é usada para armazenar as coordenadas do centro, os pontos do arco, o raio, os ângulos de início e fim, a cor e se o setor é preenchido ou não.
+ * Ela também possui um método para desenhar o setor na tela.
+*/
 class Sector
 {
 public:
+   // cxVal = coordenada x do centro, cyVal = coordenada y do centro, p1xVal = coordenada x do primeiro ponto, p1yVal = coordenada y do primeiro ponto, p2xVal = coordenada x do segundo ponto, p2yVal = coordenada y do segundo ponto, r = vermelho, g = verde, b = azul, fill = preenchido?
    Sector(int cxVal, int cyVal, int p1xVal, int p1yVal, int p2xVal, int p2yVal, 
           float r = 0.0, float g = 0.0, float b = 0.0, int fill = 0)
    {
-      cx = cxVal; cy = cyVal; // Center
-      p1x = p1xVal; p1y = p1yVal; // First point on arc
-      p2x = p2xVal; p2y = p2yVal; // Second point on arc
-      red = r; green = g; blue = b;
-      filled = fill;
+      cx = cxVal; cy = cyVal; // Centro
+      p1x = p1xVal; p1y = p1yVal; // Primeiro ponto no arco
+      p2x = p2xVal; p2y = p2yVal; // Segundo ponto no arco
+      red = r; green = g; blue = b; // Cor
+      filled = fill; // Preenchido?
       
-      // Calculate radius as distance from center to first point
+      // Calcula o raio como a distância do centro ao primeiro ponto
       radius = sqrt(pow(p1x - cx, 2) + pow(p1y - cy, 2));
       
-      // Calculate start and end angles
+      // Calcula os ângulos de início e fim
       startAngle = atan2(p1y - cy, p1x - cx);
       endAngle = atan2(p2y - cy, p2x - cx);
       
-      // Ensure proper arc direction
+      // Garante a direção correta do arco
       if (endAngle < startAngle) endAngle += 2 * PI;
    }
    void drawSector();
 private:
-   int cx, cy; // Center coordinates
-   int p1x, p1y, p2x, p2y; // Points on arc
-   float radius; // Radius
-   float startAngle, endAngle; // Start and end angles
-   float red, green, blue; // Color
-   int filled; // Is sector filled
+   int cx, cy; // Centro das coordenadas
+   int p1x, p1y, p2x, p2y; // Pontos no arco
+   float radius; // Raio
+   float startAngle, endAngle; // Angulos de início e fim
+   float red, green, blue; // Cor
+   int filled; // É preenchido?
 };
 
-// Function to draw a sector.
+/**
+ * @brief Desenha o setor circular na tela.
+ * 
+ * Esta função usa a biblioteca OpenGL para desenhar o setor circular com base nas coordenadas, ângulos e cor especificados.
+*/
 void Sector::drawSector()
 {
    glColor3f(red, green, blue);
@@ -260,17 +291,17 @@ void Sector::drawSector()
    else
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    
-   // Draw the sector
+   // Desenha o setor
    const int numSegments = 100;
    float angleIncrement = (endAngle - startAngle) / numSegments;
    
    if (filled)
    {
       glBegin(GL_TRIANGLE_FAN);
-      // Add center point
+      // Adiciona o ponto central
       glVertex2f(cx, cy);
       
-      // Add points along the arc
+      // Adiciona os pontos ao longo do arco
       for (int i = 0; i <= numSegments; i++)
       {
          float angle = startAngle + i * angleIncrement;
@@ -282,7 +313,7 @@ void Sector::drawSector()
    }
    else
    {
-      // Draw the arc
+      // Desenha o arco
       glBegin(GL_LINE_STRIP);
       for (int i = 0; i <= numSegments; i++)
       {
@@ -293,7 +324,7 @@ void Sector::drawSector()
       }
       glEnd();
       
-      // Draw the radii
+      // Desenha os raios
       glBegin(GL_LINES);
       glVertex2f(cx, cy);
       glVertex2f(cx + radius * cos(startAngle), cy + radius * sin(startAngle));
@@ -304,16 +335,18 @@ void Sector::drawSector()
    }
 }
 
-// Vector of sectors.
+// Vetor de setores
 vector<Sector> sectors;
 
-// Iterator to traverse a Sector array.
+// Iterador para percorrer o vetor de setores
 vector<Sector>::iterator sectorsIterator;
 
-// Function to draw all sectors in the sectors array.
+/**
+ * @brief Desenha todos os setores armazenados no vetor de setores.
+*/
 void drawSectors(void)
 {
-   // Loop through the sectors array drawing each sector.
+   // Loop através de cada setor do vetor e desenha o setor.
    sectorsIterator = sectors.begin();
    while(sectorsIterator != sectors.end())
    {
@@ -322,10 +355,13 @@ void drawSectors(void)
    }
 }
 
-// Text class
+/**
+ * @brief Classe que representa um texto na tela.
+*/
 class Text
 {
 public:
+   // xVal = coordenada x, yVal = coordenada y, str = string do texto, r = vermelho, g = verde, b = azul, s = tamanho do texto
    Text(int xVal, int yVal, const char* str, 
         float r = 0.0, float g = 0.0, float b = 0.0, int s = 12)
    {
@@ -336,19 +372,23 @@ public:
    }
    void drawText();
 private:
-   int x, y; // Position
-   string text; // Text string
-   float red, green, blue; // Color
-   int size; // Text size
+   int x, y; // Posição do texto
+   string text; // Texto
+   float red, green, blue; // Cor
+   int size; // Tamanho do texto
 };
 
-// Function to draw text
+/**
+ * @brief Desenha o texto na tela.
+ * 
+ * Esta função usa a biblioteca OpenGL para desenhar o texto com base nas coordenadas, cor e tamanho especificados.
+*/
 void Text::drawText()
 {
    glColor3f(red, green, blue);
    glRasterPos2f(x, y);
    
-   // Choose font size
+   // Escolhe o tamanho da fonte
    void* font;
    if (size <= 10)
       font = GLUT_BITMAP_HELVETICA_10;
@@ -357,20 +397,22 @@ void Text::drawText()
    else
       font = GLUT_BITMAP_HELVETICA_18;
    
-   // Draw each character
+   // Desenha cada caractere do texto
    for (unsigned int i = 0; i < text.length(); i++)
    {
       glutBitmapCharacter(font, text[i]);
    }
 }
 
-// Vector of text objects
+//Vetor de objetos de texto
 vector<Text> texts;
 
-// Iterator to traverse a Text array
+// Iterador para percorrer o vetor de textos
 vector<Text>::iterator textsIterator;
 
-// Function to draw all texts in the texts array
+/**
+ * @brief Desenha todos os textos armazenados no vetor de textos.
+*/
 void drawTexts(void)
 {
    textsIterator = texts.begin();
@@ -381,20 +423,22 @@ void drawTexts(void)
    }
 }
 
-// Function to draw point selection box in left selection area.
+/**
+ * @brief Desenha a caixa de seleção de ponto na área de seleção à esquerda.
+*/
 void drawPointSelectionBox(void)
 {  
-   if (primitive == POINT) glColor3f(1.0, 1.0, 1.0); // Highlight.
-   else glColor3f(0.8, 0.8, 0.8); // No highlight.
+   if (primitive == POINT) glColor3f(1.0, 1.0, 1.0); // Destaque.
+   else glColor3f(0.8, 0.8, 0.8); // Sem destaque.
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glRectf(0.0, 0.9*height, 0.1*width, height);
 
-   // Draw black boundary.
+   // Desenha a borda preta.
    glColor3f(0.0, 0.0, 0.0); 
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.0, 0.9*height, 0.1*width, height); 
 
-   // Draw point icon.
+   // Desenha o ícone do ponto.
    glPointSize(pointSize);
    glColor3f(0.0, 0.0, 0.0);
    glBegin(GL_POINTS);
@@ -402,20 +446,22 @@ void drawPointSelectionBox(void)
    glEnd();  
 }
 
-// Function to draw line selection box in left selection area.
+/**
+ * @brief Desenha a caixa de seleção de linha na área de seleção à esquerda.
+*/
 void drawLineSelectionBox(void)
 {  
-   if (primitive == LINE) glColor3f(1.0, 1.0, 1.0); // Highlight.
-   else glColor3f(0.8, 0.8, 0.8); // No highlight.
+   if (primitive == LINE) glColor3f(1.0, 1.0, 1.0); // Destaque.
+   else glColor3f(0.8, 0.8, 0.8); // Sem destaque.
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glRectf(0.0, 0.8*height, 0.1*width, 0.9*height);
 
-   // Draw black boundary.
+   // Desenha a borda preta.
    glColor3f(0.0, 0.0, 0.0);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.0, 0.8*height, 0.1*width, 0.9*height);
 
-   // Draw line icon.
+   // Desenha o ícone da linha.
    glColor3f(0.0, 0.0, 0.0);
    glBegin(GL_LINES);
       glVertex3f(0.025*width, 0.825*height, 0.0);
@@ -423,52 +469,56 @@ void drawLineSelectionBox(void)
    glEnd();  
 }
 
-// Function to draw rectangle selection box in left selection area.
+/**
+ * @brief Desenha a caixa de seleção de retângulo na área de seleção à esquerda.
+*/
 void drawRectangleSelectionBox(void)
 {  
-   if (primitive == RECTANGLE) glColor3f(1.0, 1.0, 1.0); // Highlight.
-   else glColor3f(0.8, 0.8, 0.8); // No highlight.
+   if (primitive == RECTANGLE) glColor3f(1.0, 1.0, 1.0); // Destaque.
+   else glColor3f(0.8, 0.8, 0.8); // Sem destaque.
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glRectf(0.0, 0.7*height, 0.1*width, 0.8*height);
 
-   // Draw black boundary.
+   // Desenha a borda preta.
    glColor3f(0.0, 0.0, 0.0);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.0, 0.7*height, 0.1*width, 0.8*height);
 
-   // Draw rectangle icon.
+   // Desenha o ícone do retângulo.
    glColor3f(0.0, 0.0, 0.0);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.025*width, 0.735*height, 0.075*width, 0.765*height);
    glEnd();  
 }
 
-// Function to draw sector selection box in left selection area.
+/**
+ * @brief Desenha a caixa de seleção de setor na área de seleção à esquerda.
+*/
 void drawSectorSelectionBox(void)
 {  
-   if (primitive == SECTOR) glColor3f(1.0, 1.0, 1.0); // Highlight.
-   else glColor3f(0.8, 0.8, 0.8); // No highlight.
+   if (primitive == SECTOR) glColor3f(1.0, 1.0, 1.0); // Destaque
+   else glColor3f(0.8, 0.8, 0.8); // Sem destaque
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glRectf(0.0, 0.6*height, 0.1*width, 0.7*height);
 
-   // Draw black boundary.
+   // Desenha a borda preta.
    glColor3f(0.0, 0.0, 0.0);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.0, 0.6*height, 0.1*width, 0.7*height);
 
-   // Draw sector icon
+   // Desenha o ícone do setor.
    glColor3f(0.0, 0.0, 0.0);
    
-   // Draw a wedge-like shape
+   // Desenha um formato meio triangular
    float centerX = 0.05 * width;
    float centerY = 0.65 * height;
    float radius = 0.025 * width;
    
    glBegin(GL_LINE_LOOP);
-      // Center point
+      // Ponto central
       glVertex2f(centerX, centerY);
       
-      // Arc points (about 120 degrees)
+      // Pontos do arco (cerca de 120 graus)
       for (int i = 0; i <= 8; i++)
       {
          float angle = -0.4 * PI + i * (0.8 * PI) / 8;
@@ -479,30 +529,32 @@ void drawSectorSelectionBox(void)
    glEnd();
 }
 
-// Function to draw text selection box in left selection area.
+/**
+ * @brief Desenha a caixa de seleção de texto na área de seleção à esquerda.
+*/
 void drawTextSelectionBox(void)
 {  
-   if (primitive == TEXT) glColor3f(1.0, 1.0, 1.0); // Highlight.
-   else glColor3f(0.8, 0.8, 0.8); // No highlight.
+   if (primitive == TEXT) glColor3f(1.0, 1.0, 1.0); // Destaque.
+   else glColor3f(0.8, 0.8, 0.8); // Sem destaque.
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glRectf(0.0, 0.5*height, 0.1*width, 0.6*height);
 
-   // Draw black boundary.
+   // Desenha a borda preta.
    glColor3f(0.0, 0.0, 0.0);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glRectf(0.0, 0.5*height, 0.1*width, 0.6*height);
 
-   // Draw text icon (T letter)
+   // Desenha o ícone (letra T)
    glColor3f(0.0, 0.0, 0.0);
    glLineWidth(2.0);
    
-   // Draw T
+   // Desenha a letra T
    glBegin(GL_LINES);
-      // Horizontal bar
+      // Barra horizontal
       glVertex2f(0.03*width, 0.57*height);
       glVertex2f(0.07*width, 0.57*height);
       
-      // Vertical stem
+      // Desenha a linha vertical
       glVertex2f(0.05*width, 0.57*height);
       glVertex2f(0.05*width, 0.53*height);
    glEnd();
@@ -510,7 +562,9 @@ void drawTextSelectionBox(void)
    glLineWidth(1.0);
 }
 
-// Function to draw unused part of left selection area.
+/**
+ * @brief Desenha a área não utilizada da caixa de seleção à esquerda.
+*/
 void drawInactiveArea(void)
 {
    glColor3f(0.6, 0.6, 0.6);
@@ -522,7 +576,9 @@ void drawInactiveArea(void)
    glRectf(0.0, 0.0, 0.1*width, (1 - NUMBERPRIMITIVES*0.1)*height);
 }
 
-// Function to draw temporary point.
+/**
+ * @brief Desenha o ponto temporário na tela.
+*/
 void drawTempPoint(void)
 {
    glColor3f(1.0, 0.0, 0.0);
@@ -532,7 +588,9 @@ void drawTempPoint(void)
    glEnd(); 
 }
 
-// Function to draw second temporary point (for sector)
+/**
+ * @brief Desenha o segundo ponto temporário na tela. (Para o setor
+*/
 void drawTemp2Point(void)
 {
    glColor3f(0.0, 1.0, 0.0);
@@ -542,7 +600,9 @@ void drawTemp2Point(void)
    glEnd(); 
 }
 
-// Function to draw a grid.
+/**
+ * @brief Desenha a grade na tela.
+*/
 void drawGrid(void)
 {
    int i;
@@ -565,31 +625,38 @@ void drawGrid(void)
    glDisable(GL_LINE_STIPPLE);
 }
 
-// Function to handle text input
+/**
+ * @brief Processa a entrada de texto do usuário.
+ * 
+ * Esta função adiciona o caractere digitado ao buffer de texto, ou apaga o último caractere se backspace for pressionado.
+ * Se enter for pressionado, o texto é adicionado ao canvas.
+ * 
+ * @param key O caractere digitado pelo usuário.
+*/
 void processTextInput(unsigned char key)
 {
-   // If backspace and there's text to delete
+   // Se a tecla for backspace e houver texto para apagar
    if (key == 8 && strlen(inputText) > 0)
    {
       inputText[strlen(inputText) - 1] = '\0';
    }
-   // If enter key
+   // Se a tecla for enter, adiciona o texto ao canvas
    else if (key == 13)
    {
-      // Add text to the canvas
+      // Adiciona o texto ao canvas, vetor de textos
       texts.push_back(Text(tempX, tempY, inputText, 
                          currentRed, currentGreen, currentBlue, textSize));
       
-      // Reset text input
+      // Reseta o texto de entrada
       inputText[0] = '\0';
       primitive = INACTIVE;
       pointCount = 0;
    }
-   // Regular character input
-   else if (key >= 32 && key <= 126) // Printable ASCII characters
+   // Entrada de caractere regular
+   else if (key >= 32 && key <= 126) // Caracteres ASCII imprimíveis
    {
       int len = strlen(inputText);
-      if (len < 99) // Prevent buffer overflow
+      if (len < 99) // Previne o overflow do buffer
       {
          inputText[len] = key;
          inputText[len + 1] = '\0';
@@ -597,13 +664,20 @@ void processTextInput(unsigned char key)
    }
 }
 
+/**
+ * @brief Função para limpar o anterior
+*/
 void clearPreview()
 {
    currentX = currentY = 0;
    glutPostRedisplay();
 }
 
-// Adicione esta função auxiliar antes de drawScene()
+/**
+ * @brief Desenha a pré-visualização da primitiva selecionada. (Auxilar da drawScene)
+ *
+ * Esta função desenha uma linha, retângulo ou setor na tela com base nas coordenadas do mouse e no número de pontos especificados.
+*/
 void drawPreview()
 {
    if (primitive == LINE && pointCount == 1)
@@ -700,7 +774,9 @@ void drawPreview()
    }
 }
 
-// Drawing routine.
+/**
+ * @brief Função de callback para desenhar a cena.
+*/
 void drawScene(void)
 {
    glClear(GL_COLOR_BUFFER_BIT);
@@ -732,7 +808,7 @@ void drawScene(void)
    
    if (primitive == TEXT && pointCount == 1)
    {
-      // Display current text input at mouse position
+      // Mostra o texto atual na posição do mouse
       glColor3f(currentRed, currentGreen, currentBlue);
       glRasterPos2f(tempX, tempY);
       
@@ -742,8 +818,8 @@ void drawScene(void)
          glutBitmapCharacter(font, inputText[i]);
       }
       
-      // Display cursor
-      if ((glutGet(GLUT_ELAPSED_TIME) / 500) % 2) // Blink cursor every 500ms
+      // Mostra o cursor piscando
+      if ((glutGet(GLUT_ELAPSED_TIME) / 500) % 2) // Pisca o cursor a cada 500ms
       {
          glutBitmapCharacter(font, '_');
       }
@@ -754,7 +830,13 @@ void drawScene(void)
    glutSwapBuffers();
 }
 
-// Function to pick primitive if click is in left selection area.
+/**
+ * @brief Seleciona a primitiva com base na posição do mouse.
+ *
+ * Esta função verifica a posição do mouse e define a primitiva selecionada com base na área clicada.
+ *
+ * @param y A coordenada y do mouse.
+*/
 void pickPrimitive(int y)
 {
    if (y < (1 - NUMBERPRIMITIVES*0.1)*height) primitive = INACTIVE;
@@ -765,27 +847,36 @@ void pickPrimitive(int y)
    else primitive = POINT;
    
    pointCount = 0;
-   inputText[0] = '\0'; // Clear text input
+   inputText[0] = '\0'; // Limpa o texto de entrada
 }
 
-// The mouse callback routine.
+/**
+ * @brief Função de callback para o controle do mouse.
+ *
+ * Esta função processa os eventos de clique do mouse e atualiza a primitiva selecionada ou adiciona pontos, linhas, retângulos, setores ou textos ao canvas.
+ *
+ * @param button O botão do mouse que foi pressionado.
+ * @param state O estado do botão (pressionado ou solto).
+ * @param x A coordenada x do mouse.
+ * @param y A coordenada y do mouse.
+*/
 void mouseControl(int button, int state, int x, int y)
 {
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
    {
-      y = height - y; // Correct from mouse to OpenGL co-ordinates.
+      y = height - y; // Corrige a coordenada y para o sistema de coordenadas do OpenGL
 
-      // Click outside canvas - do nothing.
+      // Clicar fora do canvas - não faz nada.
       if (x < 0 || x > width || y < 0 || y > height) ;
 
-      // Click in left selection area.
+      // Clica na área de seeleção à esquerda
       else if (x < 0.1*width) 
       {
          pickPrimitive(y);
-         currentX = currentY = 0; // Resetar pré-visualizaçã
+         currentX = currentY = 0; // Resetar pré-visualização
       }
 
-      // Click in canvas.
+      // Clica no canvas
       else
       {
          if (primitive == POINT) {
@@ -815,11 +906,11 @@ void mouseControl(int button, int state, int x, int y)
          }
          else if (primitive == SECTOR) {
             if (pointCount == 0) {
-               tempX = x; tempY = y; // Center
+               tempX = x; tempY = y; // Centro
                pointCount++;
             }
             else if (pointCount == 1) {
-               temp2X = x; temp2Y = y; // First point
+               temp2X = x; temp2Y = y; // Primeiro ponto
                pointCount++;
             }
             else {
@@ -839,12 +930,20 @@ void mouseControl(int button, int state, int x, int y)
    glutPostRedisplay();
 }
 
-// Keyboard input processing routine.
+/**
+ * @brief Função de callback para o teclado.
+ *
+ * Esta função processa a entrada do teclado e executa ações com base na tecla pressionada.
+ *
+ * @param key A tecla pressionada.
+ * @param x A coordenada x do mouse.
+ * @param y A coordenada y do mouse.
+*/
 void keyInput(unsigned char key, int x, int y)
 {
    switch (key) 
    {
-      case 27: // Escape key
+      case 27: // Tecla ESC
          exit(0);
          break;
       default:
@@ -857,7 +956,9 @@ void keyInput(unsigned char key, int x, int y)
    glutPostRedisplay();
 }
 
-// Clear the canvas and reset for fresh drawing.
+/**
+ * @brief Limpa todos os objetos desenhados e reseta o estado do canvas.
+*/
 void clearAll(void)
 {
    points.clear();
@@ -870,131 +971,173 @@ void clearAll(void)
    inputText[0] = '\0';
 }
 
-// Color submenu callback
+/**
+ * @brief Função de callback do submenu de cores.
+ *
+ * Esta função altera a cor atual com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void color_menu(int id)
 {
    switch(id)
    {
-      case 5: // Black
+      case 5: // Preto
          currentRed = 0.0; currentGreen = 0.0; currentBlue = 0.0;
          break;
-      case 6: // Red
+      case 6: // Vermelho
          currentRed = 1.0; currentGreen = 0.0; currentBlue = 0.0;
          break;
-      case 7: // Green
+      case 7: // Verde
          currentRed = 0.0; currentGreen = 1.0; currentBlue = 0.0;
          break;
-      case 8: // Blue
+      case 8: // Azul
          currentRed = 0.0; currentGreen = 0.0; currentBlue = 1.0;
          break;
-      case 9: // Yellow
+      case 9: // Amarelo
          currentRed = 1.0; currentGreen = 1.0; currentBlue = 0.0;
          break;
-      case 10: // Purple
+      case 10: // Roxo
          currentRed = 1.0; currentGreen = 0.0; currentBlue = 1.0;
          break;
    }
    glutPostRedisplay();
 }
 
-// Fill submenu callback
+/**
+ * @brief Função de callback do submenu de preenchimento.
+ *
+ * Esta função altera o estilo de preenchimento (preenchido ou contorno) com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void fill_menu(int id)
 {
    switch(id)
    {
-      case 11: // Filled
+      case 11: // Preenchido
          isFilled = 1;
          break;
-      case 12: // Outline
+      case 12: // Contorno
          isFilled = 0;
          break;
    }
    glutPostRedisplay();
 }
 
-// Line style submenu callback
+/**
+ * @brief Função de callback do submenu de estilo de linha.
+ *
+ * Esta função altera o estilo da linha (sólido ou tracejado) com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void line_menu(int id)
 {
    switch(id)
    {
-      case 13: // Solid
+      case 13: // Solido
          isStippled = 0;
          break;
-      case 14: // Dashed
+      case 14: // Tracejado
          isStippled = 1;
          break;
    }
    glutPostRedisplay();
 }
 
-// Grid size submenu callback
+/**
+ * @brief Função de callback do submenu de tamanho da grade.
+ *
+ * Esta função altera o tamanho da grade com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void grid_size_menu(int id)
 {
    switch(id)
    {
-      case 15: // 5 divisions
+      case 15: // 5 divisões
          gridSize = 5;
          break;
-      case 16: // 10 divisions
+      case 16: // 10 divisões
          gridSize = 10;
          break;
-      case 17: // 20 divisions
+      case 17: // 20 divisões
          gridSize = 20;
          break;
-      case 18: // 50 divisions
+      case 18: // 50 divisões
          gridSize = 50;
          break;
    }
    glutPostRedisplay();
 }
 
-// Text size submenu callback
+/**
+ * @brief Função de callback do submenu de tamanho do texto.
+ *
+ * Esta função altera o tamanho do texto com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void text_size_menu(int id)
 {
    switch(id)
    {
-      case 19: // Small
+      case 19: // Pequeno
          textSize = 10;
          break;
-         case 20: // Medium
+         case 20: // Médio
          textSize = 12;
          break;
-      case 21: // Large
+      case 21: // Grande
          textSize = 18;
          break;
    }
    glutPostRedisplay();
 }
 
-// Grid toggle callback
+/**
+ * @brief Função de callback do submenu de alternância da grade.
+ *
+ * Esta função alterna a exibição da grade com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void grid_toggle(int id)
 {
    switch(id)
    {
-      case 22: // Show grid
+      case 22: // Mostra o grid
          isGrid = 1;
          break;
-      case 23: // Hide grid
+      case 23: // Esconde o grid
          isGrid = 0;
          break;
    }
    glutPostRedisplay();
 }
 
-// Point size submenu callback
+/**
+ * @brief Função de callback do submenu de tamanho do ponto.
+ *
+ * Esta função altera o tamanho do ponto com base na opção selecionada no menu.
+ *
+ * @param id O ID da opção selecionada no menu.
+*/
 void point_size_menu(int id)
 {
    switch(id)
    {
-      case 24: // Small
+      case 24: // Pequeno
          pointSize = 3.0;
          Point::size = pointSize;
          break;
-      case 25: // Medium
+      case 25: // Médio
          pointSize = 6.0;
          Point::size = pointSize;
          break;
-      case 26: // Large
+      case 26: // Grande
          pointSize = 9.0;
          Point::size = pointSize;
          break;
@@ -1002,25 +1145,35 @@ void point_size_menu(int id)
    glutPostRedisplay();
 }
 
-// Main menu callback
+/**
+   * @brief Função de callback do menu principal.
+   *
+   * Esta função processa as opções selecionadas no menu principal.
+   *
+   * @param id O ID da opção selecionada no menu.
+*/
 void main_menu(int id)
 {
    switch(id)
    {
-      case 1: // Clear canvas
+      case 1: // Limpa o canvas
          clearAll();
          break;
-      case 2: // Exit
+      case 2: // Sair
          exit(0);
          break;
    }
    glutPostRedisplay();
 }
 
-// Routine to create menu.
+/**
+   * @brief Cria o menu de opções.
+   *
+   * Esta função cria os submenus e o menu principal, associando cada opção a uma função de callback.
+*/
 void makeMenu(void)
 {
-   // Create submenus
+   // Cria os submenus
    int colorSubMenu = glutCreateMenu(color_menu);
    glutAddMenuEntry("Black", 5);
    glutAddMenuEntry("Red", 6);
@@ -1057,7 +1210,7 @@ void makeMenu(void)
    glutAddMenuEntry("Medium (6px)", 25);
    glutAddMenuEntry("Large (9px)", 26);
    
-   // Create main menu
+   // Cria o menu principal
    glutCreateMenu(main_menu);
    glutAddSubMenu("Color", colorSubMenu);
    glutAddSubMenu("Fill Style", fillSubMenu);
@@ -1072,24 +1225,35 @@ void makeMenu(void)
    glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-// Initialization routine.
+/**
+   * @brief Função de configuração inicial.
+   *
+   * Esta função configura a cor de fundo da tela e cria o menu de opções.
+*/
 void setup(void) 
 {
    glClearColor(1.0, 1.0, 1.0, 0.0); 
-   makeMenu(); // Create menu.
+   makeMenu(); // Cria o menu
 }
 
-// OpenGL window reshape routine.
+/**
+   * @brief Função de redimensionamento da janela OpenGL.
+   *
+   * Esta função ajusta a caixa de visualização e as variáveis globais de largura e altura.
+   *
+   * @param w A nova largura da janela.
+   * @param h A nova altura da janela.
+*/
 void resize(int w, int h)
 {
    glViewport(0, 0, w, h);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
-   // Set viewing box dimensions equal to window dimensions.
+   // Seta a caixa de visualização para o tamanho da janela.
    glOrtho(0.0, w, 0.0, h, -1.0, 1.0);
 
-   // Pass the size of the OpenGL window to globals.
+   // Passa o tamanho da janela OpenGL para as variáveis globais.
    width = w; 
    height = h; 
 
@@ -1097,7 +1261,15 @@ void resize(int w, int h)
    glLoadIdentity();
 }
 
-// Keyboard input processing routine for special keys.
+/**
+   * @brief Função de callback para teclas especiais.
+   *
+   * Esta função processa as teclas especiais pressionadas e ajusta a posição do cursor de texto.
+   *
+   * @param key A tecla especial pressionada.
+   * @param x A coordenada x do mouse.
+   * @param y A coordenada y do mouse.
+*/
 void specialKeyInput(int key, int x, int y)
 {
    if (primitive == TEXT && pointCount == 1)
@@ -1105,14 +1277,14 @@ void specialKeyInput(int key, int x, int y)
       if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT || 
           key == GLUT_KEY_UP || key == GLUT_KEY_DOWN)
       {
-         // Move cursor position
-         int moveAmount = 5; // pixels to move
+         // Ajusta a posição do cursor
+         int moveAmount = 5; // Pixels para mover
          if (key == GLUT_KEY_LEFT) tempX -= moveAmount;
          if (key == GLUT_KEY_RIGHT) tempX += moveAmount;
          if (key == GLUT_KEY_UP) tempY += moveAmount;
          if (key == GLUT_KEY_DOWN) tempY -= moveAmount;
          
-         // Keep within window bounds
+         // Mantém dentro dos limites da janela
          tempX = max(tempX, (int)(0.1 * width));
          tempX = min(tempX, width);
          tempY = max(tempY, 0);
@@ -1123,7 +1295,14 @@ void specialKeyInput(int key, int x, int y)
 }
 
 
-// Função de movimento do mouse
+/**
+   * @brief Função de callback para o movimento do mouse.
+   *
+   * Esta função processa o movimento do mouse e atualiza a posição atual do mouse.
+   *
+   * @param x A coordenada x do mouse.
+   * @param y A coordenada y do mouse.
+*/
 void mouseMotion(int x, int y)
 {
    y = height - y; // Ajustar coordenada Y
@@ -1137,7 +1316,15 @@ void mouseMotion(int x, int y)
    }
 }
 
-// Main routine.
+/**
+   * @brief Função principal do programa.
+   *
+   * Esta função inicializa o GLUT, cria a janela e define as funções de callback.
+   *
+   * @param argc Número de argumentos da linha de comando.
+   * @param argv Argumentos da linha de comando.
+   * @return 0 se o programa for executado com sucesso.
+*/
 int main(int argc, char **argv) 
 {
    glutInit(&argc, argv);
