@@ -156,23 +156,3 @@ int main(int argc, char *argv[]){
     free(processos);
     return 0;
 }
-
-// // Verifica se possui quantidade mínima de argumentos
-//     if(argc < 3){
-//         puts("[ #<- ] Eh esperado pelo menos 3 argumentos!");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     unsigned short int prioridade = atoi(args[2]);
-
-//     // Verifica se prioridade está dentro do intervalo 1 - 10
-//     if(prioridade < 1 || prioridade > 10){
-//         puts("[ #<- ] A prioridade precisa estar entre 1 e 10!");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     // Verifica se possui quantidade impar de tempos de picos de CPU
-//     if(argc % 2){
-//         puts("[ #<- ] Sequencia impar de picos de CPU esperada!");
-//         exit(EXIT_FAILURE);
-//     }
