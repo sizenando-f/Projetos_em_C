@@ -7,6 +7,42 @@ typedef struct{
     unsigned int *tempos, qtd_tempos, tam_tempos;
 } Processo;
 
+void algFCFS(Processo processos[], unsigned short int qtd_processos){
+    // Alocação da fila de prontos
+    Processo *fila_de_prontos = (Processo*) malloc(qtd_processos * sizeof(Processo));
+
+    // Insere os processos na ordem de chegada
+    for(int i = 0; i < qtd_processos; i++){
+        if(!i){
+            fila_de_prontos[0] = processos[0];
+            continue;
+        }
+
+        int j = i-1;
+
+        while(j >= 0 && fila_de_prontos[j].instante_submissao > processos[i].instante_submissao){
+            fila_de_prontos[j+1] = fila_de_prontos[j];
+            j--;
+        }
+
+        fila_de_prontos[j+1] = processos[i]; 
+    }
+
+    char saida[50];
+    int fila_vazia = 0;
+
+    snprintf(saida, sizeof(saida), "%d[P1 ", fila_de_prontos[0].instante_submissao);
+
+    int i = 0;
+    // while(!fila_vazia){
+    //     fila_de_prontos[i].tempos[];
+        
+    //     i++;
+    // }
+
+    free(fila_de_prontos);
+}
+
 /**
  * @brief Expande a capacidade de armazenamento de processos
  * 
@@ -152,7 +188,9 @@ int main(int argc, char *argv[]){
     Processo *processos = (Processo*) malloc(qtd_processos * sizeof(Processo));
 
     // Faz leitura do arquivo passado
+    puts("[ -> ] Lendo arquivo...");
     ler_arquivo(argv[1], &processos, &qtd_processos, &processos_existentes);
+    puts("[ -> ] Arquivo lido com sucesso!");
 
     // Libera todas as memórias
     for(unsigned short i = 0; i < processos_existentes; i++){
