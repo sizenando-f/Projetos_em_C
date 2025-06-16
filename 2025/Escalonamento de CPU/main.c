@@ -124,6 +124,12 @@ void ler_arquivo(char nome_arquivo[], Processo **processos, unsigned short int *
             token = strtok(NULL, " ");
         }
 
+        // Verifica se o processo possui uma quantidade ímpar de tempos de pico
+        if(parte % 2 == 0){
+            printf("[ #<- ] O processo na linha %d possui uma quantidade par de tempos, corrija e tente novamente!\n", cont_linha);
+            exit(EXIT_FAILURE);
+        }
+
         // Incrementa o contador de linha e a quantidade de processos existentes
         cont_linha++, (*processos_existentes)++;
     }
