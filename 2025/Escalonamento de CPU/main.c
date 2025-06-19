@@ -1,3 +1,12 @@
+/**
+ * @file Escalonamento de CPU
+ * 
+ * Trabalho 3 referente ao curso de Ciência da Computação.
+ * Simulação de cinco algoritmos de escalonamento: FCFS, SJF, SRTF, Prioridade Preemptivo, Round-Robin
+ * 
+ * @author Sizenando S. França | RGM: 50575
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,13 +19,203 @@ typedef struct{
 } Processo;
 
 /**
+ * @brief Algoritmo de escalonamento SJF
+ * 
+ * Algoritmo funciona semelhante ao FCFS porém antes de executar um determinado processo, ele procura por aquele
+ * processo com o menor pico de CPU na fila de prontos para ser executado primeiro
+ * 
+ * @param processos Vetor com os processos do arquivo
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param seq 1: Sequencial, 0: Paralelo
+ */
+void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
+    // ALocação das filas
+    Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+
+    // Variáveis de controle
+    int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
+    
+    // Variável de controle para tempo I/O
+    int liberacao_io = 0;
+    
+    // Insere na fila de processo futuros ordenado por tempo de submissão
+    for(int i = 0; i < qtd_processos; i++){
+        if(!i){
+            processos_futuros[0] = &processos[0];
+            tam_processos_futuros++;
+        } else {
+            int j = i - 1;
+
+            while(j >= 0 && processos_futuros[j]->instante_submissao > processos[i].instante_submissao){
+                processos_futuros[j+1] = processos_futuros[j];
+                j--;
+            }
+
+            processos_futuros[j+1] = &processos[i];
+            tam_processos_futuros++;
+        }
+    }
+
+    // Variáveis para armazenar a saída
+    char saida[512], saida_temp[20];
+
+    // Variável para indicar se CPU está livre
+    int cpu_livre = 1;
+
+    // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
+    int tempo_atual = processos_futuros[0]->instante_submissao;
+
+    // Cria ínicio da saída
+    snprintf(saida, sizeof(saida), "SJF %d[",tempo_atual);
+
+    // Enquanto houver processos em alguma das filas
+    while(tam_processos_futuros || tam_fila_espera || tam_fila_prontos){
+        // Se houver processo em espera e seu tempo atingiu o ms atual
+        while(tam_fila_espera && fila_de_espera[0]->proximo_tempo <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = fila_de_espera[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_fila_espera - 1; i++){
+                fila_de_espera[i] = fila_de_espera[i + 1];
+            }
+            tam_fila_espera--;
+
+        }
+
+        // Se houver processos futuros e seu instante de chegada na CPU atingiu o tempo ms atual
+        while(tam_processos_futuros && processos_futuros[0]->instante_submissao <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = processos_futuros[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_processos_futuros - 1; i++){
+                processos_futuros[i] = processos_futuros[i + 1];
+            }
+            tam_processos_futuros--;
+        }
+
+        // Se a CPU estiver livre e houver processos na fila de prontos
+        if(cpu_livre && tam_fila_prontos){
+            // Armazena processo ataul da operação
+            Processo *processo_atual;
+            // Variável para armazenar o índice do menor processo para tirar da fila posteriormente
+            int idx_menor;
+
+            // Procura pelo processo com menor tempo de pico para ser executado
+            for(int i = 0; i < tam_fila_prontos; i++){
+                if(!i){
+                    processo_atual = fila_de_prontos[0];
+                    idx_menor = 0;
+                } else {
+                    if(fila_de_prontos[i]->tempos[fila_de_prontos[i]->indice_tempo] < processo_atual->tempos[processo_atual->indice_tempo]){
+                        processo_atual = fila_de_prontos[i];
+                        idx_menor = i;
+                    }
+                }
+            }
+
+            // Avança na fila de prontos removendo o processo atual
+            for(int j = idx_menor; j < tam_fila_prontos-1; j++){
+                fila_de_prontos[j] = fila_de_prontos[j + 1];
+            }
+            tam_fila_prontos--;
+            // Informa que a CPU está em uso
+            cpu_livre = 0;
+
+            // Pega o tempo de pico do processo atual
+            int tempo_pico = processo_atual->tempos[processo_atual->indice_tempo];
+            // Calcula em qual ms vai encerrar o processo
+            int tempo_ms_final = tempo_atual + tempo_pico;
+            
+            // Adiciona na saída
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", processo_atual->nome, tempo_ms_final);
+            strcat(saida, saida_temp);
+            
+            // Avança no índice do vetor de tempos indo para um tempo I/O
+            processo_atual->indice_tempo++;
+
+            // Se for maior que a quantidade de tempos no vetor, indica que o processo terminou 
+            if(processo_atual->indice_tempo >= processo_atual->qtd_tempos){
+            } else {
+                // Armazena o tempo de I/O atual
+                int tempo_io = processo_atual->tempos[processo_atual->indice_tempo];
+                // Avança para o proximo tempo (pico de CPU)
+                processo_atual->indice_tempo++;
+
+                // Se for pra executar de forma sequencial
+                if(seq){
+                    // O inicio da I/O precisa ser o maior entre o tempo ms atual e o tempo de liberação da I/O
+                    int inicio_io = (tempo_ms_final  > liberacao_io) ? tempo_ms_final : liberacao_io;
+
+                    // Armazena quando o processo poderá ser executado novamente
+                    processo_atual->proximo_tempo  = inicio_io + tempo_io;
+
+                    // Trava a I/O até o tempo do processo atual ser alcançado
+                    liberacao_io = processo_atual->proximo_tempo;
+                } else {
+                    // Não trava I/O, apenas armazena no processo quando ele poderá voltar
+                    processo_atual->proximo_tempo = tempo_ms_final + tempo_io;
+                }
+                
+                // Se a fila de espera estiver vazia, insere o processo atual na primeira posição
+                if(!tam_fila_espera){
+                    fila_de_espera[0] = processo_atual;
+                } else {
+                    // Insere na fila com um insertion sort
+                    int k = tam_fila_espera-1;
+
+                    while(k >= 0 && fila_de_espera[k]->proximo_tempo > processo_atual->proximo_tempo){
+                        fila_de_espera[k+1] = fila_de_espera[k];
+                        k--;
+                    }
+
+                    fila_de_espera[k+1] = processo_atual; 
+                }
+
+                tam_fila_espera++;
+            }
+
+            // Atualiza o tempo ms
+            tempo_atual = tempo_ms_final;
+            // Indica que a CPU está livre para uso novamente
+            cpu_livre = 1;
+        } else {
+            // Se existir processos futuros, pega o instante de submissão do primeiro
+            int proximo_evento_futuros = tam_processos_futuros ? processos_futuros[0]->instante_submissao : INT_MAX;
+            // Se existir processos na fila de espera, pega o o tempo onde o ocorrerá a próxima execução
+            int proximo_evento_espera = tam_fila_espera ? fila_de_espera[0]->proximo_tempo : INT_MAX;
+            
+            // Verifica qual vem primeiro
+            int proximo_tempo_evento = proximo_evento_espera < proximo_evento_futuros ? proximo_evento_espera : proximo_evento_futuros;
+
+            // Armazena na saída
+            snprintf(saida_temp, sizeof(saida_temp), "*** %d|",proximo_tempo_evento);
+            strcat(saida, saida_temp);
+
+            // Atualiza o tempo atual ms para o tempo do processo mais próximo, seja na fila de espera ou na fila de processos futuros caso exista
+            tempo_atual = proximo_tempo_evento;
+        }
+    }
+
+    // Finaliza saída
+    saida[strlen(saida)-1] = ']';
+
+    printf("%s", saida);
+
+    free(processos_futuros);
+    free(fila_de_prontos);
+    free(fila_de_espera);
+}
+
+/**
  * @brief Algoritmo FCFS
  * 
  * O algoritmo FCFS executa processos na sua ordem de chegada, existindo a possibilidade de executar paralelamente ou sequencial
  * 
  * @param processos Vetor com os processos existentes
  * @param qtd_processos Quantidadde de processos no vetor de processos
- * @param seq 1: Sequencial. 2: Paralelo
+ * @param seq 1: Sequencial. 0: Paralelo
  */
 void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
     // Alocação da fila de processos futuros, fila de porntos e fila de espera seguindo a ideia do diagrama proposto em aula
@@ -43,7 +242,6 @@ void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
                 processos_futuros[j+1] = processos_futuros[j];
                 j--;
             }
-
             processos_futuros[j+1] = &processos[i]; 
             tam_processos_futuros++;
         }
@@ -178,7 +376,7 @@ void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
     }
 
     // Finaliza saída
-    snprintf(saida_temp, sizeof(saida_temp), "]\n");
+    saida_temp[strlen(saida_temp)-1] = ']';
     strcat(saida, saida_temp);
 
     printf("%s", saida);
@@ -359,7 +557,7 @@ int main(int argc, char *argv[]){
     ler_arquivo(argv[1], &processos, &qtd_processos, &processos_existentes);
     puts("[ -> ] Arquivo lido com sucesso!");
 
-    algFCFS(processos, processos_existentes, seq);
+    algSJF(processos, processos_existentes, seq);
 
     // Libera todas as memórias
     for(unsigned short i = 0; i < processos_existentes; i++){
