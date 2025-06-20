@@ -7,35 +7,3 @@ SRTF: 4[P1 7|P2 12|P3 14|P1 21|P4 29|P3 31|P4 35|P2 45|*** 51|P1 54]
 PRIORIDADE PREEMPTIVO: 4[P1 7|P2 12|P3 13|P4 25|P3 26|P1 33|P2 43||P3 45|*** 63|P1 66]
 
 ROUND-ROBIN(q=4ms): 4[P1 8|P2 12|P1 16|P3 18|P2 19|P4 23|P1 25|P4 33|P3 35|*** 40|P2 50|*** 55|P1 58]
-
-
-int existe_processo = 1, ms_contador = 0, processos_na_fila = 0, processos_lidos;
-    char saida[100];
-
-    // Simula o passar dos milisegundos
-    while(existe_processo){
-        // Verifica se precisa verificar o instante de submissão dos processos
-        if(processos_lidos < qtd_processos){
-            // Itera pelos processos procurando quando colocar o processo na fila
-            for(int i = 0; i < qtd_processos; i++){
-                // Coloca na fila se o tempo em milisegundo coincidir com o instante de submissão do processo
-                if(processos[i].instante_submissao == ms_contador){
-                    fila_de_prontos[processos_na_fila] = processos[i];
-                    // Se for o primeiro processo
-                    if(!processos_lidos){
-                        snprintf(saida, sizeof(saida), "%d[P1 ", fila_de_prontos[0].instante_submissao);
-                    }
-                    processos_lidos++;
-                }
-            }
-        }
-
-        if(processos_na_fila){
-        }
-
-        // Passa para próximo milisegundo
-        ms_contador++;
-    }
-
-
-    free(fila_de_prontos);

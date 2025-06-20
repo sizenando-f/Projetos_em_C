@@ -14,9 +14,201 @@
 
 typedef struct{
     char nome[10];
-    int prioridade, instante_submissao, indice_tempo, proximo_tempo;
+    int prioridade, instante_submissao, indice_tempo, proximo_tempo, tempo_restante;
     unsigned int *tempos, qtd_tempos, tam_tempos;
 } Processo;
+
+/**
+ * @brief Algoritmo de escalonamento por prioridade com preempção
+ * 
+ * O algoritmo é exatamento mesmo que a SRTF, a única diferença é que na escolha do algoritmo a qual será preemptado, no SRTF
+ * comparava-se o tempo restante e nesse, se compara a prioridade
+ * 
+ * @param processos Vetor com os processos do arquivo
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param seq 1: Sequencial, 0: Paralelo
+ */
+void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_processos, int seq){
+    // ALocação das filas
+    Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+
+    // Variáveis de controle
+    int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
+    
+    // Variável de controle para tempo I/O
+    int liberacao_io = 0;
+    
+    // Insere na fila de processo futuros ordenado por tempo de submissão
+    for(int i = 0; i < qtd_processos; i++){
+        if(!i){
+            processos_futuros[0] = &processos[0];
+            tam_processos_futuros++;
+        } else {
+            int j = i - 1;
+
+            while(j >= 0 && processos_futuros[j]->instante_submissao > processos[i].instante_submissao){
+                processos_futuros[j+1] = processos_futuros[j];
+                j--;
+            }
+
+            processos_futuros[j+1] = &processos[i];
+            tam_processos_futuros++;
+        }
+
+        processos[i].indice_tempo = 0;
+        processos[i].tempo_restante = processos[i].tempos[0];
+    }
+
+    // Variáveis para armazenar a saída
+    char saida[512], saida_temp[20];
+
+    Processo *executando = NULL;
+
+    // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
+    int tempo_atual = processos_futuros[0]->instante_submissao;
+
+    // Cria ínicio da saída
+    snprintf(saida, sizeof(saida), "PRIORIDADE PREEMPTIVO: %d[",tempo_atual);
+
+    // Enquanto houver processos em alguma das filas
+    while(tam_processos_futuros || tam_fila_espera || tam_fila_prontos || executando){
+        // Se houver processo em espera e seu tempo atingiu o ms atual
+        while(tam_fila_espera && fila_de_espera[0]->proximo_tempo <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = fila_de_espera[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_fila_espera - 1; i++){
+                fila_de_espera[i] = fila_de_espera[i + 1];
+            }
+            tam_fila_espera--;
+
+        }
+
+        // Se houver processos futuros e seu instante de chegada na CPU atingiu o tempo ms atual
+        while(tam_processos_futuros && processos_futuros[0]->instante_submissao <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = processos_futuros[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_processos_futuros - 1; i++){
+                processos_futuros[i] = processos_futuros[i + 1];
+            }
+            tam_processos_futuros--;
+        }
+
+        Processo *anterior = executando;
+
+        if(executando != NULL){
+            fila_de_prontos[tam_fila_prontos] = executando;
+            tam_fila_prontos++;
+        }
+
+        if(tam_fila_prontos){
+            int idx_menor = 0;
+            for(int i = 1; i < tam_fila_prontos; i++){
+                if(fila_de_prontos[i]->prioridade > fila_de_prontos[idx_menor]->prioridade){
+                    idx_menor = i;
+                }
+            }
+
+            executando =  fila_de_prontos[idx_menor];
+
+            for(int i = idx_menor; i < tam_fila_prontos - 1; i++){
+                fila_de_prontos[i] = fila_de_prontos[i + 1];
+            }
+            tam_fila_prontos--;
+        } else {
+            executando = NULL;
+        }
+
+        if(anterior != NULL && executando != anterior){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", anterior->nome, tempo_atual);
+            strcat(saida, saida_temp);
+        }
+
+        if(executando == NULL){
+            // Se existir processos futuros, pega o instante de submissão do primeiro
+            int proximo_evento_futuros = tam_processos_futuros > 0 ? processos_futuros[0]->instante_submissao : INT_MAX;
+            // Se existir processos na fila de espera, pega o o tempo onde o ocorrerá a próxima execução
+            int proximo_evento_espera = tam_fila_espera > 0 ? fila_de_espera[0]->proximo_tempo : INT_MAX;
+            // Verifica qual vem primeiro
+            int proximo_tempo_evento = proximo_evento_espera < proximo_evento_futuros ? proximo_evento_espera : proximo_evento_futuros;
+
+            if(proximo_tempo_evento == INT_MAX) break;
+
+            // Armazena na saída
+            snprintf(saida_temp, sizeof(saida_temp), "*** %d|",proximo_tempo_evento);
+            strcat(saida, saida_temp);
+
+            // Atualiza o tempo atual ms para o tempo do processo mais próximo, seja na fila de espera ou na fila de processos futuros caso exista
+            tempo_atual = proximo_tempo_evento;
+            continue;
+        }
+
+        int proximo_evento = (tam_processos_futuros > 0) ? processos_futuros[0]->instante_submissao : INT_MAX;
+        int tempo_termino = tempo_atual + executando->tempo_restante;
+
+        int proximo_tempo = (proximo_evento < tempo_termino) ? proximo_evento : tempo_termino;
+    
+        int diferenca = proximo_tempo - tempo_atual;
+
+        if(diferenca){
+            executando->tempo_restante -= diferenca;
+        }
+
+        tempo_atual = proximo_tempo;
+
+        if(executando->tempo_restante <= 0){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", executando->nome, tempo_atual);
+            strcat(saida, saida_temp);
+
+            executando->indice_tempo++;
+
+            if(executando->indice_tempo >= executando->qtd_tempos){
+                executando = NULL;
+            } else {
+                int io = executando->tempos[executando->indice_tempo];
+                executando->indice_tempo++;
+
+                if(seq){
+                    int inicio_io = (tempo_atual > liberacao_io) ? tempo_atual : liberacao_io;
+                    executando->proximo_tempo = inicio_io + io;
+                    liberacao_io = executando->proximo_tempo;
+                } else {
+                    executando->proximo_tempo = tempo_atual + io;
+                }
+
+                if(executando->indice_tempo < executando->qtd_tempos){
+                    executando->tempo_restante = executando->tempos[executando->indice_tempo];
+                }
+
+                 if(!tam_fila_espera){
+                    fila_de_espera[0] = executando;
+                } else {
+                    int k = tam_fila_espera-1;
+                    while(k >= 0 && fila_de_espera[k]->proximo_tempo > executando->proximo_tempo){
+                        fila_de_espera[k+1] = fila_de_espera[k];
+                        k--;
+                    }
+                    fila_de_espera[k+1] = executando;
+                }
+                tam_fila_espera++;
+                executando = NULL;
+            }
+        }
+    }
+
+    // Finaliza saída
+    saida[strlen(saida)-1] = ']';
+
+    printf("%s", saida);
+
+    free(processos_futuros);
+    free(fila_de_prontos);
+    free(fila_de_espera);
+}
+
 
 /**
  * @brief Algoritmo de escalonamento SJF
@@ -44,6 +236,7 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
     for(int i = 0; i < qtd_processos; i++){
         if(!i){
             processos_futuros[0] = &processos[0];
+            processos_futuros[0]->tempo_restante = processos_futuros[0]->tempos[0];
             tam_processos_futuros++;
         } else {
             int j = i - 1;
@@ -97,26 +290,27 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
 
         // Se a CPU estiver livre e houver processos na fila de prontos
         if(cpu_livre && tam_fila_prontos){
-            // Armazena processo ataul da operação
-            Processo *processo_atual;
-            // Variável para armazenar o índice do menor processo para tirar da fila posteriormente
-            int idx_menor;
+            // 1. Encontrar o índice do processo com o menor burst de CPU
+            int idx_menor = 0;
+            // Pega o burst do primeiro processo como referência inicial
+            int menor_pico = fila_de_prontos[0]->tempos[fila_de_prontos[0]->indice_tempo];
 
-            // Procura pelo processo com menor tempo de pico para ser executado
-            for(int i = 0; i < tam_fila_prontos; i++){
-                if(!i){
-                    processo_atual = fila_de_prontos[0];
-                    idx_menor = 0;
-                } else {
-                    if(fila_de_prontos[i]->tempos[fila_de_prontos[i]->indice_tempo] < processo_atual->tempos[processo_atual->indice_tempo]){
-                        processo_atual = fila_de_prontos[i];
-                        idx_menor = i;
-                    }
+            for (int i = 1; i < tam_fila_prontos; i++) {
+                // Pega o próximo burst do processo 'i'
+                int pico_atual = fila_de_prontos[i]->tempos[fila_de_prontos[i]->indice_tempo];
+                
+                // CORREÇÃO: Compara os bursts de CPU, não o 'proximo_tempo'
+                if (pico_atual < menor_pico) {
+                    menor_pico = pico_atual;
+                    idx_menor = i;
                 }
             }
 
-            // Avança na fila de prontos removendo o processo atual
-            for(int j = idx_menor; j < tam_fila_prontos-1; j++){
+            // 2. O processo atual é aquele no índice do menor pico encontrado
+            Processo *processo_atual = fila_de_prontos[idx_menor];
+
+            // 3. Remover o processo selecionado da fila de prontos
+            for (int j = idx_menor; j < tam_fila_prontos - 1; j++) {
                 fila_de_prontos[j] = fila_de_prontos[j + 1];
             }
             tam_fila_prontos--;
@@ -195,6 +389,197 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
 
             // Atualiza o tempo atual ms para o tempo do processo mais próximo, seja na fila de espera ou na fila de processos futuros caso exista
             tempo_atual = proximo_tempo_evento;
+        }
+    }
+
+    // Finaliza saída
+    saida[strlen(saida)-1] = ']';
+
+    printf("%s", saida);
+
+    free(processos_futuros);
+    free(fila_de_prontos);
+    free(fila_de_espera);
+}
+
+
+/**
+ * @brief Algoritmo de escalonamento SRTF
+ * 
+ * Esse algoritmo escolhe o processo com o menor tempo restante
+ * 
+ * @param processos Vetor com os processos do arquivo
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param seq 1: Sequencial, 0: Paralelo
+ */
+void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
+    // ALocação das filas
+    Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+
+    // Variáveis de controle
+    int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
+    
+    // Variável de controle para tempo I/O
+    int liberacao_io = 0;
+    
+    // Insere na fila de processo futuros ordenado por tempo de submissão
+    for(int i = 0; i < qtd_processos; i++){
+        if(!i){
+            processos_futuros[0] = &processos[0];
+            tam_processos_futuros++;
+        } else {
+            int j = i - 1;
+
+            while(j >= 0 && processos_futuros[j]->instante_submissao > processos[i].instante_submissao){
+                processos_futuros[j+1] = processos_futuros[j];
+                j--;
+            }
+
+            processos_futuros[j+1] = &processos[i];
+            tam_processos_futuros++;
+        }
+
+        processos[i].indice_tempo = 0;
+        processos[i].tempo_restante = processos[i].tempos[0];
+    }
+
+    // Variáveis para armazenar a saída
+    char saida[512], saida_temp[20];
+
+    Processo *executando = NULL;
+
+    // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
+    int tempo_atual = processos_futuros[0]->instante_submissao;
+
+    // Cria ínicio da saída
+    snprintf(saida, sizeof(saida), "SRTF: %d[",tempo_atual);
+
+    // Enquanto houver processos em alguma das filas
+    while(tam_processos_futuros || tam_fila_espera || tam_fila_prontos || executando){
+        // Se houver processo em espera e seu tempo atingiu o ms atual
+        while(tam_fila_espera && fila_de_espera[0]->proximo_tempo <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = fila_de_espera[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_fila_espera - 1; i++){
+                fila_de_espera[i] = fila_de_espera[i + 1];
+            }
+            tam_fila_espera--;
+
+        }
+
+        // Se houver processos futuros e seu instante de chegada na CPU atingiu o tempo ms atual
+        while(tam_processos_futuros && processos_futuros[0]->instante_submissao <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = processos_futuros[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_processos_futuros - 1; i++){
+                processos_futuros[i] = processos_futuros[i + 1];
+            }
+            tam_processos_futuros--;
+        }
+
+        Processo *anterior = executando;
+
+        if(executando != NULL){
+            fila_de_prontos[tam_fila_prontos] = executando;
+            tam_fila_prontos++;
+        }
+
+        if(tam_fila_prontos){
+            int idx_menor = 0;
+            for(int i = 1; i < tam_fila_prontos; i++){
+                if(fila_de_prontos[i]->tempo_restante < fila_de_prontos[idx_menor]->tempo_restante){
+                    idx_menor = i;
+                }
+            }
+
+            executando =  fila_de_prontos[idx_menor];
+
+            for(int i = idx_menor; i < tam_fila_prontos - 1; i++){
+                fila_de_prontos[i] = fila_de_prontos[i + 1];
+            }
+            tam_fila_prontos--;
+        } else {
+            executando = NULL;
+        }
+
+        if(anterior != NULL && executando != anterior){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", anterior->nome, tempo_atual);
+            strcat(saida, saida_temp);
+        }
+
+        if(executando == NULL){
+            // Se existir processos futuros, pega o instante de submissão do primeiro
+            int proximo_evento_futuros = tam_processos_futuros > 0 ? processos_futuros[0]->instante_submissao : INT_MAX;
+            // Se existir processos na fila de espera, pega o o tempo onde o ocorrerá a próxima execução
+            int proximo_evento_espera = tam_fila_espera > 0 ? fila_de_espera[0]->proximo_tempo : INT_MAX;
+            // Verifica qual vem primeiro
+            int proximo_tempo_evento = proximo_evento_espera < proximo_evento_futuros ? proximo_evento_espera : proximo_evento_futuros;
+
+            if(proximo_tempo_evento == INT_MAX) break;
+
+            // Armazena na saída
+            snprintf(saida_temp, sizeof(saida_temp), "*** %d|",proximo_tempo_evento);
+            strcat(saida, saida_temp);
+
+            // Atualiza o tempo atual ms para o tempo do processo mais próximo, seja na fila de espera ou na fila de processos futuros caso exista
+            tempo_atual = proximo_tempo_evento;
+            continue;
+        }
+
+        int proximo_evento = (tam_processos_futuros > 0) ? processos_futuros[0]->instante_submissao : INT_MAX;
+        int tempo_termino = tempo_atual + executando->tempo_restante;
+
+        int proximo_tempo = (proximo_evento < tempo_termino) ? proximo_evento : tempo_termino;
+    
+        int diferenca = proximo_tempo - tempo_atual;
+
+        if(diferenca){
+            executando->tempo_restante -= diferenca;
+        }
+
+        tempo_atual = proximo_tempo;
+
+        if(executando->tempo_restante <= 0){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", executando->nome, tempo_atual);
+            strcat(saida, saida_temp);
+
+            executando->indice_tempo++;
+
+            if(executando->indice_tempo >= executando->qtd_tempos){
+                executando = NULL;
+            } else {
+                int io = executando->tempos[executando->indice_tempo];
+                executando->indice_tempo++;
+
+                if(seq){
+                    int inicio_io = (tempo_atual > liberacao_io) ? tempo_atual : liberacao_io;
+                    executando->proximo_tempo = inicio_io + io;
+                    liberacao_io = executando->proximo_tempo;
+                } else {
+                    executando->proximo_tempo = tempo_atual + io;
+                }
+
+                if(executando->indice_tempo < executando->qtd_tempos){
+                    executando->tempo_restante = executando->tempos[executando->indice_tempo];
+                }
+
+                 if(!tam_fila_espera){
+                    fila_de_espera[0] = executando;
+                } else {
+                    int k = tam_fila_espera-1;
+                    while(k >= 0 && fila_de_espera[k]->proximo_tempo > executando->proximo_tempo){
+                        fila_de_espera[k+1] = fila_de_espera[k];
+                        k--;
+                    }
+                    fila_de_espera[k+1] = executando;
+                }
+                tam_fila_espera++;
+                executando = NULL;
+            }
         }
     }
 
@@ -557,7 +942,10 @@ int main(int argc, char *argv[]){
     ler_arquivo(argv[1], &processos, &qtd_processos, &processos_existentes);
     puts("[ -> ] Arquivo lido com sucesso!");
 
-    algSJF(processos, processos_existentes, seq);
+    // algFCFS(processos, processos_existentes, seq);
+    // algSJF(processos, processos_existentes, seq);
+    // algSRTF(processos, processos_existentes, seq);
+    algPrioridadePreemptivo(processos, processos_existentes, seq);
 
     // Libera todas as memórias
     for(unsigned short i = 0; i < processos_existentes; i++){
