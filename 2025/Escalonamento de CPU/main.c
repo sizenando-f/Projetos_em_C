@@ -7,36 +7,106 @@
  * @author Sizenando S. França | RGM: 50575
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+#include <stdio.h>  // Para entrada e saída
+#include <stdlib.h> // Para alocação de memória
+#include <string.h> // Para manipulação de strings
+#include <limits.h> // Para escolha de menor tempo em algoritmos de preempção
 
 typedef struct{
     char nome[10];
     int prioridade, instante_submissao, indice_tempo, proximo_tempo, tempo_restante;
     unsigned int *tempos, qtd_tempos, tam_tempos;
+
+    // Esses aqui são para os cálculos de CPU e etc
+    int termino, turnaround, espera;
 } Processo;
 
 /**
- * @brief Algoritmo de escalonamento por prioridade com preempção
+ * @brief Calcula turnaround
  * 
- * O algoritmo é exatamento mesmo que a SRTF, a única diferença é que na escolha do algoritmo a qual será preemptado, no SRTF
- * comparava-se o tempo restante e nesse, se compara a prioridade
+ * Procedimento que calcula turnaround de cada processo e a média de todos os turnarounds
+ * Salva o resultado no arquivo
+ * 
+ * @param processos Vetor de processos
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param fp Arquivo para escrita do resultado
+ * 
+ */
+void calcula_turnaround(Processo processos[], unsigned short int qtd_processos, FILE *fp){
+    int soma = 0;
+    char temp[50];
+
+    fputs("------------------------\n", fp);
+    fputs("TURNAROUND:\n", fp);
+    for(int i = 0; i < qtd_processos; i++){
+        snprintf(temp, sizeof(temp), "%s: %dms\n", processos[i].nome, processos[i].turnaround);
+        fputs(temp, fp);
+        soma += processos[i].turnaround;
+    }
+    float media =  (float) soma / qtd_processos;
+
+    snprintf(temp, sizeof(temp), "MEDIO: %.2fms\n", media);
+    fputs(temp, fp);
+    fputs("------------------------\n", fp);
+}
+
+/**
+ * @brief Calcula tempo de espera
+ * 
+ * Procedimento que calcula o tempo de espera de cada processo e a média de todos os turnarounds
+ * Salva o resultado no arquivo
+ * 
+ * @param processos Vetor de processos
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param fp Arquivo para escrita do resultado
+ * 
+ */
+void calcula_tempo_espera(Processo processos[], unsigned short int qtd_processos, FILE *fp){
+    char temp[50];
+
+    fputs("TEMPO DE ESPERA:\n", fp);
+    int soma = 0;
+    for(int i = 0; i < qtd_processos; i++){
+        int picos = 0;
+        for(int j = 0; j < processos[i].qtd_tempos; j += 2){
+            picos += processos[i].tempos[j];
+        }
+        processos[i].espera = processos[i].turnaround - picos > 0 ? processos[i].turnaround - picos : 0;
+        soma += processos[i].espera;
+        snprintf(temp, sizeof(temp), "%s: %dms\n", processos[i].nome, processos[i].espera);
+        fputs(temp, fp);
+    }
+    float media =  (float) soma / qtd_processos;
+
+    snprintf(temp, sizeof(temp), "MEDIO: %.2fms\n", media);
+    fputs(temp, fp);
+    fputs("------------------------\n\n", fp);
+}
+
+/**
+ * @brief Algoritmo de escalonamento Round-Robin
+ * 
+ * Esse algoritmo realiza a preempção entre processos a cada intervalo
+ * (quantam) escolhidos pelo usuário, calculando uso de CPU e throughput no final
  * 
  * @param processos Vetor com os processos do arquivo
  * @param qtd_processos Quantidade de processos no vetor
  * @param seq 1: Sequencial, 0: Paralelo
+ * @param quantum Quantum para preempção
+ * @param fp Arquivo para escrita
  */
-void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_processos, int seq){
+char* algRoundRobin(Processo processos[], unsigned short int qtd_processos, int seq, int quantum, FILE *fp){
     // ALocação das filas
     Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
 
+    // Variáveis para métricas
+    int tempo_total_cpu = 0;
+    int tempo_final = 0;
+
     // Variáveis de controle
     int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
-    
     // Variável de controle para tempo I/O
     int liberacao_io = 0;
     
@@ -63,9 +133,233 @@ void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_proces
 
     // Variáveis para armazenar a saída
     char saida[512], saida_temp[20];
-
+    // Atual processo em execução
     Processo *executando = NULL;
+    // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
+    int tempo_atual = processos_futuros[0]->instante_submissao, quantum_final = 0;
 
+    // Cria ínicio da saída
+    snprintf(saida, sizeof(saida), "ROUND-ROBIN(q=%dms): %d[", quantum, tempo_atual);
+
+    // Enquanto houver processos em alguma das filas
+    while(tam_processos_futuros || tam_fila_espera || tam_fila_prontos || executando){
+        // Se houver processo em espera e seu tempo atingiu o ms atual
+        while(tam_fila_espera && fila_de_espera[0]->proximo_tempo <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = fila_de_espera[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_fila_espera - 1; i++){
+                fila_de_espera[i] = fila_de_espera[i + 1];
+            }
+            tam_fila_espera--;
+
+        }
+
+        // Se houver processos futuros e seu instante de chegada na CPU atingiu o tempo ms atual
+        while(tam_processos_futuros && processos_futuros[0]->instante_submissao <= tempo_atual){
+            fila_de_prontos[tam_fila_prontos] = processos_futuros[0];
+            tam_fila_prontos++;
+
+            for(int i = 0; i < tam_processos_futuros - 1; i++){
+                processos_futuros[i] = processos_futuros[i + 1];
+            }
+            tam_processos_futuros--;
+        }
+
+        // Se não tiver processo executando e houver processos na fila de prontos
+        if(executando == NULL && tam_fila_prontos > 0){
+            // O primeiro processo começa a executar
+            executando = fila_de_prontos[0];
+
+            for(int i = 0; i < tam_fila_prontos - 1; i++){
+                fila_de_prontos[i] = fila_de_prontos[i + 1];
+            }
+            tam_fila_prontos--;
+
+            // Realiza o cálculo do tempo do quantum final
+            quantum_final = tempo_atual + quantum;
+        }
+
+        if(executando == NULL){
+            // Se existir processos futuros, pega o instante de submissão do primeiro
+            int proximo_evento_futuros = tam_processos_futuros > 0 ? processos_futuros[0]->instante_submissao : INT_MAX;
+            // Se existir processos na fila de espera, pega o o tempo onde o ocorrerá a próxima execução
+            int proximo_evento_espera = tam_fila_espera > 0 ? fila_de_espera[0]->proximo_tempo : INT_MAX;
+            // Verifica qual vem primeiro
+            int proximo_tempo_evento = proximo_evento_espera < proximo_evento_futuros ? proximo_evento_espera : proximo_evento_futuros;
+
+            // Se nenhum for menor
+            if(proximo_tempo_evento == INT_MAX) break;
+
+            // Armazena na saída
+            snprintf(saida_temp, sizeof(saida_temp), "*** %d|",proximo_tempo_evento);
+            strcat(saida, saida_temp);
+
+            // Atualiza o tempo atual ms para o tempo do processo mais próximo, seja na fila de espera ou na fila de processos futuros caso exista
+            tempo_atual = proximo_tempo_evento;
+            continue;
+        }
+
+        // Se houver processo futuro, pega o instante de submissão do primeiro
+        int proximo_evento = (tam_processos_futuros > 0) ? processos_futuros[0]->instante_submissao : INT_MAX;
+        // Cálculo de término
+        int tempo_termino = tempo_atual + executando->tempo_restante;
+        // Pega o menor tempo
+        int proximo_tempo = (proximo_evento < tempo_termino) ? proximo_evento : tempo_termino;
+        // Filtra o menor entre os três
+        proximo_tempo = (quantum_final < proximo_tempo) ? quantum_final : proximo_tempo;
+
+        int diferenca = proximo_tempo - tempo_atual;
+
+        // Se a diferença for um valor válido, decrementa no tempo restante do processo em execução
+        if(diferenca > 0){
+            executando->tempo_restante -= diferenca;
+
+            tempo_total_cpu += diferenca;
+        }
+
+        // O tempo atual ms é escolhido
+        tempo_atual = proximo_tempo;
+
+        // Se o tempo restante do processo em execução chegou ao fim
+        if(executando->tempo_restante <= 0){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", executando->nome, tempo_atual);
+            strcat(saida, saida_temp);
+
+            // Passa para o próximo tempo
+            executando->indice_tempo++;
+
+            // Se não houver mais tempos para ser analisado
+            if(executando->indice_tempo >= executando->qtd_tempos){
+                // Calcula turnaround e libera CPU
+                executando->termino = tempo_atual;
+                executando->turnaround = executando->termino - executando->instante_submissao;
+                executando = NULL;
+            } else {
+                // Seleciona o tempo de espera de entrada/saída
+                int io = executando->tempos[executando->indice_tempo];
+                // Passa para o próximo tempo
+                executando->indice_tempo++;
+
+                // Se for sequencial
+                if(seq){
+                    // Armazena o maior entre o tempo atual e o tempo da próxima liberação de entrada/sa´dia
+                    int inicio_io = (tempo_atual > liberacao_io) ? tempo_atual : liberacao_io;
+                    // Informa quando o processo voltará a executar
+                    executando->proximo_tempo = inicio_io + io;
+                    // O tempo para a próxima liberação é o próprio tempo do processo em execução
+                    liberacao_io = executando->proximo_tempo;
+                } else {
+                    // Apenas armazena o próximo tempo sem influênciar a variável de controle da próxima liberação da I/O
+                    executando->proximo_tempo = tempo_atual + io;
+                }
+
+                // Se ainda houver tempos para ser analisados
+                if(executando->indice_tempo < executando->qtd_tempos){
+                    executando->tempo_restante = executando->tempos[executando->indice_tempo];
+                }
+
+                // Se não houver processo na fila de espera
+                 if(!tam_fila_espera){
+                    // Coloca o processo em execução na fila
+                    fila_de_espera[0] = executando;
+                } else {
+                    // Insere na fila ordenando pelo próximo tempo de espera
+                    int k = tam_fila_espera-1;
+                    while(k >= 0 && fila_de_espera[k]->proximo_tempo > executando->proximo_tempo){
+                        fila_de_espera[k+1] = fila_de_espera[k];
+                        k--;
+                    }
+                    fila_de_espera[k+1] = executando;
+                }
+                tam_fila_espera++;
+                executando = NULL;
+            }
+        // Se o tempo atual em ms alcançou o quantum atual acumulado
+        } else if (tempo_atual >= quantum_final){
+            snprintf(saida_temp, sizeof(saida_temp), "%s %d|", executando->nome, tempo_atual);
+            strcat(saida, saida_temp);
+
+            // Passa o processo em execução para o final da fila
+            fila_de_prontos[tam_fila_prontos] = executando;
+            tam_fila_prontos++;
+            executando = NULL;
+        }
+    }
+
+    // Finaliza saída
+    saida[strlen(saida)-1] = ']';
+
+    tempo_final = tempo_atual;
+    float uso_cpu = ((float)tempo_total_cpu / tempo_final) * 100;
+    char temp[50];
+    snprintf(temp, sizeof(temp), "UTILIZACAO CPU: %f\n", uso_cpu);
+    fputs(temp, fp);
+    snprintf(temp, sizeof(temp), "THROUGHPUT: %f\n", (float)qtd_processos / tempo_final);
+    fputs(temp, fp);
+
+
+    // Libera os vetores alocados
+    free(processos_futuros);
+    free(fila_de_prontos);
+    free(fila_de_espera);
+
+    char *final = (char*) malloc(sizeof(saida) + 1);
+    strcpy(final, saida);
+    strcat(final, "\n");
+    return final;
+}
+
+/**
+ * @brief Algoritmo de escalonamento por prioridade com preempção
+ * 
+ * O algoritmo é exatamento mesmo que a SRTF, a única diferença é que na escolha do algoritmo a qual será preemptado, no SRTF
+ * comparava-se o tempo restante e nesse, se compara a prioridade,calculando uso de CPU e throughput no final
+ * 
+ * @param processos Vetor com os processos do arquivo
+ * @param qtd_processos Quantidade de processos no vetor
+ * @param seq 1: Sequencial, 0: Paralelo
+ * @param fp Arquivo para escrita
+ */
+char* algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_processos, int seq, FILE *fp){
+    // ALocação das filas
+    Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+
+    // Variáveis para métricas
+    int tempo_total_cpu = 0;
+    int tempo_final = 0;
+
+    // Variáveis de controle
+    int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
+    // Variável de controle para tempo I/O
+    int liberacao_io = 0;
+    
+    // Insere na fila de processo futuros ordenado por tempo de submissão
+    for(int i = 0; i < qtd_processos; i++){
+        if(!i){
+            processos_futuros[0] = &processos[0];
+            tam_processos_futuros++;
+        } else {
+            int j = i - 1;
+
+            while(j >= 0 && processos_futuros[j]->instante_submissao > processos[i].instante_submissao){
+                processos_futuros[j+1] = processos_futuros[j];
+                j--;
+            }
+
+            processos_futuros[j+1] = &processos[i];
+            tam_processos_futuros++;
+        }
+
+        processos[i].indice_tempo = 0;
+        processos[i].tempo_restante = processos[i].tempos[0];
+    }
+
+    // Variáveis para armazenar a saída
+    char saida[512], saida_temp[20];
+    Processo *executando = NULL;
     // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
     int tempo_atual = processos_futuros[0]->instante_submissao;
 
@@ -155,6 +449,8 @@ void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_proces
 
         if(diferenca){
             executando->tempo_restante -= diferenca;
+
+            tempo_total_cpu += diferenca;
         }
 
         tempo_atual = proximo_tempo;
@@ -166,6 +462,8 @@ void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_proces
             executando->indice_tempo++;
 
             if(executando->indice_tempo >= executando->qtd_tempos){
+                executando->termino = tempo_atual;
+                executando->turnaround = executando->termino - executando->instante_submissao;
                 executando = NULL;
             } else {
                 int io = executando->tempos[executando->indice_tempo];
@@ -202,11 +500,23 @@ void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_proces
     // Finaliza saída
     saida[strlen(saida)-1] = ']';
 
-    printf("%s", saida);
+    tempo_final = tempo_atual;
+    float uso_cpu = ((float)tempo_total_cpu / tempo_final) * 100;
+    char temp[50];
+    snprintf(temp, sizeof(temp), "UTILIZACAO CPU: %f\n", uso_cpu);
+    fputs(temp, fp);
+    snprintf(temp, sizeof(temp), "THROUGHPUT: %f\n", (float)qtd_processos / tempo_final);
+    fputs(temp, fp);
+
 
     free(processos_futuros);
     free(fila_de_prontos);
     free(fila_de_espera);
+
+    char *final = (char*) malloc(sizeof(saida) + 1);
+    strcpy(final, saida);
+    strcat(final, "\n");
+    return final;
 }
 
 
@@ -214,24 +524,28 @@ void algPrioridadePreemptivo(Processo processos[], unsigned short int qtd_proces
  * @brief Algoritmo de escalonamento SJF
  * 
  * Algoritmo funciona semelhante ao FCFS porém antes de executar um determinado processo, ele procura por aquele
- * processo com o menor pico de CPU na fila de prontos para ser executado primeiro
+ * processo com o menor pico de CPU na fila de prontos para ser executado primeiro, calculando uso de CPU e throughput no final
  * 
  * @param processos Vetor com os processos do arquivo
  * @param qtd_processos Quantidade de processos no vetor
  * @param seq 1: Sequencial, 0: Paralelo
+ * @param fp Arquivo para escrita
  */
-void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
+char* algSJF(Processo processos[], unsigned short int qtd_processos, int seq, FILE *fp){
     // ALocação das filas
     Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
 
+    // Variáveis para métricas
+    int tempo_total_cpu = 0;
+    int tempo_final = 0;
+
     // Variáveis de controle
     int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
-    
     // Variável de controle para tempo I/O
     int liberacao_io = 0;
-    
+
     // Insere na fila de processo futuros ordenado por tempo de submissão
     for(int i = 0; i < qtd_processos; i++){
         if(!i){
@@ -253,15 +567,13 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
 
     // Variáveis para armazenar a saída
     char saida[512], saida_temp[20];
-
     // Variável para indicar se CPU está livre
     int cpu_livre = 1;
-
     // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
     int tempo_atual = processos_futuros[0]->instante_submissao;
 
     // Cria ínicio da saída
-    snprintf(saida, sizeof(saida), "SJF %d[",tempo_atual);
+    snprintf(saida, sizeof(saida), "SJF: %d[",tempo_atual);
 
     // Enquanto houver processos em alguma das filas
     while(tam_processos_futuros || tam_fila_espera || tam_fila_prontos){
@@ -294,6 +606,8 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
             int idx_menor = 0;
             // Pega o burst do primeiro processo como referência inicial
             int menor_pico = fila_de_prontos[0]->tempos[fila_de_prontos[0]->indice_tempo];
+
+            tempo_total_cpu += menor_pico;
 
             for (int i = 1; i < tam_fila_prontos; i++) {
                 // Pega o próximo burst do processo 'i'
@@ -331,6 +645,9 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
 
             // Se for maior que a quantidade de tempos no vetor, indica que o processo terminou 
             if(processo_atual->indice_tempo >= processo_atual->qtd_tempos){
+                processo_atual->termino = tempo_atual;
+                processo_atual->turnaround = processo_atual->termino - processo_atual->instante_submissao;
+                processo_atual = NULL;
             } else {
                 // Armazena o tempo de I/O atual
                 int tempo_io = processo_atual->tempos[processo_atual->indice_tempo];
@@ -395,32 +712,47 @@ void algSJF(Processo processos[], unsigned short int qtd_processos, int seq){
     // Finaliza saída
     saida[strlen(saida)-1] = ']';
 
-    printf("%s", saida);
+    tempo_final = tempo_atual;
+    float uso_cpu = ((float)tempo_total_cpu / tempo_final) * 100;
+    char temp[50];
+    snprintf(temp, sizeof(temp), "UTILIZACAO CPU: %f\n", uso_cpu);
+    fputs(temp, fp);
+    snprintf(temp, sizeof(temp), "THROUGHPUT: %f\n", (float)qtd_processos / tempo_final);
+    fputs(temp, fp);
 
     free(processos_futuros);
     free(fila_de_prontos);
     free(fila_de_espera);
+
+    char *final = (char*) malloc(sizeof(saida) + 1);
+    strcpy(final, saida);
+    strcat(final, "\n");
+    return final;
 }
 
 
 /**
  * @brief Algoritmo de escalonamento SRTF
  * 
- * Esse algoritmo escolhe o processo com o menor tempo restante
+ * Esse algoritmo escolhe o processo com o menor tempo restante, calculando uso de CPU e throughput no final
  * 
  * @param processos Vetor com os processos do arquivo
  * @param qtd_processos Quantidade de processos no vetor
  * @param seq 1: Sequencial, 0: Paralelo
+ * @param fp Arquivo para escrita
  */
-void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
+char* algSRTF(Processo processos[], unsigned short int qtd_processos, int seq, FILE *fp){
     // ALocação das filas
     Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
 
+    // Variáveis para métricas
+    int tempo_total_cpu = 0;
+    int tempo_final = 0;
+
     // Variáveis de controle
     int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
-    
     // Variável de controle para tempo I/O
     int liberacao_io = 0;
     
@@ -446,10 +778,8 @@ void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
     }
 
     // Variáveis para armazenar a saída
-    char saida[512], saida_temp[20];
-
+    char saida[512], saida_temp[50];
     Processo *executando = NULL;
-
     // Tempo atual iniciando com o primeiro instante de submissão na fila de processos futuros
     int tempo_atual = processos_futuros[0]->instante_submissao;
 
@@ -531,15 +861,34 @@ void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
         }
 
         int proximo_evento = (tam_processos_futuros > 0) ? processos_futuros[0]->instante_submissao : INT_MAX;
-        int tempo_termino = tempo_atual + executando->tempo_restante;
 
-        int proximo_tempo = (proximo_evento < tempo_termino) ? proximo_evento : tempo_termino;
+        int proximo_espera = (tam_fila_espera > 0) ? fila_de_espera[0]->proximo_tempo : INT_MAX;
+
+        int tempo_termino = (executando != NULL) ? (tempo_atual + executando->tempo_restante) : INT_MAX;
+
+        int proximo_tempo = proximo_evento;
+
+        if(proximo_espera < proximo_tempo){
+            proximo_tempo = proximo_espera;
+        }
+        if(tempo_termino < proximo_tempo){
+            proximo_tempo = tempo_termino;
+        }
+
+        if(proximo_tempo == INT_MAX) break;
     
         int diferenca = proximo_tempo - tempo_atual;
 
-        if(diferenca){
-            executando->tempo_restante -= diferenca;
+        if(executando){
+            if(diferenca){
+                executando->tempo_restante -= diferenca;
+                tempo_total_cpu += diferenca;
+            }
+        } else {
+            snprintf(saida_temp, sizeof(saida_temp), "*** %d|", proximo_tempo);
+            strcat(saida, saida_temp);
         }
+        
 
         tempo_atual = proximo_tempo;
 
@@ -550,6 +899,8 @@ void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
             executando->indice_tempo++;
 
             if(executando->indice_tempo >= executando->qtd_tempos){
+                executando->termino = tempo_atual;
+                executando->turnaround = executando->termino - executando->instante_submissao;
                 executando = NULL;
             } else {
                 int io = executando->tempos[executando->indice_tempo];
@@ -586,30 +937,47 @@ void algSRTF(Processo processos[], unsigned short int qtd_processos, int seq){
     // Finaliza saída
     saida[strlen(saida)-1] = ']';
 
-    printf("%s", saida);
+    tempo_final = tempo_atual;
+    float uso_cpu = ((float)tempo_total_cpu / tempo_final) * 100;
+    char temp[50];
+    snprintf(temp, sizeof(temp), "UTILIZACAO CPU: %f\n", uso_cpu);
+    fputs(temp, fp);
+    snprintf(temp, sizeof(temp), "THROUGHPUT: %f\n", (float)qtd_processos / tempo_final);
+    fputs(temp, fp);
 
     free(processos_futuros);
     free(fila_de_prontos);
     free(fila_de_espera);
+
+    char *final = (char*) malloc(sizeof(saida) + 1);
+    strcpy(final, saida);
+    strcat(final, "\n");
+    return final;
 }
 
 /**
  * @brief Algoritmo FCFS
  * 
- * O algoritmo FCFS executa processos na sua ordem de chegada, existindo a possibilidade de executar paralelamente ou sequencial
+ * O algoritmo FCFS executa processos na sua ordem de chegada, existindo a possibilidade de executar paralelamente ou sequencial,
+ * calculando uso de CPU e throughput no final
  * 
  * @param processos Vetor com os processos existentes
  * @param qtd_processos Quantidadde de processos no vetor de processos
  * @param seq 1: Sequencial. 0: Paralelo
+ * @param fp Arquivo para escrita
  */
-void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
+char* algFCFS(Processo processos[], unsigned short int qtd_processos, int seq, FILE *fp){
     // Alocação da fila de processos futuros, fila de porntos e fila de espera seguindo a ideia do diagrama proposto em aula
     Processo **processos_futuros = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_prontos = (Processo**) malloc(qtd_processos * sizeof(Processo*));
     Processo **fila_de_espera = (Processo**) malloc(qtd_processos * sizeof(Processo*));
+    
+    // Variáveis para métricas
+    int tempo_total_cpu = 0;
+    int tempo_final = 0;
+    
     // Variáveis para armazenar a quantidade de elementos em cada fila
     int tam_processos_futuros = 0, tam_fila_prontos = 0, tam_fila_espera = 0;
-
     // Variável para armazenar o tempo do dispositivo I/O
     int liberacao_io = 0;
 
@@ -686,6 +1054,9 @@ void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
 
             // Pega o tempo de pico do processo atual
             int tempo_pico = processo_atual->tempos[processo_atual->indice_tempo];
+            
+            tempo_total_cpu += tempo_pico;
+            
             // Calcula em qual ms vai encerrar o processo
             int tempo_ms_final = tempo_atual + tempo_pico;
             
@@ -698,6 +1069,10 @@ void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
 
             // Se for maior que a quantidade de tempos no vetor, indica que o processo terminou 
             if(processo_atual->indice_tempo >= processo_atual->qtd_tempos){
+                // Calcula turnaround e libera CPU
+                processo_atual->termino = tempo_ms_final;
+                processo_atual->turnaround = processo_atual->termino - processo_atual->instante_submissao;
+                processo_atual = NULL;
             } else {
                 // Armazena o tempo de I/O atual
                 int tempo_io = processo_atual->tempos[processo_atual->indice_tempo];
@@ -761,16 +1136,25 @@ void algFCFS(Processo processos[], unsigned short int qtd_processos, int seq){
     }
 
     // Finaliza saída
-    saida_temp[strlen(saida_temp)-1] = ']';
-    strcat(saida, saida_temp);
+    saida[strlen(saida)-1] = ']';
 
-    printf("%s", saida);
+    tempo_final = tempo_atual;
+    float uso_cpu = ((float)tempo_total_cpu / tempo_final) * 100;
+    char temp[50];
+    snprintf(temp, sizeof(temp), "UTILIZACAO CPU: %f\n", uso_cpu);
+    fputs(temp, fp);
+    snprintf(temp, sizeof(temp), "THROUGHPUT: %f\n", (float)qtd_processos / tempo_final);
+    fputs(temp, fp);
 
     // Desaloca vetores de fila
     free(processos_futuros);
     free(fila_de_prontos);
     free(fila_de_espera);
 
+    char *final = (char*) malloc(sizeof(saida) + 1);
+    strcpy(final, saida);
+    strcat(final, "\n");
+    return final;
 }
 
 /**
@@ -914,6 +1298,36 @@ void ler_arquivo(char nome_arquivo[], Processo **processos, unsigned short int *
     fclose(fp);
 }
  
+/**
+ * @brief Inicilizar processos
+ * 
+ * Procedimento que inicialzia todos os processos existentes e garante
+ * que exista consistência entre as chamadas dos algoritmos sem um
+ * altear o outro
+ * 
+ * @param processos Vetor de processos
+ * @param qtd_processos Quantidade de processos no vetor
+ */
+void inicializar_processos(Processo processos[], unsigned short int qtd_processos){
+    for(int i = 0; i < qtd_processos; i++){
+        processos[i].indice_tempo = 0;
+        processos[i].proximo_tempo = 0;
+        processos[i].turnaround = 0;
+        processos[i].termino = 0;
+        processos[i].espera = 0;
+
+        if(processos[i].qtd_tempos > 0){
+            processos[i].tempo_restante = processos[i].tempos[0];
+        } else {
+            processos[i].tempo_restante = 0;
+        }
+    }
+}
+
+void escrever_arquivo(FILE *fp){
+
+}
+
 int main(int argc, char *argv[]){
     // Verifica entradas
     if(argc == 1){
@@ -926,7 +1340,15 @@ int main(int argc, char *argv[]){
 
     // Aloca vetor de processos inicialmente 4
     unsigned short int qtd_processos = 5, processos_existentes = 0;
+    unsigned int quantum = atoi(argv[2]);
+    char saida[512], *temp = NULL;
     Processo *processos = (Processo*) malloc(qtd_processos * sizeof(Processo));
+    snprintf(saida, sizeof(saida), "%s.out", argv[1]);
+    FILE *fp = fopen(saida, "w");
+    if(!fp){
+        puts("[ -># ] Erro ao abrir o arquivo de escrita!");
+        exit(EXIT_FAILURE);
+    }
 
     int seq = 0;
 
@@ -936,16 +1358,70 @@ int main(int argc, char *argv[]){
             break;
         }
     }
-
     // Faz leitura do arquivo passado
     puts("[ -> ] Lendo arquivo...");
     ler_arquivo(argv[1], &processos, &qtd_processos, &processos_existentes);
     puts("[ -> ] Arquivo lido com sucesso!");
+    
+    puts("---------------------------------------------------------");
+    puts("[ -> ] Executando algoritmo FCFS...                     |");
+    inicializar_processos(processos, processos_existentes);
+    puts("[ -> ] Execucao concluida!...                           |");
+    temp = algFCFS(processos, processos_existentes, seq, fp);
+    puts("[ -> ] Escrevendo resultado...                          |");
+    fputs(temp, fp);
+    calcula_turnaround(processos, processos_existentes, fp);
+    calcula_tempo_espera(processos, processos_existentes, fp);
+    free(temp);
 
-    // algFCFS(processos, processos_existentes, seq);
-    // algSJF(processos, processos_existentes, seq);
-    // algSRTF(processos, processos_existentes, seq);
-    algPrioridadePreemptivo(processos, processos_existentes, seq);
+    puts("---------------------------------------------------------");
+    puts("[ -> ] Executando algoritmo SJF...                      |");
+    inicializar_processos(processos, processos_existentes);
+    temp = algSJF(processos, processos_existentes, seq, fp);
+    puts("[ -> ] Execucao concluida!...                           |");
+    puts("[ -> ] Escrevendo resultado...                          |");
+    fputs(temp, fp);
+    calcula_turnaround(processos, processos_existentes, fp);
+    calcula_tempo_espera(processos, processos_existentes, fp);
+    free(temp);
+
+    puts("---------------------------------------------------------");
+    puts("[ -> ] Executando algoritmo SRTF...                     |");
+    inicializar_processos(processos, processos_existentes);
+    temp = algSRTF(processos, processos_existentes, seq, fp);
+    puts("[ -> ] Execucao concluida!...                           |");
+    puts("[ -> ] Escrevendo resultado...                          |");
+    fputs(temp, fp);
+    calcula_turnaround(processos, processos_existentes, fp);
+    calcula_tempo_espera(processos, processos_existentes, fp);
+    free(temp);
+
+    puts("---------------------------------------------------------");
+    puts("[ -> ] Executando algoritmo de Prioridade Preemptivo... |");
+    inicializar_processos(processos, processos_existentes);
+    temp = algPrioridadePreemptivo(processos, processos_existentes, seq, fp);
+    puts("[ -> ] Execucao concluida!...                           |");
+    puts("[ -> ] Escrevendo resultado...                          |");
+    fputs(temp, fp);
+    calcula_turnaround(processos, processos_existentes, fp);
+    calcula_tempo_espera(processos, processos_existentes, fp);
+    free(temp);
+
+    puts("---------------------------------------------------------");
+    puts("[ -> ] Executando algoritmo Round-Robin...              |");
+    inicializar_processos(processos, processos_existentes);
+    temp = algRoundRobin(processos, processos_existentes, seq, quantum, fp);
+    puts("[ -> ] Execucao concluida!...                           |");
+    puts("[ -> ] Escrevendo resultado...                          |");
+    fputs(temp, fp);
+    calcula_turnaround(processos, processos_existentes, fp);
+    calcula_tempo_espera(processos, processos_existentes, fp);
+    puts("---------------------------------------------------------");
+    free(temp);
+
+    puts("[ -> ] Gravacao concluida");
+
+    fclose(fp);
 
     // Libera todas as memórias
     for(unsigned short i = 0; i < processos_existentes; i++){
@@ -953,5 +1429,6 @@ int main(int argc, char *argv[]){
 
     }
     free(processos);
+    puts("[ -> ] Programa finalizado com sucesso!");
     return 0;
 }

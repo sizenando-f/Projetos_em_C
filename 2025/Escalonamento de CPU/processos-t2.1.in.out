@@ -1,0 +1,105 @@
+UTILIZACAO CPU: 66.292137
+THROUGHPUT: 0.056180
+FCFS: 2[P5 5|P1 15|P5 20|P2 25|P3 27|P4 39|*** 45|P1 48|*** 51|P5 58|*** 72|P2 82|*** 87|P3 89]
+------------------------
+TURNAROUND:
+P1: 44ms
+P2: 75ms
+P3: 78ms
+P4: 26ms
+P5: 56ms
+MEDIO: 55.80ms
+------------------------
+TEMPO DE ESPERA:
+P1: 31ms
+P2: 60ms
+P3: 74ms
+P4: 14ms
+P5: 41ms
+MEDIO: 44.00ms
+------------------------
+
+UTILIZACAO CPU: 63.917522
+THROUGHPUT: 0.051546
+SJF: 2[P5 5|P1 15|P3 17|P5 22|P2 27|P4 39|*** 45|P1 48|*** 60|P3 62|*** 66|P5 73|*** 87|P2 97]
+------------------------
+TURNAROUND:
+P1: 41ms
+P2: 80ms
+P3: 49ms
+P4: 14ms
+P5: 64ms
+MEDIO: 49.60ms
+------------------------
+TEMPO DE ESPERA:
+P1: 28ms
+P2: 65ms
+P3: 45ms
+P4: 2ms
+P5: 49ms
+MEDIO: 37.80ms
+------------------------
+
+UTILIZACAO CPU: 67.816093
+THROUGHPUT: 0.057471
+SRTF: 2[P5 5|P1 7|P2 12|P3 14|P5 19|P1 27|P4 39|P2 49|P3 51|*** 54|P5 61|*** 84|P1 87]
+------------------------
+TURNAROUND:
+P1: 83ms
+P2: 42ms
+P3: 40ms
+P4: 26ms
+P5: 59ms
+MEDIO: 50.00ms
+------------------------
+TEMPO DE ESPERA:
+P1: 70ms
+P2: 27ms
+P3: 36ms
+P4: 14ms
+P5: 44ms
+MEDIO: 38.20ms
+------------------------
+
+UTILIZACAO CPU: 58.999996
+THROUGHPUT: 0.050000
+PRIORIDADE PREEMPTIVO: 2[P5 4|P1 7|P2 12|P3 13|P4 25|P3 26|P1 33|P2 43|P5 44|*** 48|P3 50|*** 78|P1 81|*** 82|P5 87|*** 93|P5 100]
+------------------------
+TURNAROUND:
+P1: 77ms
+P2: 36ms
+P3: 39ms
+P4: 12ms
+P5: 98ms
+MEDIO: 52.40ms
+------------------------
+TEMPO DE ESPERA:
+P1: 64ms
+P2: 21ms
+P3: 35ms
+P4: 0ms
+P5: 83ms
+MEDIO: 40.60ms
+------------------------
+
+UTILIZACAO CPU: 57.843136
+THROUGHPUT: 0.049020
+ROUND-ROBIN(q=4ms): 2[P5 5|P1 9|P2 13|P1 17|P5 21|P3 23|P2 24|P4 28|P1 30|P5 31|P4 35|P4 39|P3 41|*** 59|P2 63|P2 67|P2 69|*** 89|P1 92|*** 95|P5 99|P5 102]
+------------------------
+TURNAROUND:
+P1: 88ms
+P2: 62ms
+P3: 30ms
+P4: 26ms
+P5: 100ms
+MEDIO: 61.20ms
+------------------------
+TEMPO DE ESPERA:
+P1: 75ms
+P2: 47ms
+P3: 26ms
+P4: 14ms
+P5: 85ms
+MEDIO: 49.40ms
+------------------------
+
