@@ -6,10 +6,13 @@
 
 using namespace std;
 
-int main(){
+int main()
+{
     // Cria o socket (telefone) do cliente
-    int client_socket = socket(AF_INET, SOCK_STREAM, 0);;
-    if(client_socket == -1){
+    int client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    ;
+    if (client_socket == -1)
+    {
         cerr << "Erro ao criar o socket do cliente!" << endl;
         return 1;
     }
@@ -20,16 +23,18 @@ int main(){
     server_addr.sin_port = htons(8080);
 
     // Converte o endereço em string para o formato binario
-    if(inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr) <= 0){
+    if (inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr) <= 0)
+    {
         cerr << "Endereço IP inválido ou não suportado" << endl;
         return 1;
     }
 
     // Conecta o socket criado do cliente no endereço desejado
-    if(connect(client_socket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0){
+    if (connect(client_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+    {
         cerr << "Erro na conexão com o servidor" << endl;
         return 1;
-    } 
+    }
 
     cout << "Conectado ao servidor!" << endl;
 
