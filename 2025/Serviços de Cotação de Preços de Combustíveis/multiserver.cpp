@@ -5,7 +5,85 @@
 #include <string.h>
 #include <thread>
 
+#include <algorithm>
+#include <memory>
+#include <vector>
+
 using namespace std;
+
+struct Ponto
+{
+    double x, y;
+    int id;
+};
+
+struct No
+{
+    Ponto p;
+    unique_ptr<No> esquerda;
+    unique_ptr<No> direita;
+
+    No(Ponto pt) : p(pt), esquerda(nullptr), direita(nullptr) {}
+};
+
+unique_ptr<No> construir_kdtree(vector<Ponto> &pontos, int depth)
+{
+    if (pontos.empty())
+    {
+        return nullptr;
+    }
+
+    int eixo = depth % 2;
+
+    sort(pontos.begin(), pontos.end(), [eixo](const Ponto &a, const Ponto &b)
+         { return (eixo == 0) ? a.x < b.x : a.y < b.y; });
+
+    size_t mediana_idx = pontos.size() / 2;
+    Ponto ponto_mediana = pontos[mediana_idx];
+
+    vector<Ponto> pontos_esquerda(pontos.begin(), pontos.begin() + mediana_idx);
+    vector<Ponto> pontos_direita(pontos.begin() + mediana_idx + 1, pontos.end());
+
+    auto no_raiz = make_unique<No>(ponto_mediana);
+    no_raiz->esquerda = construir_kdtree(pontos_esquerda, depth + 1);
+    no_raiz->direita = construir_kdtree(pontos_direita, depth + 1);
+
+    return no_raiz;
+}
+
+struct CaixaBusca
+{
+    double x_min, x_max, y_min, y_max;
+};
+
+void buscar_kdtree(No *no_atual, const CaixaBusca &caixa, int depth, vector<Ponto> &resultados)
+{
+    if (no_atual == nullptr)
+    {
+        return;
+    }
+
+    Ponto p = no_atual->p;
+    if (p.x >= caixa.x_min && p.x <= caixa.x_max && p.y >= caixa.y_min && p.y <= caixa.y_max)
+    {
+        resultados.push_back(p);
+    }
+
+    int eixo = depth % 2;
+    double valor_ponto_no_eixo = (eixo == 0) ? p.x : p.y;
+    double min_caixa_no_eixo = (eixo == 0) ? caixa.x_min : caixa.y_min;
+    double max_caixa_no_eixo = (eixo == 0) ? caixa.x_max : caixa.y_max;
+
+    if (min_caixa_no_eixo < valor_ponto_no_eixo)
+    {
+        buscar_kdtree(no_atual->esquerda.get(), caixa, depth + 1, resultados);
+    }
+
+    if (max_caixa_no_eixo > valor_ponto_no_eixo)
+    {
+        buscar_kdtree(no_atual->direita.get(), caixa, depth + 1, resultados);
+    }
+}
 
 void handle_client(int client_socket)
 {
