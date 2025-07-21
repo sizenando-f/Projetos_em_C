@@ -4,10 +4,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <thread>
+#include <string>
 
 #include <algorithm>
 #include <memory>
 #include <vector>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -85,73 +87,79 @@ void buscar_kdtree(No *no_atual, const CaixaBusca &caixa, int depth, vector<Pont
     }
 }
 
-void handle_client(int client_socket)
+void handle_request_udp(int server_socket, string client_message, sockaddr_in client_addr)
 {
-    cout << "Novo thread criado para cuidar do cliente socket: " << client_socket << endl;
+    char client_ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+    int client_port = ntohs(client_addr.sin_port);
 
-    char buffer[1024] = {0};
-    read(client_socket, buffer, 1024);
-    cout << "Mensagem do cliente [" << client_socket << "]: " << buffer << endl;
+    cout << "Thread [" << this_thread::get_id() << "] tratando requisição de " << client_ip << ": " << client_port << endl;
+    cout << "Mensagem do cliente: " << client_message << endl;
 
-    const char *message = "Olá, eu sou o garçom-thread! Bem-vindo!";
-    send(client_socket, message, strlen(message), 0);
+    const char *message = "Olá, eu sou o garçom-thread UDP! Recebido!";
+    sendto(server_socket, message, strlen(message), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
 
-    close(client_socket);
-    cout << "Conexão com o cliente " << client_socket << " fechada" << endl;
+    cout << "Thread [" << this_thread::get_id() << "] finalizada." << endl;
 }
 
 int main(int argc, char **argv)
 {
-    // Cria o socket para o servidor: AF_INET = IPv4, SOCK_STREAM = TCP, 0 = Protocolo automático
-    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == -1)
+    if (argc != 2)
     {
-        cerr << "Erro ao criar o socket do servidor" << endl;
-        return 1;
+        cerr << "Uso: " << argv[0] << " <porta>" << endl;
     }
-
-    // Configura o endereço do servidor
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(8080);
-
-    // Associa endereço com o socket
-    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+    else
     {
-        cerr << "Erro ao fazer o bind" << endl;
-        return 1;
-    }
-
-    // Começa a ouvir por clientes
-    if (listen(server_fd, 5) < 0)
-    {
-        cerr << "Erro no listen" << endl;
-        return 1;
-    }
-
-    cout << "Servidor multi-cliente ouvindo na porta 8080..." << endl;
-
-    // Looping infinito para atender todos os clientes
-    while (true)
-    {
-        sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
-        int client_socket = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
-
-        if (client_socket < 0)
+        // Cria o socket para o servidor: AF_INET = IPv4, SOCK_DGRAM = UDP, 0 = Protocolo automático
+        int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+        if (server_fd == -1)
         {
-            cerr << "Erro ao aceitar conexão" << endl;
-            continue;
+            cerr << "Erro ao criar o socket do servidor" << endl;
+        }
+        else
+        {
+            // Configura o endereço do servidor
+            sockaddr_in server_addr;
+            server_addr.sin_family = AF_INET;
+            server_addr.sin_addr.s_addr = INADDR_ANY;
+            server_addr.sin_port = htons(8080);
+
+            // Associa endereço com o socket
+            if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+            {
+                cerr << "Erro ao fazer o bind" << endl;
+                close(server_fd);
+            }
+            else
+            {
+                cout << "Servidor multi-cliente UDP ouvindo na porta 8080..." << endl;
+
+                // Looping infinito para atender todos os clientes
+                while (true)
+                {
+                    char buffer[1024] = {0};
+                    sockaddr_in client_addr;
+                    socklen_t client_len = sizeof(client_addr);
+                    ssize_t bytes_received = recvfrom(server_fd, buffer, 1024, 0, (struct sockaddr *)&client_addr, &client_len);
+
+                    if (bytes_received < 0)
+                    {
+                        cerr << "Erro no recvfrom" << endl;
+                        continue;
+                    }
+
+                    cout << "Datagrama recebido! Criando uma thread para ele..." << endl;
+
+                    string message_str(buffer, bytes_received);
+
+                    thread client_thread(handle_request_udp, server_fd, message_str, client_addr);
+                    client_thread.detach();
+                }
+            }
         }
 
-        cout << "Cliente conectado! Criando uma thread para ele..." << endl;
-
-        thread client_thread(handle_client, client_socket);
-        client_thread.detach();
+        close(server_fd);
     }
-
-    close(server_fd);
 
     return 0;
 }
