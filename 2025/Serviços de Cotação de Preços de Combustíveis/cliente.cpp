@@ -8,7 +8,7 @@
 
 using namespace std;
 
-typedef struct Pacote
+struct Pacote
 {
     char tipo_msg; // D ou P
     int id_msg;
@@ -68,10 +68,10 @@ int main(int argc, char **argv)
             {
                 cout << "Escreva <exit> para sair" << endl;
                 string input = "";
+                cout << "> ";
+                getline(cin, input);
                 while (input != "exit")
                 {
-                    cout << "> ";
-                    getline(cin, input);
                     stringstream linha(input);
                     Pacote pacote;
                     string tempChar;
@@ -126,6 +126,9 @@ int main(int argc, char **argv)
                     socklen_t server_len = sizeof(server_addr);
                     recvfrom(client_socket, buffer, sizeof(buffer), 0, (struct sockaddr *)&server_addr, &server_len);
                     cout << "Resposta do servidor:" << buffer << endl;
+
+                    cout << "> ";
+                    getline(cin, input);
                 }
 
                 close(client_socket);
