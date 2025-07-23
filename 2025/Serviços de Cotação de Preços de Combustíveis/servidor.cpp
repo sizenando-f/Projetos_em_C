@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <arpa/inet.h>
+#include <fstream>
 
 using namespace std;
 
@@ -39,6 +40,12 @@ struct Pacote
             double longitude_centro;
         } pesquisa;
     } payload;
+};
+
+struct Resposta
+{
+    int id_msg_original;
+    bool is_nak; // true se for NAK e false se for ACK
 };
 
 int main(int argc, char **argv)
@@ -87,18 +94,52 @@ int main(int argc, char **argv)
                         Pacote pacote_recebido;
                         memcpy(&pacote_recebido, buffer_recebido, sizeof(Pacote));
                         cout << "Pacote deserializado com sucesso!" << endl;
-                        cout << "ID da mensagem: " << pacote_recebido.id_msg << endl;
-                        cout << "Tipo da mensagem: " << pacote_recebido.tipo_msg << endl;
-                        cout << "Veio com erro?" << (pacote_recebido.erro ? "Sim" : "Não") << endl;
 
-                        if (pacote_recebido.tipo_msg == 'D')
+                        Resposta resposta_servidor;
+                        resposta_servidor.id_msg_original = pacote_recebido.id_msg;
+                        if (pacote_recebido.erro)
                         {
-                            cout << "Preço: " << pacote_recebido.payload.dados.preco << endl;
+                            cout << "PACOTE CORROMPIDO! Enviando NAK para mensagem de ID: " << resposta_servidor.id_msg_original << endl;
+                            resposta_servidor.is_nak = true;
                         }
-                    }
+                        else
+                        {
+                            cout << "PACOTE OK! Enviando ACK para mensagem de ID: " << resposta_servidor.id_msg_original << endl;
+                            resposta_servidor.is_nak = false;
 
-                    const char *message = "Olá, eu sou o garçom UDP! Recebido!";
-                    sendto(server_fd, message, strlen(message), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+                            if (pacote_recebido.tipo_msg == 'D')
+                            {
+                                cout << "Recebida mensagem de DADOS. Salvando em arquivo..." << endl;
+                                ofstream arquivo_dados("dados_postos.csv", ios::app);
+
+                                if (arquivo_dados.is_open())
+                                {
+                                    arquivo_dados << pacote_recebido.payload.dados.tipo_combustivel << ","
+                                                  << pacote_recebido.payload.dados.preco << ","
+                                                  << pacote_recebido.payload.dados.latitude << ","
+                                                  << pacote_recebido.payload.dados.longitude << endl;
+                                    arquivo_dados.close();
+                                    cout << "Dados salvos com sucesso!" << endl;
+                                }
+                                else
+                                {
+                                    cerr << "Erro ao abrir o arquivo de dados para escrita!" << endl;
+                                }
+                            }
+                        }
+
+                        char buffer_resposta[(sizeof(Resposta))];
+                        memcpy(buffer_resposta, &resposta_servidor, sizeof(Resposta));
+                        sendto(server_fd, buffer_resposta, sizeof(Resposta), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+
+                        // cout << "ID da mensagem: " << pacote_recebido.id_msg << endl;
+                        // cout << "Tipo da mensagem: " << pacote_recebido.tipo_msg << endl;
+                        // cout << "Veio com erro?" << (pacote_recebido.erro ? "Sim" : "Não") << endl;
+                        // if (pacote_recebido.tipo_msg == 'D')
+                        // {
+                        //     cout << "Preço: " << pacote_recebido.payload.dados.preco << endl;
+                        // }
+                    }
                 }
             }
         }

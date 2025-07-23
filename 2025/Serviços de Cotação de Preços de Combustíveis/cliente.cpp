@@ -36,6 +36,12 @@ struct Pacote
     } payload;
 };
 
+struct Resposta
+{
+    int id_msg_original;
+    bool is_nak; // true se for NAK e false se for ACK
+};
+
 int main(int argc, char **argv)
 {
 
@@ -45,6 +51,7 @@ int main(int argc, char **argv)
     }
     else
     {
+        srand(time(NULL));
         // Cria o socket (telefone) do cliente
         int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -54,6 +61,12 @@ int main(int argc, char **argv)
         }
         else
         {
+            // Seta o timeout para caso o pacote se perder na rede
+            struct timeval timeout;
+            timeout.tv_sec = 2;
+            timeout.tv_usec = 0;
+            setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
             // Define que tipo de endereço o cliente vai se conectar e a porta do servidor
             sockaddr_in server_addr;
             server_addr.sin_family = AF_INET;
@@ -77,7 +90,6 @@ int main(int argc, char **argv)
                     string tempChar;
                     double tempValue;
 
-                    srand(time(NULL));
                     double prob = (double)rand() / RAND_MAX;
                     if (prob > 0.5)
                     {
@@ -116,16 +128,43 @@ int main(int argc, char **argv)
                         pacote.payload.pesquisa.longitude_centro = tempValue;
                     }
 
-                    // Se comunica com o servidor seja enviando uma mensagem ou recebendo
-                    char buffer_envio[sizeof(Pacote)];
-                    memcpy(buffer_envio, &pacote, sizeof(Pacote));
-                    sendto(client_socket, buffer_envio, sizeof(Pacote), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-                    cout << "Pacote convertido e enviado para o servidor" << endl;
+                    bool ack_recebido = false;
+                    while (!ack_recebido)
+                    {
+                        char buffer_envio[sizeof(Pacote)];
+                        memcpy(buffer_envio, &pacote, sizeof(Pacote));
+                        sendto(client_socket, buffer_envio, sizeof(Pacote), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+                        cout << "Pacote " << pacote.id_msg << " enviado. Aguardando ACK/NAK" << endl;
 
-                    char buffer[1024] = {0};
-                    socklen_t server_len = sizeof(server_addr);
-                    recvfrom(client_socket, buffer, sizeof(buffer), 0, (struct sockaddr *)&server_addr, &server_len);
-                    cout << "Resposta do servidor:" << buffer << endl;
+                        char buffer_resposta[sizeof(Resposta)];
+                        socklen_t server_len = sizeof(server_addr);
+                        ssize_t bytes_received = recvfrom(client_socket, buffer_resposta, sizeof(Resposta), 0, (struct sockaddr *)&server_addr, &server_len);
+
+                        if (bytes_received < 0)
+                        {
+                            cout << "Timeout! O ACK/NAK foi perdido. Retransmitindo pacote " << pacote.id_msg << "..." << endl;
+                            pacote.erro = false;
+                        }
+                        else
+                        {
+                            Resposta resposta_servidor;
+                            memcpy(&resposta_servidor, buffer_resposta, sizeof(Resposta));
+
+                            if (resposta_servidor.id_msg_original == pacote.id_msg)
+                            {
+                                if (resposta_servidor.is_nak)
+                                {
+                                    cout << "NAK recebido. Retransmitindo pacote " << pacote.id_msg << "..." << endl;
+                                    pacote.erro = false;
+                                }
+                                else
+                                {
+                                    cout << "ACK recebido para o pacote " << pacote.id_msg << "! Sucesso!" << endl;
+                                    ack_recebido = true;
+                                }
+                            }
+                        }
+                    }
 
                     cout << "> ";
                     getline(cin, input);
