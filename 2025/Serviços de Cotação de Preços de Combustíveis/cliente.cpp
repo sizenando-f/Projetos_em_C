@@ -8,6 +8,7 @@
 
 using namespace std;
 
+// As structs permanecem as mesmas
 struct Pacote
 {
     char tipo_msg; // D ou P
@@ -16,16 +17,13 @@ struct Pacote
 
     union
     {
-        // Para tipo D (Dados)
         struct
         {
-            int tipo_combustivel; // 0 (Diesel), 1 (Álcool), 2 (Gasolina)
-            int preco;            // 4449 -> 4,449
+            int tipo_combustivel;
+            int preco;
             double latitude;
             double longitude;
         } dados;
-
-        // Para tipo P (Pesquisa)
         struct
         {
             int tipo_combustivel;
@@ -42,138 +40,134 @@ struct Resposta
     bool is_nak; // true se for NAK e false se for ACK
 };
 
+struct RespostaPesquisa
+{
+    int preco_encontrado; // -1 se não encontrou, -2 para NAK
+};
+
 int main(int argc, char **argv)
 {
-
     if (argc != 3)
     {
         cerr << "Uso: " << argv[0] << " <ip/nome> <porta>" << endl;
+        return 1;
     }
-    else
-    {
-        srand(time(NULL));
-        // Cria o socket (telefone) do cliente
-        int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
-        if (client_socket == -1)
+    srand(time(NULL));
+    int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (client_socket == -1)
+    {
+        cerr << "Erro ao criar o socket do cliente!" << endl;
+        return 1;
+    }
+
+    struct timeval timeout;
+    timeout.tv_sec = 2;
+    timeout.tv_usec = 0;
+    setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
+    sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(atoi(argv[2]));
+    if (inet_pton(AF_INET, argv[1], &server_addr.sin_addr) <= 0)
+    {
+        cerr << "Endereço IP inválido ou não suportado" << endl;
+        return 1;
+    }
+
+    cout << "Escreva <exit> para sair" << endl;
+    string input;
+    while (cout << "> ", getline(cin, input) && input != "exit")
+    {
+        stringstream linha(input);
+        Pacote pacote;
+        string tipo_str;
+
+        linha >> tipo_str;
+        if (tipo_str.empty())
+            continue;
+
+        pacote.tipo_msg = tipo_str[0];
+        pacote.id_msg = rand() % 1000; // Aumentado para diminuir colisões
+        pacote.erro = ((double)rand() / RAND_MAX) > 0.5;
+
+        if (pacote.tipo_msg == 'D')
         {
-            cerr << "Erro ao criar o socket do cliente!" << endl;
+            linha >> pacote.payload.dados.tipo_combustivel >> pacote.payload.dados.preco >> pacote.payload.dados.latitude >> pacote.payload.dados.longitude;
+        }
+        else if (pacote.tipo_msg == 'P')
+        {
+            linha >> pacote.payload.pesquisa.tipo_combustivel >> pacote.payload.pesquisa.raio_busca >> pacote.payload.pesquisa.latitude_centro >> pacote.payload.pesquisa.longitude_centro;
         }
         else
         {
-            // Seta o timeout para caso o pacote se perder na rede
-            struct timeval timeout;
-            timeout.tv_sec = 2;
-            timeout.tv_usec = 0;
-            setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+            cerr << "Tipo de mensagem inválido. Use 'D' ou 'P'." << endl;
+            continue;
+        }
 
-            // Define que tipo de endereço o cliente vai se conectar e a porta do servidor
-            sockaddr_in server_addr;
-            server_addr.sin_family = AF_INET;
-            server_addr.sin_port = htons(atoi(argv[2]));
+        bool sucesso = false;
+        while (!sucesso)
+        {
+            cout << "Enviando pacote " << pacote.id_msg << " (erro=" << (pacote.erro ? "sim" : "não") << ")..." << endl;
+            sendto(client_socket, &pacote, sizeof(Pacote), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
-            // Converte o endereço em string para o formato binario
-            if (inet_pton(AF_INET, argv[1], &server_addr.sin_addr) <= 0)
+            if (pacote.tipo_msg == 'D')
             {
-                cerr << "Endereço IP inválido ou não suportado" << endl;
-            }
-            else
-            {
-                cout << "Escreva <exit> para sair" << endl;
-                string input = "";
-                cout << "> ";
-                getline(cin, input);
-                while (input != "exit")
+                Resposta resposta_d;
+                ssize_t bytes = recvfrom(client_socket, &resposta_d, sizeof(Resposta), 0, NULL, NULL);
+
+                if (bytes < 0)
                 {
-                    stringstream linha(input);
-                    Pacote pacote;
-                    string tempChar;
-                    double tempValue;
-
-                    double prob = (double)rand() / RAND_MAX;
-                    if (prob > 0.5)
+                    cout << "Timeout! Retransmitindo..." << endl;
+                    pacote.erro = false;
+                }
+                else if (resposta_d.id_msg_original == pacote.id_msg)
+                {
+                    if (resposta_d.is_nak)
                     {
-                        pacote.erro = true;
+                        cout << "NAK recebido. Retransmitindo..." << endl;
+                        pacote.erro = false;
                     }
                     else
                     {
+                        cout << "ACK recebido! Sucesso!" << endl;
+                        sucesso = true;
+                    }
+                }
+            }
+            else if (pacote.tipo_msg == 'P')
+            {
+                RespostaPesquisa resposta_p;
+                ssize_t bytes = recvfrom(client_socket, &resposta_p, sizeof(RespostaPesquisa), 0, NULL, NULL);
+
+                if (bytes < 0)
+                {
+                    cout << "Timeout! Retransmitindo..." << endl;
+                    pacote.erro = false;
+                }
+                else
+                {
+                    if (resposta_p.preco_encontrado == -2)
+                    { // Código de NAK
+                        cout << "NAK recebido para pesquisa. Retransmitindo..." << endl;
                         pacote.erro = false;
                     }
-
-                    pacote.id_msg = rand() % 100;
-                    linha >> tempChar;
-
-                    if (tempChar == "D")
+                    else
                     {
-                        pacote.tipo_msg = 'D';
-                        linha >> tempValue;
-                        pacote.payload.dados.tipo_combustivel = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.dados.preco = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.dados.latitude = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.dados.longitude = tempValue;
-                    }
-                    else if (tempChar == "P")
-                    {
-                        pacote.tipo_msg = 'P';
-                        linha >> tempValue;
-                        pacote.payload.pesquisa.tipo_combustivel = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.pesquisa.raio_busca = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.pesquisa.latitude_centro = tempValue;
-                        linha >> tempValue;
-                        pacote.payload.pesquisa.longitude_centro = tempValue;
-                    }
-
-                    bool ack_recebido = false;
-                    while (!ack_recebido)
-                    {
-                        char buffer_envio[sizeof(Pacote)];
-                        memcpy(buffer_envio, &pacote, sizeof(Pacote));
-                        sendto(client_socket, buffer_envio, sizeof(Pacote), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-                        cout << "Pacote " << pacote.id_msg << " enviado. Aguardando ACK/NAK" << endl;
-
-                        char buffer_resposta[sizeof(Resposta)];
-                        socklen_t server_len = sizeof(server_addr);
-                        ssize_t bytes_received = recvfrom(client_socket, buffer_resposta, sizeof(Resposta), 0, (struct sockaddr *)&server_addr, &server_len);
-
-                        if (bytes_received < 0)
+                        if (resposta_p.preco_encontrado == -1)
                         {
-                            cout << "Timeout! O ACK/NAK foi perdido. Retransmitindo pacote " << pacote.id_msg << "..." << endl;
-                            pacote.erro = false;
+                            cout << "Resposta do servidor: Nenhum posto encontrado." << endl;
                         }
                         else
                         {
-                            Resposta resposta_servidor;
-                            memcpy(&resposta_servidor, buffer_resposta, sizeof(Resposta));
-
-                            if (resposta_servidor.id_msg_original == pacote.id_msg)
-                            {
-                                if (resposta_servidor.is_nak)
-                                {
-                                    cout << "NAK recebido. Retransmitindo pacote " << pacote.id_msg << "..." << endl;
-                                    pacote.erro = false;
-                                }
-                                else
-                                {
-                                    cout << "ACK recebido para o pacote " << pacote.id_msg << "! Sucesso!" << endl;
-                                    ack_recebido = true;
-                                }
-                            }
+                            cout << "Resposta do servidor: Menor preço encontrado: " << resposta_p.preco_encontrado << endl;
                         }
+                        sucesso = true;
                     }
-
-                    cout << "> ";
-                    getline(cin, input);
                 }
-
-                close(client_socket);
             }
         }
     }
-
+    close(client_socket);
     return 0;
 }

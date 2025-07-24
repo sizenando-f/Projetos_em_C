@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -g
+CXXFLAGS = -Wall -g -static-libstdc++
 EXECUTABLES = cliente servidor
 
 all: $(EXECUTABLES)

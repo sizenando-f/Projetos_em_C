@@ -3,17 +3,16 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
-#include <thread>
 #include <string>
-
-#include <algorithm>
-#include <memory>
 #include <vector>
 #include <arpa/inet.h>
 #include <fstream>
+#include <cmath>
+#include <sstream>
 
 using namespace std;
 
+// As structs permanecem as mesmas
 struct Pacote
 {
     char tipo_msg; // D ou P
@@ -22,16 +21,13 @@ struct Pacote
 
     union
     {
-        // Para tipo D (Dados)
         struct
         {
-            int tipo_combustivel; // 0 (Diesel), 1 (Álcool), 2 (Gasolina)
-            int preco;            // 4449 -> 4,449
+            int tipo_combustivel;
+            int preco;
             double latitude;
             double longitude;
         } dados;
-
-        // Para tipo P (Pesquisa)
         struct
         {
             int tipo_combustivel;
@@ -48,104 +44,162 @@ struct Resposta
     bool is_nak; // true se for NAK e false se for ACK
 };
 
+struct RespostaPesquisa
+{
+    int preco_encontrado; // -1 se não encontrou, -2 para NAK
+};
+
+struct Posto
+{
+    int tipo_combustivel;
+    int preco;
+    double latitude;
+    double longitude;
+};
+
+// Função haversine permanece a mesma
+double haversine(double lat1, double lon1, double lat2, double lon2)
+{
+    const double R = 6371.0;
+    double lat_rad1 = lat1 * M_PI / 180.0;
+    double lon_rad1 = lon1 * M_PI / 180.0;
+    double lat_rad2 = lat2 * M_PI / 180.0;
+    double lon_rad2 = lon2 * M_PI / 180.0;
+    double dlon = lon_rad2 - lon_rad1;
+    double dlat = lat_rad2 - lat_rad1;
+    double a = sin(dlat / 2.0) * sin(dlat / 2.0) + cos(lat_rad1) * cos(lat_rad2) * sin(dlon / 2.0) * sin(dlon / 2.0);
+    double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
+    return R * c;
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
     {
         cerr << "Uso: " << argv[0] << " <porta>" << endl;
+        return 1;
     }
-    else
+
+    int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (server_fd == -1)
     {
-        // Cria o socket para o servidor: AF_INET = IPv4, SOCK_DGRAM = UDP, 0 = Protocolo automático
-        int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
-        if (server_fd == -1)
-        {
-            cerr << "Erro ao criar o socket do servidor" << endl;
-        }
-        else
-        {
-            // Configura o endereço do servidor
-            sockaddr_in server_addr;
-            server_addr.sin_family = AF_INET;
-            server_addr.sin_addr.s_addr = INADDR_ANY;
-            server_addr.sin_port = htons(atoi(argv[1]));
+        cerr << "Erro ao criar o socket do servidor" << endl;
+        return 1;
+    }
 
-            // Associa endereço com o socket
-            if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-            {
-                cerr << "Erro ao fazer o bind" << endl;
-                close(server_fd);
-            }
-            else
-            {
-                cout << "Servidor multi-cliente UDP ouvindo na porta " << argv[1] << "..." << endl;
+    sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(atoi(argv[1]));
 
-                // Looping infinito para atender todos os clientes
-                while (true)
+    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+    {
+        cerr << "Erro ao fazer o bind" << endl;
+        close(server_fd);
+        return 1;
+    }
+
+    cout << "Servidor UDP ouvindo na porta " << argv[1] << "..." << endl;
+
+    while (true)
+    {
+        char buffer_recebido[sizeof(Pacote)];
+        sockaddr_in client_addr;
+        socklen_t client_len = sizeof(client_addr);
+        ssize_t bytes_received = recvfrom(server_fd, buffer_recebido, sizeof(Pacote), 0, (struct sockaddr *)&client_addr, &client_len);
+
+        if (bytes_received == sizeof(Pacote))
+        {
+            Pacote pacote_recebido;
+            memcpy(&pacote_recebido, buffer_recebido, sizeof(Pacote));
+            cout << "----------------------------------------" << endl;
+            cout << "Pacote " << pacote_recebido.id_msg << " deserializado. Tipo: " << pacote_recebido.tipo_msg << endl;
+
+            // Lógica principal
+            if (pacote_recebido.tipo_msg == 'D')
+            {
+                if (pacote_recebido.erro)
                 {
-                    char buffer_recebido[sizeof(Pacote)];
-                    sockaddr_in client_addr;
-                    socklen_t client_len = sizeof(client_addr);
-
-                    ssize_t bytes_received = recvfrom(server_fd, buffer_recebido, sizeof(Pacote), 0, (struct sockaddr *)&client_addr, &client_len);
-
-                    if (bytes_received == sizeof(Pacote))
+                    cout << "PACOTE 'D' CORROMPIDO! Enviando NAK." << endl;
+                    Resposta resposta_nak;
+                    resposta_nak.id_msg_original = pacote_recebido.id_msg;
+                    resposta_nak.is_nak = true;
+                    sendto(server_fd, &resposta_nak, sizeof(Resposta), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+                }
+                else
+                {
+                    cout << "PACOTE 'D' OK. Salvando e enviando ACK..." << endl;
+                    ofstream arquivo_dados("dados_postos.csv", ios::app);
+                    if (arquivo_dados.is_open())
                     {
-                        Pacote pacote_recebido;
-                        memcpy(&pacote_recebido, buffer_recebido, sizeof(Pacote));
-                        cout << "Pacote deserializado com sucesso!" << endl;
-
-                        Resposta resposta_servidor;
-                        resposta_servidor.id_msg_original = pacote_recebido.id_msg;
-                        if (pacote_recebido.erro)
+                        arquivo_dados << pacote_recebido.payload.dados.tipo_combustivel << ","
+                                      << pacote_recebido.payload.dados.preco << ","
+                                      << pacote_recebido.payload.dados.latitude << ","
+                                      << pacote_recebido.payload.dados.longitude << endl;
+                        arquivo_dados.close();
+                    }
+                    Resposta resposta_ack;
+                    resposta_ack.id_msg_original = pacote_recebido.id_msg;
+                    resposta_ack.is_nak = false;
+                    sendto(server_fd, &resposta_ack, sizeof(Resposta), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+                }
+            }
+            else if (pacote_recebido.tipo_msg == 'P')
+            {
+                RespostaPesquisa resposta_p;
+                if (pacote_recebido.erro)
+                {
+                    cout << "PACOTE 'P' CORROMPIDO! Respondendo com falha." << endl;
+                    resposta_p.preco_encontrado = -2; // Código para NAK
+                }
+                else
+                {
+                    cout << "PACOTE 'P' OK. Iniciando busca..." << endl;
+                    vector<Posto> postos;
+                    ifstream arquivo_dados("dados_postos.csv");
+                    if (arquivo_dados.is_open())
+                    {
+                        string linha;
+                        while (getline(arquivo_dados, linha))
                         {
-                            cout << "PACOTE CORROMPIDO! Enviando NAK para mensagem de ID: " << resposta_servidor.id_msg_original << endl;
-                            resposta_servidor.is_nak = true;
+                            stringstream ss(linha);
+                            string item;
+                            Posto posto_atual;
+                            getline(ss, item, ',');
+                            posto_atual.tipo_combustivel = stoi(item);
+                            getline(ss, item, ',');
+                            posto_atual.preco = stoi(item);
+                            getline(ss, item, ',');
+                            posto_atual.latitude = stod(item);
+                            getline(ss, item, ',');
+                            posto_atual.longitude = stod(item);
+                            postos.push_back(posto_atual);
                         }
-                        else
+                        arquivo_dados.close();
+                    }
+
+                    int menor_preco = -1;
+                    for (const auto &posto : postos)
+                    {
+                        if (posto.tipo_combustivel == pacote_recebido.payload.pesquisa.tipo_combustivel)
                         {
-                            cout << "PACOTE OK! Enviando ACK para mensagem de ID: " << resposta_servidor.id_msg_original << endl;
-                            resposta_servidor.is_nak = false;
-
-                            if (pacote_recebido.tipo_msg == 'D')
+                            double distancia = haversine(pacote_recebido.payload.pesquisa.latitude_centro, pacote_recebido.payload.pesquisa.longitude_centro, posto.latitude, posto.longitude);
+                            if (distancia <= pacote_recebido.payload.pesquisa.raio_busca)
                             {
-                                cout << "Recebida mensagem de DADOS. Salvando em arquivo..." << endl;
-                                ofstream arquivo_dados("dados_postos.csv", ios::app);
-
-                                if (arquivo_dados.is_open())
+                                if (menor_preco == -1 || posto.preco < menor_preco)
                                 {
-                                    arquivo_dados << pacote_recebido.payload.dados.tipo_combustivel << ","
-                                                  << pacote_recebido.payload.dados.preco << ","
-                                                  << pacote_recebido.payload.dados.latitude << ","
-                                                  << pacote_recebido.payload.dados.longitude << endl;
-                                    arquivo_dados.close();
-                                    cout << "Dados salvos com sucesso!" << endl;
-                                }
-                                else
-                                {
-                                    cerr << "Erro ao abrir o arquivo de dados para escrita!" << endl;
+                                    menor_preco = posto.preco;
                                 }
                             }
                         }
-
-                        char buffer_resposta[(sizeof(Resposta))];
-                        memcpy(buffer_resposta, &resposta_servidor, sizeof(Resposta));
-                        sendto(server_fd, buffer_resposta, sizeof(Resposta), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
-
-                        // cout << "ID da mensagem: " << pacote_recebido.id_msg << endl;
-                        // cout << "Tipo da mensagem: " << pacote_recebido.tipo_msg << endl;
-                        // cout << "Veio com erro?" << (pacote_recebido.erro ? "Sim" : "Não") << endl;
-                        // if (pacote_recebido.tipo_msg == 'D')
-                        // {
-                        //     cout << "Preço: " << pacote_recebido.payload.dados.preco << endl;
-                        // }
                     }
+                    resposta_p.preco_encontrado = menor_preco;
+                    cout << "Busca finalizada. Resultado: " << menor_preco << endl;
                 }
+                sendto(server_fd, &resposta_p, sizeof(RespostaPesquisa), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
             }
         }
-
-        close(server_fd);
     }
-
+    close(server_fd);
     return 0;
 }
