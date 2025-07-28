@@ -1426,8 +1426,8 @@ int main(int argc, char *argv[]){
     // Libera todas as memórias
     for(unsigned short i = 0; i < processos_existentes; i++){
         free(processos[i].tempos);
-
     }
+    
     free(processos);
     puts("[ -> ] Programa finalizado com sucesso!");
     return 0;
