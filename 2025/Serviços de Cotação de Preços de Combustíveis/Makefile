@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -g -static-libstdc++
+CXXFLAGS = -Wall -g -static-libstdc++ -pthread
 EXECUTABLES = cliente servidor
 
 all: $(EXECUTABLES)
