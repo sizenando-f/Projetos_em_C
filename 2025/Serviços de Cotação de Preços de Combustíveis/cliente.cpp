@@ -40,7 +40,7 @@ struct Pacote
             double latitude_centro;
             double longitude_centro;
         } pesquisa;
-    } payload;
+    } tipo_pacote;
 };
 
 // Resposta de ACK/NAK que será recebida do servidor
@@ -113,11 +113,11 @@ int main(int argc, char **argv)
         // Preenche pacote com cada palavra da linha lida
         if (pacote.tipo_msg == 'D')
         {
-            linha >> pacote.id_msg >> pacote.payload.dados.tipo_combustivel >> pacote.payload.dados.preco >> pacote.payload.dados.latitude >> pacote.payload.dados.longitude;
+            linha >> pacote.id_msg >> pacote.tipo_pacote.dados.tipo_combustivel >> pacote.tipo_pacote.dados.preco >> pacote.tipo_pacote.dados.latitude >> pacote.tipo_pacote.dados.longitude;
         }
         else if (pacote.tipo_msg == 'P')
         {
-            linha >> pacote.id_msg >> pacote.payload.pesquisa.tipo_combustivel >> pacote.payload.pesquisa.raio_busca >> pacote.payload.pesquisa.latitude_centro >> pacote.payload.pesquisa.longitude_centro;
+            linha >> pacote.id_msg >> pacote.tipo_pacote.pesquisa.tipo_combustivel >> pacote.tipo_pacote.pesquisa.raio_busca >> pacote.tipo_pacote.pesquisa.latitude_centro >> pacote.tipo_pacote.pesquisa.longitude_centro;
         }
         else
         {
