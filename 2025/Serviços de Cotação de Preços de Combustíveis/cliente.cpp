@@ -20,7 +20,7 @@ using namespace std;
 struct Pacote
 {
     char tipo_msg; // D ou P
-    int id_msg;    // Identificador fornecido pelo usuário
+    int id_msg;    // Identificador gerado automaticamente
     bool erro;     // Se o pacote possui erro ou não
 
     // Pacote pode ser do tipo Dados ou Pesquisa ao mesmo tempo
@@ -90,10 +90,11 @@ int main(int argc, char **argv)
         cerr << "Endereço IP inválido ou não suportado" << endl;
         return 1;
     }
+    
     cout << "-----------------------------------------------------------------------" << endl;
-    cout << "Padrão de entrada para tipo D e tipo P" << endl;
-    cout << "> <'D'> <ID> <(0,2)> <preco> <latitude> <longitude>" << endl;
-    cout << "> <'P'> <ID> <(0,2)> <raio_busca> <latitude_centro> <longitude_centro>" << endl;
+    cout << "Padrão de entrada para Dados (D) e Pesquisa (P):" << endl;
+    cout << "> D <tipo_comb(0-2)> <preco> <latitude> <longitude>" << endl;
+    cout << "> P <tipo_comb(0-2)> <raio_busca> <latitude_centro> <longitude_centro>" << endl;
     cout << "Escreva <exit> para sair" << endl;
     cout << "-----------------------------------------------------------------------" << endl;
     string input;
@@ -108,16 +109,17 @@ int main(int argc, char **argv)
             continue;
 
         pacote.tipo_msg = tipo_str[0];
+        pacote.id_msg = rand() % 1000;
         pacote.erro = ((double)rand() / RAND_MAX) > 0.5; // Realiza a randomização do erro a ser gerado
 
         // Preenche pacote com cada palavra da linha lida
         if (pacote.tipo_msg == 'D')
         {
-            linha >> pacote.id_msg >> pacote.tipo_pacote.dados.tipo_combustivel >> pacote.tipo_pacote.dados.preco >> pacote.tipo_pacote.dados.latitude >> pacote.tipo_pacote.dados.longitude;
+            linha >> pacote.tipo_pacote.dados.tipo_combustivel >> pacote.tipo_pacote.dados.preco >> pacote.tipo_pacote.dados.latitude >> pacote.tipo_pacote.dados.longitude;
         }
         else if (pacote.tipo_msg == 'P')
         {
-            linha >> pacote.id_msg >> pacote.tipo_pacote.pesquisa.tipo_combustivel >> pacote.tipo_pacote.pesquisa.raio_busca >> pacote.tipo_pacote.pesquisa.latitude_centro >> pacote.tipo_pacote.pesquisa.longitude_centro;
+            linha >> pacote.tipo_pacote.pesquisa.tipo_combustivel >> pacote.tipo_pacote.pesquisa.raio_busca >> pacote.tipo_pacote.pesquisa.latitude_centro >> pacote.tipo_pacote.pesquisa.longitude_centro;
         }
         else
         {
