@@ -36,7 +36,7 @@ struct Pacote
         struct
         {
             int tipo_combustivel; // 0 (diesel), 1 (alcool), 2 (gasolina)
-            int raio_busca;       // Raio de busca em Km
+            double raio_busca;       // Raio de busca em Km
             double latitude_centro;
             double longitude_centro;
         } pesquisa;

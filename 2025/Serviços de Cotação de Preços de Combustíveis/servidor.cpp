@@ -38,7 +38,7 @@ struct Pacote {
             double longitude; 
         } dados;
         struct { int tipo_combustivel; 
-            int raio_busca; 
+            double raio_busca; 
             double latitude_centro; 
             double longitude_centro; 
         } pesquisa;
