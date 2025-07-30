@@ -45,7 +45,7 @@ struct Pacote
             double latitude_centro;
             double longitude_centro;
         } pesquisa;
-    } payload;
+    } tipo_pacote;
 };
 
 // Resposta de ACK ou NAK para o cliente
@@ -175,10 +175,10 @@ int main(int argc, char **argv)
                                 ofstream arquivo_dados("dados_postos.csv", ios::app);
                                 if (arquivo_dados.is_open())
                                 {
-                                    arquivo_dados << pacote_recebido.payload.dados.tipo_combustivel << ","
-                                                  << pacote_recebido.payload.dados.preco << ","
-                                                  << pacote_recebido.payload.dados.latitude << ","
-                                                  << pacote_recebido.payload.dados.longitude << endl;
+                                    arquivo_dados << pacote_recebido.tipo_pacote.dados.tipo_combustivel << ","
+                                                  << pacote_recebido.tipo_pacote.dados.preco << ","
+                                                  << pacote_recebido.tipo_pacote.dados.latitude << ","
+                                                  << pacote_recebido.tipo_pacote.dados.longitude << endl;
                                     arquivo_dados.close();
                                 }
                                 Resposta resposta_ack;
@@ -227,12 +227,12 @@ int main(int argc, char **argv)
                                 for (const auto &posto : postos)
                                 {
                                     // Filtra primeiro pelo tipo de combustível pelo procurado
-                                    if (posto.tipo_combustivel == pacote_recebido.payload.pesquisa.tipo_combustivel)
+                                    if (posto.tipo_combustivel == pacote_recebido.tipo_pacote.pesquisa.tipo_combustivel)
                                     {
                                         // Realiza o cálculo da distância em Km
-                                        double distancia = haversine(pacote_recebido.payload.pesquisa.latitude_centro, pacote_recebido.payload.pesquisa.longitude_centro, posto.latitude, posto.longitude);
+                                        double distancia = haversine(pacote_recebido.tipo_pacote.pesquisa.latitude_centro, pacote_recebido.tipo_pacote.pesquisa.longitude_centro, posto.latitude, posto.longitude);
                                         // Distância menor que o raio encontrado
-                                        if (distancia <= pacote_recebido.payload.pesquisa.raio_busca)
+                                        if (distancia <= pacote_recebido.tipo_pacote.pesquisa.raio_busca)
                                         {
                                             if (menor_preco == -1 || posto.preco < menor_preco)
                                             {
