@@ -123,7 +123,7 @@ void processar_requisicao(int server_socket_fd, Pacote pacote_recebido, sockaddr
             vector<Posto> postos;
             
             // Protege com mutex novamente
-            file_mutex.lock(); // Adquire o "cadeado" para leitura segura
+            file_mutex.lock();
             ifstream arquivo_dados("dados_postos.csv");
             if (arquivo_dados.is_open()) {
                 string linha;
