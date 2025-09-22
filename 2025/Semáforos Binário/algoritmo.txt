@@ -1,0 +1,87 @@
+A partir do exemplo no manual:
+
+
+    int x;
+
+    pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+
+
+    pthread_mutex_lock(&mut);
+
+    /* operate on x */
+
+    pthread_mutex_unlock(&mut);
+
+
+Preciso ter uma struct Nó com o valor em si, com uma variável pthread_mutex_t e realizar as operações de lock (provavelmente decrementa o mutex) e unlock (incrementa o mutex) com o pthread_mutex_...
+
+
+Posso criar um enum contendo os estágios que aquele nó se encontra (CRIADO, CHECK_PAR, CHECK_PRIMO)
+
+
+Creio que não precisa de um lock global devido aos locks locais, quando um nó estiver sendo operado, o lock bloqueará o acesso àquelas variáveis e apenas quando terminar liberará para outra thread operar.
+
+
+O removedor de pares chegará no nó, bloqueará o acesso para que ninguém mais mexa, verifica se o passo anterior foi concluído, no caso CRIADO, verifica se o valor atende e então caso remover, ele precisa travar o nó anterior para poder operar o seu ponteiro e fazê-lo apontar pra o próximo do nó removido.
+
+
+Após a operação ele muda o estado do nó para CHECK_PAR e libera o acesso do nó
+
+enum Estado
+    CRIADO,
+    CHECK_PAR,
+    CHECK_PRIMO,
+    IMPRESSO
+fimenum
+
+estrutura No
+    int valor
+    estrutura No proximo
+    pthread_mutex_t trava
+    Estado estado
+fimestrutura
+
+estrutura Lista
+    No inicio
+    No fim
+fimestrutura
+
+procedimento adiciona_no(Lista lista, int valor):
+    novoNo <- alocaNo()
+    novoNo.valor <- valor
+    novoNo.proximo <- NULO
+
+    se lista.inicio == NULO entao
+        lista.inicio <- novoNo
+        lista.fim <- novoNo
+    senao
+        lista.fim.proximo <- novoNo
+        lista.fim <- novoNo
+fimprocedimento
+
+funcao remove_no(Lista lista):
+    se lista.inicio == NULO entao
+        retorne -1
+    senao
+        valor_lido
+        no_temp <- lista.inicio
+
+        valor_lido <- temp.valor
+        lista.inicio <- lista.inicio.proximo
+
+        se lista.inicio == NULO entao
+            lista.fim <- NULO
+        fimse
+
+        libera(no_temp)
+
+        retorna valor_lido
+    fimse
+fimfuncao
+
+procedimento inicializa_lista(Lista lista):
+    lista.inicio <- NULO
+    lista.fim <- NULO
+fimprocedimento
+
+
