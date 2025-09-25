@@ -27,6 +27,8 @@ O removedor de pares chegará no nó, bloqueará o acesso para que ninguém mais
 
 Após a operação ele muda o estado do nó para CHECK_PAR e libera o acesso do nó
 
+-------------------------------------
+
 enum Estado
     CRIADO,
     CHECK_PAR,
@@ -37,19 +39,32 @@ fimenum
 estrutura No
     int valor
     estrutura No proximo
-    pthread_mutex_t trava
+    pthread_mutex_t trava_no
     Estado estado
 fimestrutura
 
 estrutura Lista
     No inicio
     No fim
+    pthread_mutex_t trava_lista
 fimestrutura
+
+Lista lista
+
+procedimento inicializa_lista(Lista lista):
+    lista.inicio <- NULO
+    lista.fim <- NULO
+    inicializa_mutex(lista.trava_lista, 1)
+fimprocedimento
 
 procedimento adiciona_no(Lista lista, int valor):
     novoNo <- alocaNo()
     novoNo.valor <- valor
     novoNo.proximo <- NULO
+    inicializa_mutex(novoNo.trava_no, 1)
+    novoNo.estado <- CRIADO     // Acabou de ser criado
+
+    espera(lista.trava_da_lista)
 
     se lista.inicio == NULO entao
         lista.inicio <- novoNo
@@ -57,31 +72,173 @@ procedimento adiciona_no(Lista lista, int valor):
     senao
         lista.fim.proximo <- novoNo
         lista.fim <- novoNo
+    fimse
+
+    libera(lista.trava_da_lista)
 fimprocedimento
 
-funcao remove_no(Lista lista):
-    se lista.inicio == NULO entao
-        retorne -1
-    senao
-        valor_lido
-        no_temp <- lista.inicio
+funcao remove_no(Lista lista, No no_anterior, No no_atual):
+    valor_lido <- no_atual.valor
 
-        valor_lido <- temp.valor
-        lista.inicio <- lista.inicio.proximo
-
+    espera(lista.trava_da_lista)
+    
+    se no_anterior == NULO entao
+        lista.inicio <- no_atual.proximo
         se lista.inicio == NULO entao
             lista.fim <- NULO
         fimse
-
-        libera(no_temp)
-
-        retorna valor_lido
+    senao
+        no_anterior.proximo <- no_atual.proximo
+        se no_atual == lista.fim entao
+            lista.fim <- no_anterior
+        fimse
     fimse
+
+    libera(lista.trava_da_lista)
+
+    libera(no_atual.trava_no)
+    free(no_atual)
+
+    retorna valor_lido
 fimfuncao
 
-procedimento inicializa_lista(Lista lista):
-    lista.inicio <- NULO
-    lista.fim <- NULO
+funcao verifica_primo(valor):
+    se valor <= 1 entao
+        retorne 0
+    senao
+        para i de 2 até valor - 1 faca
+            se valor % i == 0 entao
+                retorne 0
+            fimse
+        fimpara
+    fimse
+
+    retorne 1
+fimfuncao
+
+procedimento remove_pares():
+    enquanto Verdadeiro faca
+        No no_anterior <- NULO
+        No no_atual <- lista.inicio
+
+        enquanto no_atual != NULO faca
+            espera(no_atual.trava_no)
+            No proximo_no <- no_atual.proximo
+
+            se no_atual.valor == -1 entao
+                libera(no_atual.trava_no)
+                retorna
+            fimse
+
+            se no_atual.estado == CRIADO entao
+                se (no_atual.valor % 2 == 0) e (no_atual.valor > 2) entao
+                    remove_no(lista, no_anterior, no_atual)
+                    se no_anterior != NULO entao
+                        no_atual <- no_anterior.proximo
+                    senao
+                        no_atual <- lista.inicio
+                    fimse
+                senao
+                    no_atual.estado <- CHECK_PAR
+                    libera(no_atual.trava_no)
+                    no_anterior <- no_atual
+                    no_atual <- proximo_no
+                fimse
+            senao
+                libera(no_atual.trava_no)
+                no_anterior <- no_atual
+                no_atual <- proximo_no
+            fimse
+        fimenquanto
+        dorme(10ms)
+    fimenquanto
 fimprocedimento
 
+funcao filtra_primos():
+    enquanto Verdadeiro faca
+        No no_anterior <- NULO
+        No no_atual <- lista.inicio
 
+        enquanto no_atual != NULO faca
+            espera(no_atual.trava_no)
+
+            No proximo_no <- no_atual.proximo
+
+            se no_atual.valor == -1 entao
+                libera(no_atual.trava_no)
+                retorna
+            fimse
+
+            se no_atual.estado == CHECK_PAR entao
+                se (verifica_primo(no_atual.valor)) entao
+                    no_atual.estado <- CHECK_PRIMO
+                    libera(no_atual.trava_no)
+                    no_anterior <- no_atual
+                    no_atual <- proximo_no
+                senao
+                    remove_no(lista, no_anterior, no_atual)
+
+                    se no_anterior != NULO entao
+                        no_atual <- no_anterior.proximo
+                    senao
+                        no_atual <- lista.inicio
+                    fimse
+                fimse
+            senao
+                libera(no_atual.trava_no)
+                no_anterior <- no_atual
+                no_atual <- proximo_no
+            fimse
+        fimenquanto
+        dorme(10ms)
+    fimenquanto
+fimfuncao
+
+procedimento imprime_primos():
+    enquanto Verdadeiro faca
+        no_atual <- lista.inicio
+
+        enquanto no_atual != NULO entao
+            espera(no_atual.trava_no)
+
+            se no_atual.valor == -1 entao
+                libera(no_atual.trava_no)
+                retorna
+            fimse
+
+            se no_atual.estado == CHECK_PRIMO entao
+                print(no_atual.valor)
+                no_atual.estado <- IMPRESSO
+            fimse
+
+            libera(no_atual.trava_no)
+            no_atual <- no_atual.proximo
+        fimenquanto
+
+        dorme(10ms)
+    fimenquanto
+fimprocedimento
+
+algoritmo
+    inicializa_lista(lista)    
+
+    criaThread(thread_impares)
+    criaThread(thread_primos)
+    criaThread(thread_imprime)
+
+    arquivo <- abreArquivo("in.txt")
+    se arquivo == NULO entao
+        retorna erro
+    fimse
+
+    enquanto existeNumero faca
+        valor <- leNumero(arquivo)
+        adiciona_no(lista, valor)
+    fimenquanto
+
+    fechaArquivo(arquivo)
+
+    adiciona_no(lista, -1)
+
+    aguardaTodasThreadsTerminarem() 
+fimalgoritmo
