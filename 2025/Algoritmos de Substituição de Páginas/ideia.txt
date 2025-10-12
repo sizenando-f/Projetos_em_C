@@ -1,0 +1,18 @@
+. memória lógica é dividida em blocos de tamanhos fixos (páginas)
+. memória física é dividida em blocos do mesmo tamanho (quadros)
+
+. calcular o número da página a partir de um endereço de memória:
+numero_da_pagina = chão(endereco_acesso/tamanho_da_página)
+
+. pra saber quantos quadros de memória estão disponíveis
+quantidade_de_quadros = chão(tamanho_da_memoria/tamanho_da_página)
+
+. exemplo: (tamanho_da_pagina = 10 e tamanho_da_memoria = 30)
+o endereço 76 corresponde à página 7 pois:
+76 (endereco_acesso) / 10 (tamanho_da_pagina) = 7.6, arredondando pra baixo
+
+e a memória disponível possui 3 quadros pois 
+30 (tamanho_da_memoria) / 10 (tamanho_da_pagina) = 3
+
+Quando ocorre um erro, pausa processo, encontra página necessária no disco, carrega em algum quadro livre e retoma o processo -> Contar quantas vezes isso ocorre.
+Quando não houver quadro livre, os algoritmos de substituição irão escolher qual página remover para colocar a nova página no lugar
