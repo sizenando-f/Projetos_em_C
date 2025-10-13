@@ -1,3 +1,5 @@
+# Ideia Geral
+
 . memória lógica é dividida em blocos de tamanhos fixos (páginas)
 . memória física é dividida em blocos do mesmo tamanho (quadros)
 
@@ -16,3 +18,53 @@ e a memória disponível possui 3 quadros pois
 
 Quando ocorre um erro, pausa processo, encontra página necessária no disco, carrega em algum quadro livre e retoma o processo -> Contar quantas vezes isso ocorre.
 Quando não houver quadro livre, os algoritmos de substituição irão escolher qual página remover para colocar a nova página no lugar
+
+----------------------------------------
+
+# Fluxo do programa
+. Array de de sequência de referência (inteiro) para todos os números de página que será lido do arquivo de entrada
+. Um array para simular a memória física, tamanho de N quadros inicializando com -1 para indicar que está vazio
+
+1. Verificar se argc é 4, onde [1] é o tamanho da página, [2] é o tamanho da memória. [3] o nome do arquivo. atoi() para converter string para inteiro
+
+2. Calcular a quantidade de quadros com chão(tamanho_da_memoria/tamanho_da_página)
+
+3. Abrir o arquivo e ler todos os endereços de acesso, cada leitura calcula o número da página correspondente e armazena num array (o de sequência de referência), contando quando endereços foram lidos.
+
+4. Executar cada algoritmo fifo, opt e lru. Cada um receberá o array de referências, o número total de acessos e a quantidade de quadros disponíveis, retornando o número de faltas de página.
+
+5. Abrir o arquivo de saída para colocar os endereços e páginas que ocorreram os erros e no terminal mostrar para cada algoritmo o número de erros e o percentual (erros/total_de_acessos) * 100
+
+
+algoritmo
+	se argc != 4 então
+		escreve("Quantidade inválida de parâmetros")
+		retorne
+	senão
+		tamanho_da_pagina <- inteiro(argumento[1])
+		tamanho_da_memoria <- inteiro(argumento[2])
+		
+		quantidade_de_quadros <- chão(tamanho_da_memoria/tamanho_da_pagina)
+		
+		memoria_física[quantidade_de_quadros] <- -1
+
+		arquivo <- abrirArquivo(argumento[3])
+		numeros_lidos <- 0
+			
+		enquanto(valor <- existirElemento(arquivo)) faca
+			numero_da_pagina <- chão(endereco_acesso/tamanho_da_página)
+			sequencia_referencia.insere(numero_da_pagina)
+			numeros_lidos <- numeros_lidos + 1
+		fimenquanto
+		
+		fechaArquivo(arquivo)
+
+		falta_fifo <- fifo(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
+		falta_opt <- opt(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
+		falta_lru <- lru(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
+
+		escreve(falta_fifo, (falta_fifo/numeros_lidos) * 100)
+		escreve(falta_opt, (falta_opt/numeros_lidos) * 100)
+		escreve(falta_lru, (falta_lru/numeros_lidos) * 100)
+	fimse
+fimalgoritmo
