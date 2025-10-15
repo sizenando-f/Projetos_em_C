@@ -35,6 +35,206 @@ Quando não houver quadro livre, os algoritmos de substituição irão escolher 
 
 5. Abrir o arquivo de saída para colocar os endereços e páginas que ocorreram os erros e no terminal mostrar para cada algoritmo o número de erros e o percentual (erros/total_de_acessos) * 100
 
+###############################################################
+# Função auxiliar para todas as outras
+função esta_em_quadro(pagina, quadros, quantidade_de_quadros, indice -> referência): inteiro
+	# Verifica no vetor de quadros se página já existe
+	para i de 1 ate quantidade_de_quadros faca
+		se quadros[i] = pagina então
+			indice <- i
+			retorne 1
+		fimse
+	fimpara
+	retorne 0
+fimfuncao
+
+funcao encontra_vitima(quadros, sequencias_futuras, ponteiros_de_leitura, quantidade_de_quadros, indice_atual)
+	maior_distancia <- -1
+	vitima <- 1
+	para i de 1 ate quantidade_de_quadros faca
+		distancia_futura <- sequencias_futuras[quadros[i]][ponteiros_de_leitura[quadros[i]]] - indice_atual
+		se distancia_futura <= 0 entao
+			retorne i
+		senao se maior_distancia < distancia_futura entao
+			maior_distancia <- distancia_futura
+			vitima <- i
+		fimse
+	fimpara
+	retorne vitima
+fimfuncao
+
+funcao aloca_indice_futuros(sequencia_referencia, numeros_lidos, maior_pagina): matriz
+	# Aloca a a tabela hash com o tamanho da maior página para não ter vazamento de memmória
+	sequencias_futuras[maior_pagina][numeros_lidos]
+	# Para contar qual proximo indice livre pra colocar os indices, incializa todos com 1
+	conta_indice[maior_pagina] <- 1
+	para i de 1 ate numeros_lidos faca
+		# Pega a página que está sendo lida
+		pagina_atual <- sequencia_referencia[i]
+		# Adiciona na tabela hash na posição livre
+		sequencias_futuras[pagina_atual][conta_indice[pagina_atual]] <- i
+		# Incrementa a próxima posição livre referente a página lida
+		conta_indice[pagina_atual] <- conta_indice[pagina_atual] + 1
+	fimpara
+
+	retorna sequencias_futuras
+fimfuncao
+
+funcao opt_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos, maior_pagina): inteiro
+	sequencias_futuras <- aloca_indice_futuros(sequencias_futuras, sequencia_referencia. numeros_lidos, maior_pagina)
+
+	ponteiros_de_leitura[maior_pagina] <- 0 # Inicializa todos com 0, indica que é o primeiro
+
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Para saber quantos quadros foram preenchidos
+	quadros_preenchidos <- 0
+	# Para saber quantos erros ocorreram
+	falta_de_pagina <- 0
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Para ler na busca da vítima
+		ponteiros_de_leitura[elemento] <- ponteiros_de_leitura[elemento] + 1
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, LAMBDA) então
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao
+				# Encontra a melhor vítima para ser substituida
+				vitima <- encontra_vitima(sequencias_futuras, quadros, quantidade_de_quadros, i, numeros_lidos)
+				# Substitui na memória colocando a nova página
+				quadros[vitima] <- elemento
+			fimse
+		fimse
+		
+	fimpara
+fimfuncao
+
+funcao menor_tempo(uso_recente, quantidade_de_quadros): inteiro
+	# Define o primeiro elemento do vetor como o menor
+	menor <- uso_recente[1]
+	indice_menor <- 1
+
+	para i de 2 ate quantidade_de_quadros faca
+		se uso_recente[i] < menor entao
+			menor <- uso_recente[i]
+			indice_menor <- i
+		fimse
+	fimpara
+
+	retorne indice_menor
+fimfuncao
+
+função lru_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos): inteiro
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Para saber quando cada quadro foi utilizado
+	uso_recente[quantidade_de_quadros] <- 0
+	# Para saber quantos quadros foram preenchidos
+	quadros_preenchidos <- 0
+	# Para saber quanto tempo se passou
+	tempo <- 0
+	# Para saber quantos erros ocorreram
+	falta_de_pagina <- 0
+
+	# Vetores para armazenar erros
+	enderecos_falha[numeros_lidos]
+	paginas_falha[numeros_lidos]
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Passa o tempo
+		tempo <- tempo + 1
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, indice) então
+			uso_recente[indice] <- tempo
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Atualiza o tempo de uso da página
+				uso_recente[quadros_preenchidos + 1] <- tempo
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao	
+				# Descobre o menos recentemente usado
+				menor <- menor_tempo(uso_recente, quantidade_de_quadros)
+				# Substitui na memória colocando a nova página
+				quadros[menor] <- elemento
+				# Atualiza o tempo correspondente
+				uso_recente[menor] <- tempo
+			fimse
+		fimse
+	fimpara
+
+	retorne falta_de_pagina
+fimfuncao
+
+função fifo_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos): inteiro
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Indica qual sofrerá substituição, iniciando com 1 (primeira posição em pseudoalg)
+	proximo_quadro_substituir <- 1
+	# Para saber quantas faltas de páginas ocorreram
+	falta_de_pagina <- 0
+	# Para indicar quantos quadros já foram preenchidos
+	quadros_preenchidos <- 0
+
+	# Vetores para armazenar erros
+	enderecos_falha[numeros_lidos]
+	paginas_falha[numeros_lidos]
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, LAMBDA) então
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao				
+				# Substitui na memória colocando a nova página
+				quadros[proximo_quadro_substituir] <- elemento
+				# Incrementa o contador de quadro para substiuição
+				proximo_quadro_substituir <- (proximo_quadro_substituir + 1) % quantidade_de_quadros
+			fimse
+		fimse
+	fimpara
+	
+	# Retorna o número de erros
+	retorne falta_de_pagina
+fimfuncao
 
 algoritmo
 	se argc != 4 então
@@ -47,21 +247,27 @@ algoritmo
 		quantidade_de_quadros <- chão(tamanho_da_memoria/tamanho_da_pagina)
 		
 		memoria_física[quantidade_de_quadros] <- -1
+		enderecos[]
+		maior_pagina <- -1
 
 		arquivo <- abrirArquivo(argumento[3])
 		numeros_lidos <- 0
 			
 		enquanto(valor <- existirElemento(arquivo)) faca
-			numero_da_pagina <- chão(endereco_acesso/tamanho_da_página)
+			endereços.insere(valor)
+			numero_da_pagina <- chão(valor/tamanho_da_página)
 			sequencia_referencia.insere(numero_da_pagina)
 			numeros_lidos <- numeros_lidos + 1
+			se numero_da_pagina > maior_pagina entao
+				maior_pagina <- numero_da_pagina
+			fimse
 		fimenquanto
 		
 		fechaArquivo(arquivo)
 
-		falta_fifo <- fifo(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
-		falta_opt <- opt(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
-		falta_lru <- lru(sequencia_referencia, numeros_lidos, quantidade_de_quadros)
+		falta_fifo <- fifo_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos)
+		falta_opt <- opt_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos, maior_pagina)
+		falta_lru <- lru_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos)
 
 		escreve(falta_fifo, (falta_fifo/numeros_lidos) * 100)
 		escreve(falta_opt, (falta_opt/numeros_lidos) * 100)
