@@ -1,15 +1,26 @@
+/**
+ * @file main.c
+ * 
+ * Esse arquivo contém o trabalho de SO implementando sobre substituição
+ * de páginas na memória. Os algoritmos implementados foram:
+ * FIFO
+ * LRU
+ * OPT
+ * 
+ * O pseudocódigo desenvolvido para implementar o código se encontra no final
+ * 
+ * @author Sizenando S. França | RGM: 50575
+ * @date 17-10-2025
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// int fifo_alg(int* seq_ref, int num_lidos, int quant_quadros, int* enderecos);
-// int opt_alg(int* seq_ref, int num_lidos, int quant_quadros, int* enderecos, int maior_pag);
-// int lru_alg(int* seq_ref, int num_lidos, int quant_quadros, int* enderecos);
-
 /**
  * @brief Descobre se página está em quadro: Auxilixar para todos
  * 
- * Itera por todos os índices de quandro verificando a existência de uma página
+ * Itera por todos os índices do quadro verificando a existência de uma página
  * 
  * @param pag Página a ser procurada
  * @param quadros Vetor de quadros
@@ -29,26 +40,52 @@ int esta_em_quadro(int pag, int quadros[], int quant_quadros, int *indice){
     return 0;
 }
 
+/**
+ * @brief Desaloca matriz: Auxiliar para OPT
+ * 
+ * Essa função desaloca por completo uma matriz qualquer
+ * 
+ * @param seq_futuras Matriz a ser desalocada
+ * @param maior_pag Tamanho da matriz
+ */
 void libera_matriz(int **seq_futuras, int maior_pag) {
     if (seq_futuras == NULL) return;
-    for (int i = 0; i < maior_pag; i++) {
+    for (int i = 0; i < maior_pag + 1; i++) {
         free(seq_futuras[i]);
     }
     free(seq_futuras);
 }
 
+/**
+ * @brief Encontra melhor vítima para ser substituída: Auxiliar para OPT
+ * 
+ * Realiza o calculo de distância buscando aquela página que nunca
+ * mais será usada ou aquela que vai demorar mais para ser usada
+ * 
+ * @param quadros Vetor de quadros da memória
+ * @param seq_fut Vetor de sequências futuras
+ * @param pont_leitura Vetor que indica onde ler em cada página
+ * @param quant_quadros Tamanho de vetor de quadros
+ * @param indice_atual Indice da página a ser procurado
+ * 
+ * @return Melhor vítima
+ */
 int encontra_vitima(int quadros[], int **seq_fut, int pont_leitura[], int quant_quadros, int indice_atual){
     int maior_distancia = -1;
     int vitima = 0;
 
     for(int i = 0; i < quant_quadros; i++){
         int pag_no_quadro = quadros[i];
-        int prox_uso = seq_fut[pag_no_quadro][pont_leitura[pag_no_quadro]] - indice_atual;
 
+        // Descobre quando será o próximo uso da página
+        int prox_uso = seq_fut[pag_no_quadro][pont_leitura[pag_no_quadro]];
+
+        // Se ela nunca mais aparecer
         if(prox_uso == 0){
             return i;
         }
 
+        // Se não foi a vítima perfeita, calcula a distância
         int distancia_futura = prox_uso - (indice_atual + 1);
         
         if(maior_distancia < distancia_futura){
@@ -59,6 +96,19 @@ int encontra_vitima(int quadros[], int **seq_fut, int pont_leitura[], int quant_
     return vitima;
 }
 
+/**
+ * @brief Cria a tabela hash
+ * 
+ * Cria a tabela hash necessária para realizar a pesquisa da
+ * melhor vítima de forma rápida
+ * 
+ * @param seq_futuras Ponteiro para vetor de ponteiros
+ * @param seq_ref Vetor de páginas
+ * @param num_lidos Tamanho do vetor de páginas
+ * @param maior_pag Maior página existente
+ * 
+ * @return -1 se ocorreu algum erro, 0 se tudo deu certo
+ */
 int aloca_indice_futuros(int ***seq_futuras, int seq_ref[], int num_lidos, int maior_pag){
     // Criação da tabela hash (matriz)
     int tam_real = maior_pag + 1;
@@ -72,14 +122,12 @@ int aloca_indice_futuros(int ***seq_futuras, int seq_ref[], int num_lidos, int m
 
     // Aloca todas as colunas
     for(int i = 0; i < tam_real; i++){
-        // Aloca coluna
-        (*seq_futuras)[i] = (int *) malloc(num_lidos * sizeof(int));
+        // Aloca coluna com memória zerada
+        (*seq_futuras)[i] = (int *) calloc(num_lidos + 1, sizeof(int));
         if((*seq_futuras)[i] == NULL){
             printf("(aloca_indices_futuros) Erro ao alocar coluna de seq_futuras...\n");
-            for(int k = 0; k < i; k++){
-                free((*seq_futuras)[k]);
-            }
-            free(*seq_futuras);
+            // Libera matriz
+            libera_matriz(*seq_futuras, i - 1);
             *seq_futuras = NULL;
             return -1;
         }
@@ -87,13 +135,12 @@ int aloca_indice_futuros(int ***seq_futuras, int seq_ref[], int num_lidos, int m
     // Término da criação da matriz
 
     // Para saber qual índice livre para colocar índices
-    int *conta_indice = (int*) malloc(tam_real * sizeof(int));
+    int *conta_indice = (int*) calloc(tam_real, sizeof(int));
     if (conta_indice == NULL) {
         printf("(aloca_indice_futuro) Erro na alocacao de conta_indice...\n");
+        libera_matriz(*seq_futuras, maior_pag);
         return -1; 
     }
-    // Inicializa tudo com 0 (próximo indice livre)
-    memset(conta_indice, 0, tam_real * sizeof(int));
 
     for(int i = 0; i < num_lidos; i++){
         // Pega página que está sendo lida
@@ -103,21 +150,36 @@ int aloca_indice_futuros(int ***seq_futuras, int seq_ref[], int num_lidos, int m
         // Adiciona na tabela hash na posição livre
         (*seq_futuras)[pag_atual][pos_livre] = i + 1;
         // Incrementa próxima posição livre
-        conta_indice[pag_atual] = conta_indice[pag_atual] + 1;
+        conta_indice[pag_atual]++;
     }
 
     free(conta_indice);
     return 0;
 }
 
-int opt_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], int maior_pag){
+/**
+ * @brief  Aplica algoritmo OPT
+ * 
+ * Realiza a substituição em páginas que não serão mais usadas ou que
+ * demorarão muito para serem usadas novamente
+ * 
+ * @param seq_ref Vetor de páginas
+ * @param num_lidos Tamanho do vetor de páginas
+ * @param quant_quadros Tamanho do vetor de quadros
+ * @param enderecos Vetor de endereços acessados
+ * @param maior_pag Maior página existente
+ * @param erros_out Arquivo para escrever os erros
+ * 
+ * @return Número de falta de páginas
+ */
+int opt_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], int maior_pag, FILE *erros_out){
     int **seq_futuras = NULL;
-    if(aloca_indice_futuros(&seq_futuras, seq_ref, num_lidos, maior_pag+1) == -1){
+    if(aloca_indice_futuros(&seq_futuras, seq_ref, num_lidos, maior_pag) != 0){
         printf("(opt_alg) Erro ao alocar matriz...\n");
         return -1;
     }
 
-    int *pont_leitura = (int*) malloc((maior_pag+1) * sizeof(int));
+    int *pont_leitura = (int*) calloc(maior_pag + 1, sizeof(int));
     int *quadros = (int*) malloc(quant_quadros * sizeof(int));
 
     // Armazena os erros
@@ -125,12 +187,15 @@ int opt_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], in
     int *pag_falha = (int*) malloc(num_lidos * sizeof(int));
 
     if(pont_leitura == NULL || quadros == NULL || enderecos_falha == NULL || pag_falha == NULL){
-        printf("(opt_alg) Erro na alocação de pont_leitura ou quadros ou endereços de falha ou páginas de falha...\n");
-        libera_matriz(seq_futuras, maior_pag + 1);
+        printf("(opt_alg) Erro na alocação de memória...\n");
+        libera_matriz(seq_futuras, maior_pag);
+        free(pont_leitura);
+        free(quadros);
+        free(enderecos_falha);
+        free(pag_falha);
         return -1;
     }
 
-    memset(pont_leitura, 0, (maior_pag+1) * sizeof(int));
     memset(quadros, -1, quant_quadros * sizeof(int));
 
     int quadros_preenchidos = 0;
@@ -156,14 +221,14 @@ int opt_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], in
         }
     }
 
-    /**
-     * TODO: Fazer a inserção dos resultados em out.txt com um arquivo
-     * recebido por referência da main
-     */
+    // Escreve os erros no arquivo
+    for(int i = 0; i < falta_de_pag; i++){
+        fprintf(erros_out, "erro de pagina endereço :%d pagina: %d\n", enderecos_falha[i], pag_falha[i]);
+    }
 
     // Desaloca antes de sair
     free(quadros);
-    libera_matriz(seq_futuras, maior_pag + 1);
+    libera_matriz(seq_futuras, maior_pag);
     free(enderecos_falha);
     free(pag_falha);
     free(pont_leitura);
@@ -205,10 +270,11 @@ int menor_tempo(int uso_recente[], int quant_quadros){
  * @param num_lidos Tamanho do vetor de páginas
  * @param quant_quadros Tamanho do vetor de quadros
  * @param enderecos Vetor de endereços acessados
+ * @param erros_out Arquivo para escrever os erros
  * 
  * @return Número de falta de páginas
  */
-int lru_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[]){
+int lru_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], FILE *erros_out){
     // Vetor para simbolizar memória física
     int *quadros = (int*) malloc(quant_quadros * sizeof(int));
     // Para saber quando cada quadro foi utilizado
@@ -280,10 +346,10 @@ int lru_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[]){
         }
     }
 
-    /**
-     * TODO: Fazer a inserção dos resultados em out.txt com um arquivo
-     * recebido por referência da main
-     */
+    // Escreve os erros no arquivo
+    for(int i = 0; i < falta_de_pag; i++){
+        fprintf(erros_out, "erro de pagina endereço :%d pagina: %d\n", enderecos_falha[i], pag_falha[i]);
+    }
 
     // Desaloca antes de sair
     free(quadros);
@@ -304,10 +370,11 @@ int lru_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[]){
  * @param num_lidos Tamanho do vetor de páginas
  * @param quant_quadros Tamanho do vetor de quadros
  * @param enderecos Vetor com endereços acessados
+ * @param erros_out Arquivo para escrever os erros
  * 
  * @return Número de erros
  */
-int fifo_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[]){
+int fifo_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[], FILE *erros_out){
     // Vetor para simbolizar memória física
     int *quadros = (int*) malloc(quant_quadros * sizeof(int));
     // Se alocação deu errado
@@ -362,10 +429,10 @@ int fifo_alg(int seq_ref[], int num_lidos, int quant_quadros, int enderecos[]){
         }
     }
 
-    /**
-     * TODO: Fazer a inserção dos resultados em out.txt com um arquivo
-     * recebido por referência da main
-     */
+    // Escreve os erros no arquivo
+    for(int i = 0; i < falta_de_pag; i++){
+        fprintf(erros_out, "erro de pagina endereço :%d pagina: %d\n", enderecos_falha[i], pag_falha[i]);
+    }
 
     // Desaloca antes de sair
     free(quadros);
@@ -396,17 +463,6 @@ int main(int argc, char *argv[]) {
     // Realiza o cálculo de quantos quadros estão disponíveis
     int quant_quadros = tam_mem / tam_pag;
 
-    // Vetor para representar a memória física
-    int *mem_fisica = (int*) malloc(quant_quadros * sizeof(int));
-    if (mem_fisica == NULL) {
-        printf("(main) Erro na alocacao de memoria fisica...\n");
-         // Fecha o arquivo antes de sair
-        fclose(arquivo);
-        return 1;
-    }
-    // Inicializa o vetor com -1 pra representar vazio
-    memset(mem_fisica, -1, quant_quadros * sizeof(int));
-
     // Aloca os vetores dinâmicos com um tamanho inicial
     int capacidade = 20;
     int *enderecos = (int*) malloc(capacidade * sizeof(int));
@@ -416,8 +472,7 @@ int main(int argc, char *argv[]) {
     if (enderecos == NULL || seq_ref == NULL) {
         printf("(main) Erro na alocacao inicial dos vetores dinamicos...\n");
         fclose(arquivo);
-        free(mem_fisica);
-        free(enderecos); // free(NULL) é seguro, não há problema em chamar
+        free(enderecos);
         free(seq_ref);
         return 1;
     }
@@ -439,7 +494,6 @@ int main(int argc, char *argv[]) {
             if (temp_enderecos == NULL) {
                 printf("(main) Erro na realocacao do vetor de enderecos...\n");
                 // Libera tudo antes de sair
-                free(mem_fisica);
                 free(enderecos);
                 free(seq_ref);
                 fclose(arquivo);
@@ -450,7 +504,6 @@ int main(int argc, char *argv[]) {
             int *temp_seq_ref = (int*) realloc(seq_ref, capacidade * sizeof(int));
             if (temp_seq_ref == NULL) {
                 printf("(main) Erro na realocacao do vetor de sequencia de referencia...\n");
-                free(mem_fisica);
                 free(enderecos);
                 free(seq_ref);
                 fclose(arquivo);
@@ -470,27 +523,284 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    /* 
-    int falta_fifo = fifo_alg(seq_ref, num_lidos, quant_quadros, enderecos);
-    int falta_opt = opt_alg(seq_ref, num_lidos, quant_quadros, enderecos, maior_pag);
-    int falta_lru = lru_alg(seq_ref, num_lidos, quant_quadros, enderecos);
+    // Fecha arquivo de entrada
+    fclose(arquivo);
 
+    // Abre arquivo de saída
+    FILE *erros_out = fopen("erros.out", "w");
+    if(erros_out == NULL){
+        printf("(main) Erro ao criar arquivo de saida 'erros.out'...\n");
+        free(enderecos);
+        free(seq_ref);
+        return 1;
+    }
+
+    // Executa os algoritmos e escreve no arquivo
+    fprintf(erros_out, "FIFO:\n");
+    int falta_fifo = fifo_alg(seq_ref, num_lidos, quant_quadros, enderecos, erros_out);
+    
+    fprintf(erros_out, "\nOPT:\n");
+    int falta_opt = opt_alg(seq_ref, num_lidos, quant_quadros, enderecos, maior_pag, erros_out);
+    
+    fprintf(erros_out, "\nLRU:\n");
+    int falta_lru = lru_alg(seq_ref, num_lidos, quant_quadros, enderecos, erros_out);
+
+    // Fecha arquivo de saída
+    fclose(erros_out);
+
+    // Exibe os resultados na tela
     printf("FIFO: %d page faults - %.2f%% de taxa de falha.\n", falta_fifo, ((float)falta_fifo / num_lidos) * 100.0);
     printf("OPT: %d page faults - %.2f%% de taxa de falha.\n", falta_opt, ((float)falta_opt / num_lidos) * 100.0);
     printf("LRU: %d page faults - %.2f%% de taxa de falha.\n", falta_lru, ((float)falta_lru / num_lidos) * 100.0);
-    */
-
-    // Pra saber se tá funcionando
-    printf("Arquivo lido com sucesso!\n");
-    printf("Total de enderecos lidos: %d\n", num_lidos);
-    printf("Total de quadros de memoria: %d\n", quant_quadros);
-    printf("Maior pagina referenciada: %d\n", maior_pag);
-
 
     // Limpeza final
-    fclose(arquivo);
-    free(mem_fisica);
     free(enderecos);
     free(seq_ref);
     return 0;
 }
+
+/*
+=== PSEUDOCÓDIGO ===
+Obs: A única coisa não presente é a escrita do arquivo se saida erros_out
+A escolha da implementação da tabela hash foi necessário porque a procura bruta índice por índice estava deixando a execução extremamente lenta
+Em casos extremos ao lidar com 1 milhão de valores, o tempo de execução caiu de 1 minutos e 40 segundos para 1 milissegundo
+
+# Função auxiliar para todas as outras
+função esta_em_quadro(pagina, quadros, quantidade_de_quadros, indice -> referência): inteiro
+	# Verifica no vetor de quadros se página já existe
+	para i de 1 ate quantidade_de_quadros faca
+		se quadros[i] = pagina então
+			indice <- i
+			retorne 1
+		fimse
+	fimpara
+	retorne 0
+fimfuncao
+
+funcao encontra_vitima(quadros, sequencias_futuras, ponteiros_de_leitura, quantidade_de_quadros, indice_atual)
+	maior_distancia <- -1
+	vitima <- 1
+	para i de 1 ate quantidade_de_quadros faca
+		distancia_futura <- sequencias_futuras[quadros[i]][ponteiros_de_leitura[quadros[i]]] - indice_atual
+		se distancia_futura <= 0 entao
+			retorne i
+		senao se maior_distancia < distancia_futura entao
+			maior_distancia <- distancia_futura
+			vitima <- i
+		fimse
+	fimpara
+	retorne vitima
+fimfuncao
+
+funcao aloca_indice_futuros(sequencia_referencia, numeros_lidos, maior_pagina): matriz
+	# Aloca a a tabela hash com o tamanho da maior página para não ter vazamento de memmória
+	sequencias_futuras[maior_pagina][numeros_lidos]
+	# Para contar qual proximo indice livre pra colocar os indices, incializa todos com 1
+	conta_indice[maior_pagina] <- 1
+	para i de 1 ate numeros_lidos faca
+		# Pega a página que está sendo lida
+		pagina_atual <- sequencia_referencia[i]
+		# Adiciona na tabela hash na posição livre
+		sequencias_futuras[pagina_atual][conta_indice[pagina_atual]] <- i
+		# Incrementa a próxima posição livre referente a página lida
+		conta_indice[pagina_atual] <- conta_indice[pagina_atual] + 1
+	fimpara
+
+	retorna sequencias_futuras
+fimfuncao
+
+funcao opt_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos, maior_pagina): inteiro
+	sequencias_futuras <- aloca_indice_futuros(sequencias_futuras, sequencia_referencia. numeros_lidos, maior_pagina)
+
+	ponteiros_de_leitura[maior_pagina] <- 0 # Inicializa todos com 0, indica que é o primeiro
+
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Para saber quantos quadros foram preenchidos
+	quadros_preenchidos <- 0
+	# Para saber quantos erros ocorreram
+	falta_de_pagina <- 0
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Para ler na busca da vítima
+		ponteiros_de_leitura[elemento] <- ponteiros_de_leitura[elemento] + 1
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, LAMBDA) então
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao
+				# Encontra a melhor vítima para ser substituida
+				vitima <- encontra_vitima(sequencias_futuras, quadros, quantidade_de_quadros, i, numeros_lidos)
+				# Substitui na memória colocando a nova página
+				quadros[vitima] <- elemento
+			fimse
+		fimse
+		
+	fimpara
+fimfuncao
+
+funcao menor_tempo(uso_recente, quantidade_de_quadros): inteiro
+	# Define o primeiro elemento do vetor como o menor
+	menor <- uso_recente[1]
+	indice_menor <- 1
+
+	para i de 2 ate quantidade_de_quadros faca
+		se uso_recente[i] < menor entao
+			menor <- uso_recente[i]
+			indice_menor <- i
+		fimse
+	fimpara
+
+	retorne indice_menor
+fimfuncao
+
+função lru_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos): inteiro
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Para saber quando cada quadro foi utilizado
+	uso_recente[quantidade_de_quadros] <- 0
+	# Para saber quantos quadros foram preenchidos
+	quadros_preenchidos <- 0
+	# Para saber quanto tempo se passou
+	tempo <- 0
+	# Para saber quantos erros ocorreram
+	falta_de_pagina <- 0
+
+	# Vetores para armazenar erros
+	enderecos_falha[numeros_lidos]
+	paginas_falha[numeros_lidos]
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Passa o tempo
+		tempo <- tempo + 1
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, indice) então
+			uso_recente[indice] <- tempo
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Atualiza o tempo de uso da página
+				uso_recente[quadros_preenchidos + 1] <- tempo
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao	
+				# Descobre o menos recentemente usado
+				menor <- menor_tempo(uso_recente, quantidade_de_quadros)
+				# Substitui na memória colocando a nova página
+				quadros[menor] <- elemento
+				# Atualiza o tempo correspondente
+				uso_recente[menor] <- tempo
+			fimse
+		fimse
+	fimpara
+
+	retorne falta_de_pagina
+fimfuncao
+
+função fifo_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos): inteiro
+	# Inicializa o vetor de quadros com -1 (vazio)
+	quadros[quantidade_de_quadros] <- -1
+	# Indica qual sofrerá substituição, iniciando com 1 (primeira posição em pseudoalg)
+	proximo_quadro_substituir <- 1
+	# Para saber quantas faltas de páginas ocorreram
+	falta_de_pagina <- 0
+	# Para indicar quantos quadros já foram preenchidos
+	quadros_preenchidos <- 0
+
+	# Vetores para armazenar erros
+	enderecos_falha[numeros_lidos]
+	paginas_falha[numeros_lidos]
+
+	para i de 1 ate numeros_lidos faca
+		# Escolhe o elemento atual
+		elemento <- sequencia_referencia[i]
+		# Se estiver no quadro apenas ignora
+		se esta_em_quadro(elemento, quadros, quantidade_de_quadros, LAMBDA) então
+			continue
+		senão
+			# Incrementa um erro
+			falta_de_pagina <- falta_de_pagina + 1
+			# Insere endereço e página que deram erro
+			endereços_falha.insere(enderecos[i])
+			paginas_falha.insere(elemento)
+			# Se houver espaço no vetor de quadros
+			se quadros_preenchidos < quantidade_de_quadros então
+				# quadros_preenchidos + 1 pois começa em 0
+				quadros[quadros_preenchidos + 1] <- elemento
+				# Incrementa o contador de quadros
+				quadros_preenchidos <- quadros_preenchidos + 1
+			senao				
+				# Substitui na memória colocando a nova página
+				quadros[proximo_quadro_substituir] <- elemento
+				# Incrementa o contador de quadro para substiuição
+				proximo_quadro_substituir <- (proximo_quadro_substituir + 1) % quantidade_de_quadros
+			fimse
+		fimse
+	fimpara
+	
+	# Retorna o número de erros
+	retorne falta_de_pagina
+fimfuncao
+
+algoritmo
+	se argc != 4 então
+		escreve("Quantidade inválida de parâmetros")
+		retorne
+	senão
+		tamanho_da_pagina <- inteiro(argumento[1])
+		tamanho_da_memoria <- inteiro(argumento[2])
+		
+		quantidade_de_quadros <- chão(tamanho_da_memoria/tamanho_da_pagina)
+		
+		memoria_física[quantidade_de_quadros] <- -1
+		enderecos[]
+		maior_pagina <- -1
+
+		arquivo <- abrirArquivo(argumento[3])
+		numeros_lidos <- 0
+			
+		enquanto(valor <- existirElemento(arquivo)) faca
+			endereços.insere(valor)
+			numero_da_pagina <- chão(valor/tamanho_da_página)
+			sequencia_referencia.insere(numero_da_pagina)
+			numeros_lidos <- numeros_lidos + 1
+			se numero_da_pagina > maior_pagina entao
+				maior_pagina <- numero_da_pagina
+			fimse
+		fimenquanto
+		
+		fechaArquivo(arquivo)
+
+		falta_fifo <- fifo_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos)
+		falta_opt <- opt_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos, maior_pagina)
+		falta_lru <- lru_alg(sequencia_referencia, numeros_lidos, quantidade_de_quadros, enderecos)
+
+		escreve(falta_fifo, (falta_fifo/numeros_lidos) * 100)
+		escreve(falta_opt, (falta_opt/numeros_lidos) * 100)
+		escreve(falta_lru, (falta_lru/numeros_lidos) * 100)
+	fimse
+fimalgoritmo
+*/
