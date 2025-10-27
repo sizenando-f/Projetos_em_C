@@ -170,6 +170,10 @@ processa_funcao:
 	addiu $t3, $zero, 10
 	beq $s2, $t3, funcao_a
 	
+	# Para a tecla 'e'
+	addiu $t3, $zero, 14
+	beq $s2, $t3, funcao_e
+	
 	# Para tecla 'f'
 	addiu $t3, $zero, 15
 	beq $s2, $t3, funcao_f
@@ -211,6 +215,102 @@ funcao_a:
 	jal atualiza_visor
 	
 	j fim_busca
+
+
+#----------------------------------------
+# @brief Prepara Fibbonacci
+#
+# Prepara a chamada e lida com o resultado obtido da recursão
+#----------------------------------------
+# n -> $s3
+funcao_e:
+	# n é passado como parâmetro
+	add $a0, $s3, $zero
+	jal fib_recursivo
+	
+	# Verifica se o resultado pode ser mostrado no visor (< 100)
+	addiu $t3, $zero, 100
+	slt $t3, $v0, $t3			# $t3 = 1 se resultado for < 100
+	beq $t3, $zero, exibe_erro	# Mostra erro se >= 100
+	
+	# Atualia o resultado no visor
+	add $a0, $v0, $zero
+	jal atualiza_visor
+	j fim_busca
+
+#----------------------------------------
+# @brief Função recursiva para Fibonacci
+# @param $a0 - n
+# @return $v0 - fib_recursivo(n)
+#----------------------------------------
+fib_recursivo:
+	# Processo mostrado em sala para funções recursivas
+	# Salva estado da pilha
+	addiu $sp, $sp, -12			# Abre 3 palavras (12 bytes) na pilha
+	sw $ra, 8($sp)				# Salva endereço de retorno
+	sw $s0, 4($sp)				# Salva o registrador $s0
+	sw $a0, 0($sp)				# Salva argumento 'n'
+
+	# Caso base
+	bne $a0, $zero, nao_eh_zero # Se n == 0, retorna 0
+	addiu $v0, $zero, 0			# fib_recursivo(0) = 0
+	j fib_fim					# Pula para o fim
+
+# Segundo caso base
+nao_eh_zero:
+	addiu $t3, $zero, 1				# Se n == 1, retorna 1
+	bne $a0, $t3, passo_recursivo
+	addiu $v0, $zero, 1				# fib_recursivo(1) = 1
+	j fib_fim						# Pula para o fim
+
+# fib_recursivo(n-1) + fib_recursivo(n-2)
+passo_recursivo:
+	# Calcula fib_recursivo(n-1)
+	addiu $a0, $a0, -1	# n = n - 1
+	jal fib_recursivo	# Chama fib_recursivo(n-1), volta em $v0
+	
+	add $s0, $v0, $zero	# Guarda resultado em $s0
+	
+	# Calcula fib_recursivo(n-2)
+	lw $a0, 0($sp)		# Restaura o 'n' original
+	addiu $a0, $a0, -2	# n = n - 2 
+	jal fib_recursivo	# Chama fib_recursivo(n-2), volta em $v0
+	
+	# Soma os resultados fib_recursivo = fib_recursivo(n-1) + fib_recursivo(n-2)
+	addu $v0, $s0, $v0
+
+# Finaliza chamada
+fib_fim:
+	lw $ra, 8($sp)		# Restaura endereço de retorno
+	lw $s0, 4($sp)		# Retaura $s0
+	addiu $sp, $sp, 12	# Fecha espaço na pilha
+	jr $ra				# Retorna pra quem chamou
+	
+#----------------------------------------
+# @brief Exibe erro no visor. "EE"
+#----------------------------------------
+exibe_erro:
+	# Carrega o padrão de 7 segmentos
+	lui $t7, 0x1001			
+	ori $t7, $t7, 0x0014	# Endereço base do MAPA_SEGMENTO
+	addiu $t4, $zero, 10	# Índice da letra 'E' é 10
+	addu $t7, $t7, $t4		# Endereço padrão do 'E'
+	lb $t7, 0($t7)			# Salva em $s7
+	
+	# Endereços dos visores
+	lui $t5, 0xFFFF
+    ori $t5, $t5, 0x0011 # Visor esquerdo
+    lui $t6, 0xFFFF
+    ori $t6, $t6, 0x0010 # Visor direito
+    
+    # Escreve 'E' nos dois visores
+    sb $t7, 0($t5)
+    sb $t7, 0($t6)
+    
+    # Reseta número total pra não ser empilhado
+    addiu $s3, $zero, 0
+    
+    j fim_busca
 
 #----------------------------------------
 # @brief Limpa tudo
