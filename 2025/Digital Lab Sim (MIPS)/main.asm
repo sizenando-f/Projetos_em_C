@@ -119,7 +119,7 @@ busca_tecla_loop:
 # Para quando encontrar tecla
 tecla_encontrada:
 	# Carrega o endereço base de VALORES_TECLAS em $t4
-	lui $t4, 0x1001		# Carrega a parte alta do endereço
+	lui $t4, 0x1001			# Carrega a parte alta do endereço
 	ori $t4, $t4, 0x005C	# Carrega a parte baixa
 	
 	# Para o índice para encontrar o valor correspondente
@@ -150,10 +150,10 @@ processa_numero:
 	# Multiplica o número atual por 10
 	addiu $t3, $zero, 10	# Prepara multiplicando
 	multu $s3, $t3			# numero atual * 10
-	mflo $s3				# $s3 = resultado
+	mflo $s3				# $s3 <- resultado
 	
 	# Adiciona o novo dígito
-	addu $s3, $s3, $s2		# $s3 = ($s3 * 10) + $s2
+	addu $s3, $s3, $s2		# $s3 <- ($s3 * 10) + $s2
 	
 	# Atualiza o visor
 	add $a0, $s3, $zero		# Coloca o número a ser exibido para ser passado como parâmetro
@@ -164,11 +164,20 @@ processa_numero:
 overflow:
 	j fim_busca
 	
+#-------------------------
+# @brief Escolhe função
+#
+# Escolhe para qual função pular de acordo com a tecla pressionada
+#-------------------------
 # Valor da função -> $s2
 processa_funcao:
 	# Para tecla 'a' (10 em hexa)
 	addiu $t3, $zero, 10
 	beq $s2, $t3, funcao_a
+	
+	# Para a tecla 'b'
+	addiu $t3, $zero, 11
+	beq $s2, $t3, funcao_b
 	
 	# Para a tecla 'e'
 	addiu $t3, $zero, 14
@@ -189,18 +198,18 @@ processa_funcao:
 funcao_a:
 	lui $t4, 0x1001
 	ori $t4, $t4, 0x0048		# Endereço do topo da pilha (0x10010020 + 40)
-	lw $t5, 0($t4)				# $t5 = valor do topo da pilha
+	lw $t5, 0($t4)				# $t5 <- valor do topo da pilha
 	
 	# Verifica se pilha está cheia
 	addiu $t6, $zero, 10
-	slt $t6, $t5, $t6			# $t6 = 1 se topo < 10, senão 0
+	slt $t6, $t5, $t6			# $t6 <- 1 se topo < 10, senão 0
 	beq $t6, $zero, fim_busca	# Se topo >= 10 então a pilha está cheia
 	
 	# Calcula endereço de destino -> base + (topo * 4)
 	lui $t6, 0x1001
 	ori $t6, $t6, 0x0020		# Endereço base da PILHA_ARRAY
-	sll $t7, $t5, 2				# $t7 = topo * 4
-	addu $t6, $t6, $t7			# $t6 = endereço de destino
+	sll $t7, $t5, 2				# $t7 <- topo * 4
+	addu $t6, $t6, $t7			# $t6 <- endereço de destino
 	
 	# Armazena número atual na ppilha
 	sw $s3, 0($t6)
@@ -216,6 +225,142 @@ funcao_a:
 	
 	j fim_busca
 
+#----------------------------------------
+# @brief Calcula a média aritmética
+#
+# Realiza o cálculo da média aritmética de todos valores na pilha
+#----------------------------------------
+funcao_b:
+	# Carrega o endereço e valor da PILHA_TOPO
+	lui $t4, 0x1001
+	ori $t4, $t4, 0x0048	# Endereço da PILHA_TOPO
+	lw $s4, 0($t4)			# ($s4) <- número de elementos na pilha
+	
+	# Verifica se a pilha está vazia
+	bne $s4, $zero, calcular_soma
+	addiu $a0, $zero, 0
+	jal atualiza_visor
+	j fim_busca
+
+# Inicializa variáveis para o loop de soma
+calcular_soma:
+	addiu $s5, $zero, 0		# $s5 <- soma total
+	addiu $t5, $zero, 0		# $t5 <- índice do loop
+	lui $t6, 0x1001			
+	ori $t6, $t6, 0x0020	# $t6 <- endereço base do PILHA_ARRAY
+
+# Realiza a soma dos elementos da pilha
+soma_loop:
+	# Verifica se i >= n
+	slt $t3, $t5, $s4				# $t3 = 1 se i < N
+	beq $t3, $zero, fim_soma_loop
+	
+	# Calcula o endereço do elemento atual. base + (i * 4)
+	sll $t7, $t5, 2		# $t7 <- i * 4
+	addu $t7, $t6, $t7	# $t7 <- endereço do elemento
+	
+	# Carrega elemento e adiciona na soma
+	lw $t8, 0($t7)		# $t8 <- pilha[i]
+	addu $s5, $s5, $t8	# soma total <- soma total + pilha[i]
+	
+	# Incrementa o índice
+	addiu $t5, $t5, 1	# i++
+	j soma_loop
+	
+# $s5 <- soma | $s4 <- N
+fim_soma_loop:
+	# Verifica se a média é exata
+	divu $s5, $s4
+	mflo $t3			# $t3 <- soma / N
+	mfhi $t4			# $t4 < soma % N
+	
+	# Verifica se o resto é zero
+	bne $t4, $zero, media_nao_inteira
+
+# Para lidar com médias inteiras
+media_inteira:
+	# Verifica se cabe no visor
+	addiu $t5, $zero, 100
+	slt $t5, $t3, $t5			# $t5 = 1 se parte inteira < 100
+	beq $t5, $zero, exibe_erro	# se for maior ou igual a 100, dá erro
+	
+	# Mostra o resultado no visor
+	add $a0, $t3, $zero
+	jal atualiza_visor
+	j fim_busca
+
+media_nao_inteira:
+	# Verifica se parte inteira possui apenas um dígito
+	addiu $t5, $zero, 10
+	slt $t5, $t3, $t5			# $t5 = 1 se parte inteira < 10
+	beq $t5, $zero, exibe_erro	# Senão da erro
+	
+	# (soma * 10 + N / 2) / N
+	# Multiplica a soma por 10
+	addiu $t5, $zero, 10	# Multiplicador
+	multu $t4, $t5			
+	mflo $t4				# $t4 <- soma * 10
+
+	# Calcula o arredondamento
+	srl $t5, $s4, 1			# $t5 <- N/2, desloca bit
+	
+	# Soma os dois termos calculados
+	addu $t4, $t4, $t5		# $t4 <- (soma * 10 + N / 2)
+			
+	divu $t4, $s4			# Divide pelo número de elementos
+	mflo $t4				# $t4 <- digito decimal
+	
+	# Verifica se cabe no visor
+	addiu $t5, $zero, 10
+	multu $t3, $t5
+	mflo $a0
+	addu $a0, $a0, $t4
+	
+	# Atualiza visor se estiver tudo certo
+	jal atualiza_visor_ponto
+	j fim_busca
+
+#-----------------------------------
+# @brief Atualiza os visores com ponto decimal
+# @param $a0 - Número a ser exibido
+#------------------------------------
+atualiza_visor_ponto:
+	# Carrega os endereços dos visores
+	lui $t5, 0xFFFF
+	ori $t5, $t5, 0x0011	# Lado esquerdo
+	lui $t6, 0xFFFF
+	ori $t6, $t6, 0x0010	# lado direito
+	
+	# Calcula a parte inteira
+	addiu $t7, $zero, 10
+	divu $a0, $t7
+	mflo $t8				# $t8 <- Digito esquerdo, inteiro
+	mfhi $t9				# $t9 = Digito direito, fracionado
+	
+	# Carrega endereço base do MAPA_SEGMENTO
+	lui $t7, 0x1001
+	ori $t7, $t7, 0x0014
+	
+	# Carrega os bits do ponto
+	lui $t4, 0x1001
+	ori $t4, $t4, 0x001F	# Endereço  0014 + 11 = 001F
+	lb $t4, 0($t4)			# $t4 <- 0x080 como no .data
+	
+	# Exibe no visor esquerdo com o ponto
+	addu $t3, $t7, $t8		# Endereço do dígito esquerdo
+	lb $t3, 0($t3)			# Carrega dígito
+	or $t3, $t3, $t4		# Combina com o ponto
+	sb $t3, 0($t5)			# Mostra no visor esquerdo
+	
+	# Exibe no visor direito
+	addu $t3, $t7, $t9		# Endereço do dígito direito
+	lb $t3, 0($t3)			# Carrega o dígito
+	sb $t3, 0($t6)			# Mostra no visor direito
+	
+	# Zera $s3 pra não ser empilhado
+	addiu $s3, $zero, 0
+	
+	jr $ra
 
 #----------------------------------------
 # @brief Prepara Fibbonacci
@@ -266,14 +411,14 @@ nao_eh_zero:
 # fib_recursivo(n-1) + fib_recursivo(n-2)
 passo_recursivo:
 	# Calcula fib_recursivo(n-1)
-	addiu $a0, $a0, -1	# n = n - 1
+	addiu $a0, $a0, -1	# n <- n - 1
 	jal fib_recursivo	# Chama fib_recursivo(n-1), volta em $v0
 	
 	add $s0, $v0, $zero	# Guarda resultado em $s0
 	
 	# Calcula fib_recursivo(n-2)
 	lw $a0, 0($sp)		# Restaura o 'n' original
-	addiu $a0, $a0, -2	# n = n - 2 
+	addiu $a0, $a0, -2	# n <- n - 2 
 	jal fib_recursivo	# Chama fib_recursivo(n-2), volta em $v0
 	
 	# Soma os resultados fib_recursivo = fib_recursivo(n-1) + fib_recursivo(n-2)
@@ -339,7 +484,6 @@ funcao_f:
 # respectivos visores
 #
 # @param $a0 - Número a ser exibido
-# @return Nada
 #------------------------------------
 atualiza_visor:
 	# Carrega os endereços do visor
@@ -354,10 +498,10 @@ atualiza_visor:
 	# Calcula o dígito da dezena (dezena = numero / 10)
 	addiu $t7, $zero, 10
 	divu $a0, $t7			# Armazena quociente em LO e resto em HI de acordo com help
-	mflo $t8				# $t8 = Digito da dezena
+	mflo $t8				# $t8 <- Digito da dezena
 	
 	# Calcula o digito da unidade (unidade = numero % 10 -> o resto)
-	mfhi $t9				# $t9 = Digito da unidade
+	mfhi $t9				# $t9 <- Digito da unidade
 	
 	# Carrega o endereço base do mapa de segmentos
 	lui $t7, 0x1001
