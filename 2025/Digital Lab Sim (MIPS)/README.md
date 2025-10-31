@@ -8,8 +8,6 @@ Uma calculadora multifuncional desenvolvida puramente em MIPS Assembly, projetad
 
 O desenvolvimento seguiu a rigorosa restrição de **não utilizar nenhuma pseudo-instrução**, exigindo a manipulação direta de endereços de memória e o uso exclusivo do conjunto de instruções fundamental da arquitetura MIPS.
 
-![Screenshot da Calculadora em Ação](https://imgur.com/a/aypTnqq)
-
 ---
 
 ## Tabela de Conteúdos
