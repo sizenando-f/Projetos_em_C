@@ -2,8 +2,8 @@
 #	Implementação do projeto usando Digital Lab Sim.
 #	Inserção em pilha, cálculo de média aritmética, desvio padrão, sequência de van eck e fibbonacci
 #
-#	@authors: Sizenando S. França (50575), Alexandre... (43551)
-#	@date: 27-10-2025
+#	@authors: Sizenando S. França (50575), Alexandre (43551)
+#	@date: 30-10-2025
 
 # ==============
 # SEÇÃO DE DADOS
