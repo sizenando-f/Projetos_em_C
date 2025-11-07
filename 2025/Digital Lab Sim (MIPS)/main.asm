@@ -3,7 +3,7 @@
 #	Inserção em pilha, cálculo de média aritmética, desvio padrão, sequência de van eck e fibbonacci
 #
 #	@authors: Sizenando S. França (50575), Alexandre (43551)
-#	@date: 30-10-2025
+#	@date: 06-11-2025
 
 # ==============
 # SEÇÃO DE DADOS
@@ -174,24 +174,27 @@ fim_busca:
 processa_numero:
 	# Verifica se o número passou de 3 digitos
 	sltiu $t3, $s3, 10			# $t3 = 1 se $s3 < 10, se for 0 então $s3 já tem 2 digitos
-	beq $t3, $zero, overflow	# se $t3 >= 10 então não adiciona digito
+	beq $t3, $zero, estouro_buffer_entrada	# se $t3 >= 10 então reseta
+
+continua_processa_numero:
+	# Multiplica número atual por 10
+	addiu $t3, $zero, 10
+	multu $s3, $t3
+	mflo $s3
 	
-	# Multiplica o número atual por 10
-	addiu $t3, $zero, 10	# Prepara multiplicando
-	multu $s3, $t3			# numero atual * 10
-	mflo $s3				# $s3 <- resultado
-	
-	# Adiciona o novo dígito
-	addu $s3, $s3, $s2		# $s3 <- ($s3 * 10) + $s2
+	# Adiciona novo digito
+	addu $s3, $s3, $s2
 	
 	# Atualiza o visor
-	add $a0, $s3, $zero		# Coloca o número a ser exibido para ser passado como parâmetro
+	add $a0, $s3, $zero
 	jal atualiza_visor
-
 	j fim_busca
 	
-overflow:
-	j fim_busca
+estouro_buffer_entrada:
+	# Reseta o $s3 para 0
+	addiu $s3, $zero, 0
+	# Retorna ao processo
+	j continua_processa_numero
 	
 #-----------------------------------------
 # @brief Roteia para a função de operação correta ('a' a 'f').
@@ -437,12 +440,13 @@ c_diff_loop:
 c_fim_diff_loop:
 	# $s7 = soma_dos_quadrados (multiplicada por 100)
 	# $s4 <- N
-	# Calcula variância (com arredondamento)
-	# var_x100 <- (soma_dos_quadrados + N / 2) / N
-	srl $t3, $s4, 1         # $t3 <- N / 2
-	addu $s7, $s7, $t3      # $s7 <- soma_dos_quadrados + N / 2
-	divu $s7, $s4
-	mflo $s7                # $s7 <- variância * 100
+	# Calcula variância amostral (com arredondamento)
+    # (soma_dos_quadrados + (N-1) / 2) / (N-1)
+    addiu $t5, $s4, -1		# $t5 <- N - 1 (o novo divisor)
+    srl $t3, $t5, 1			# $t3 <- (N - 1) / 2 (termo de arredondamento)
+    addu $s7, $s7, $t3		# $s7 <- soma_dos_quadrados + (N-1) / 2
+    divu $s7, $t5				# Divide por (N - 1)
+    mflo $s7					# $s7 <- variância * 100
 	
 	# Calcula a raíz quadrada da variância
 	add $a0, $s7, $zero     # $a0 = argumento para raiz_quadrada
