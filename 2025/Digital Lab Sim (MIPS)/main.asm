@@ -42,7 +42,6 @@
 # SEÇÃO DE CÓDIGO
 # ===============
 .text
-# Indica o ponto de entrada do programa para o SO, nesse caso, o simulador
 .globl main
 
 #-----------------------------------------
@@ -210,7 +209,7 @@ processa_funcao:
 	addiu $t3, $zero, 11
 	beq $s2, $t3, funcao_b
 	
-	# Para a tecla 'c' (12) ##### NOVO #####
+	# Para a tecla 'c' (12)
 	addiu $t3, $zero, 12
 	beq $s2, $t3, funcao_c
 	
@@ -440,7 +439,7 @@ c_diff_loop:
 c_fim_diff_loop:
 	# $s7 = soma_dos_quadrados (multiplicada por 100)
 	# $s4 <- N
-	# Calcula variância amostral (com arredondamento)
+	# Calcula variância amostral
     # (soma_dos_quadrados + (N-1) / 2) / (N-1)
     addiu $t5, $s4, -1		# $t5 <- N - 1 (o novo divisor)
     srl $t3, $t5, 1			# $t3 <- (N - 1) / 2 (termo de arredondamento)
@@ -488,9 +487,9 @@ c_display_decimal:
 	j fim_busca
 
 #----------------------------------------
-# @brief Raiz Quadrada Inteira (Babylonian)
+# @brief Raiz Quadrada Inteira
 # @param $a0 - n (número para achar a raiz)
-# @return $v0 - isqrt(n)
+# @return $v0 - raiz_quadrada(n)
 #----------------------------------------
 raiz_quadrada:
 	# Salva registradores que vamos usar
@@ -607,7 +606,7 @@ van_eck_continua:
 	add $a0, $v0, $zero
 	jal atualiza_visor
 	
-	# Zera nuffer de entrada
+	# Zera buffer de entrada
 	addiu $s3, $zero, 0
 	j fim_busca
 
