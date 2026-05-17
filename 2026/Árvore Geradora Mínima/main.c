@@ -44,6 +44,25 @@ int encontraChefe(int vertice, int chefe[]){
     return vertice;
 }
 
+/**
+ * @brief Une um vértice com outro
+ * 
+ * Verifica ambos os chefes e caso forem diferentes realiza a união,
+ * caso contrário ambos estão no mesmo grupo
+ * 
+ * @param verticeU Vértice u
+ * @param verticeV Vértice v
+ * @param chefe Vetor de chefes
+ */
+void unir(int verticeU, int verticeV, int chefe[]){
+    int chefeU = encontraChefe(verticeU, chefe);
+    int chefeV = encontraChefe(verticeV, chefe);
+
+    if(chefeU != chefeV){
+        chefe[chefeU] = chefeV; 
+    }
+}
+
 
 int main(int argc, char **argv){
     // Verifica número de parâmetros
