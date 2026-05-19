@@ -121,6 +121,40 @@ int main(int argc, char **argv){
         chefe[i] = i;
     }
 
+    int *aresta_mais_barata = (int*) malloc(grafo.V * sizeof(int));
+
+    // Inicialmente o número de árvore é o mesmo que o número de vértices
+    int num_arvore = grafo.V;
+
+    while(num_arvore > 1){
+        memset(aresta_mais_barata, -1, grafo.V * sizeof(int)); // Inicializa com -1 indicando vazio
+
+        // Verifica quais arestas possui menor peso
+        for(int i = 0; i < grafo.E; i++){
+            int chefeU = encontraChefe(grafo.arestas[i].origem, chefe);
+            int chefeV = encontraChefe(grafo.arestas[i].destino, chefe);
+
+            int aresta_barata_U = aresta_mais_barata[chefeU];
+            int aresta_barata_V = aresta_mais_barata[chefeV];
+
+            if(chefeU != chefeV){
+                if(aresta_barata_U == -1 || grafo.arestas[i].peso < grafo.arestas[aresta_barata_U].peso){
+                    aresta_mais_barata[chefeU] = i;
+                }
+                if (aresta_barata_V == -1 || grafo.arestas[i].peso < grafo.arestas[aresta_barata_V].peso){
+                    aresta_mais_barata[chefeV] = i;
+                }
+            }
+        }
+
+        for(int i = 0; i < grafo.V; i++){
+            
+        }
+
+    }
+
+    free(chefe);
+    free(aresta_mais_barata);
     free(grafo.arestas);
     return 0;
 }
