@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 /**
  * @brief Uma aresta do grafo
@@ -12,7 +13,7 @@
 struct Aresta {
     int origem;
     int destino;
-    int peso;
+    long long int peso;
 };
 
 /**
@@ -103,11 +104,11 @@ int main(int argc, char **argv){
 
     // Armazena todas as arestas do grafo
     int i = 0;
-    while(fscanf(arquivo, "%d %d %d", &grafo.arestas[i].origem, &grafo.arestas[i].destino, &grafo.arestas[i].peso) == 3){
+    while(fscanf(arquivo, "%d %d %lld", &grafo.arestas[i].origem, &grafo.arestas[i].destino, &grafo.arestas[i].peso) == 3){
         i++;
     }
 
-    printf("%d arestas carregadas na memória.\n", i);
+    printf("%d arestas carregadas na memoria.\n", i);
     if(grafo.E == i){
         printf("A quantidade de arestas lidas eh a mesma da informada\n");
     } else {
@@ -117,6 +118,7 @@ int main(int argc, char **argv){
     fclose(arquivo);
 
     int *chefe = (int*) malloc(grafo.V * sizeof(int));
+    // Inicialmente todos é o chefe de si mesmo
     for(int i = 0; i < grafo.V; i++){
         chefe[i] = i;
     }
@@ -126,10 +128,21 @@ int main(int argc, char **argv){
     // Inicialmente o número de árvore é o mesmo que o número de vértices
     int num_arvore = grafo.V;
 
+    long long int peso_total = 0;
+
+    // Para medir o tempo
+    struct timeval inicio, fim;
+    double tempo_execucao;
+
+    // Inicia o cronômetro
+    gettimeofday(&inicio, NULL);
+
+    // Enquanto não concluído
     while(num_arvore > 1){
+        // Inicializa a aresta de menor peso para cada componente como -1 (Nenhuma)
         memset(aresta_mais_barata, -1, grafo.V * sizeof(int)); // Inicializa com -1 indicando vazio
 
-        // Verifica quais arestas possui menor peso
+        // Para cada aresta uv em E
         for(int i = 0; i < grafo.E; i++){
             int chefeU = encontraChefe(grafo.arestas[i].origem, chefe);
             int chefeV = encontraChefe(grafo.arestas[i].destino, chefe);
@@ -137,7 +150,9 @@ int main(int argc, char **argv){
             int aresta_barata_U = aresta_mais_barata[chefeU];
             int aresta_barata_V = aresta_mais_barata[chefeV];
 
+            // Onde uv estão em componentes diferentes
             if(chefeU != chefeV){
+                // Deixe wx ser a aresta de menor peso
                 if(aresta_barata_U == -1 || grafo.arestas[i].peso < grafo.arestas[aresta_barata_U].peso){
                     aresta_mais_barata[chefeU] = i;
                 }
@@ -147,11 +162,35 @@ int main(int argc, char **argv){
             }
         }
 
-        for(int i = 0; i < grafo.V; i++){
-            
-        }
+        // Para cada componente
+        for(int v = 0; v < grafo.V; v++){
+            // Cuja aresta de menor peso
+            int indice_aresta = aresta_mais_barata[v];
 
+            // É -1 ("nenhuma")
+            if(indice_aresta != -1){
+                int origem = grafo.arestas[indice_aresta].origem;
+                int destino = grafo.arestas[indice_aresta].destino;
+
+                int chefeOrigem = encontraChefe(origem, chefe);
+                int chefeDestino = encontraChefe(destino, chefe);
+
+                // Adicione sua aresta de menor peso
+                if(chefeOrigem != chefeDestino){
+                    peso_total += grafo.arestas[indice_aresta].peso;
+                    unir(chefeOrigem, chefeDestino, chefe);
+                    num_arvore--;
+                }
+            }
+        }
     }
+
+    // Encerra o cronômetro
+    gettimeofday(&fim, NULL);
+    tempo_execucao = (fim.tv_sec - inicio.tv_sec) + (fim.tv_usec - inicio.tv_usec) / 1000000.0;
+
+    printf("Peso total: %lld\n", peso_total);
+    printf("Tempo de execucao sequencial: %f segundos\n", tempo_execucao);
 
     free(chefe);
     free(aresta_mais_barata);
