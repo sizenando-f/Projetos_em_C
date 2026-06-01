@@ -129,6 +129,8 @@ int main(int argc, char **argv){
     int num_arvore = grafo.V;
 
     long long int peso_total = 0;
+    struct Aresta* arvore_final = (struct Aresta*) malloc((grafo.V - 1) * sizeof(struct Aresta));
+    int conta_arestas_arvore = 0;
 
     // Para medir o tempo
     struct timeval inicio, fim;
@@ -180,6 +182,10 @@ int main(int argc, char **argv){
                     peso_total += grafo.arestas[indice_aresta].peso;
                     unir(chefeOrigem, chefeDestino, chefe);
                     num_arvore--;
+
+                    // Adiciona para saída
+                    arvore_final[conta_arestas_arvore] = grafo.arestas[indice_aresta];
+                    conta_arestas_arvore++;
                 }
             }
         }
@@ -192,8 +198,22 @@ int main(int argc, char **argv){
     printf("Peso total: %lld\n", peso_total);
     printf("Tempo de execucao sequencial: %f segundos\n", tempo_execucao);
 
+    // Criação do arquivo de saída
+    FILE *arquivo_saida = fopen("arvore_saida.txt", "w");
+    if(arquivo_saida == NULL){
+        printf("[ ERRO ] Nao fo possivel criar o arquivo de saida.");
+        return 1;
+    }
+
+    for(int i = 0; i < conta_arestas_arvore; i++){
+        fprintf(arquivo_saida, "no %d -> %lld -> no %d\n", arvore_final[i].origem, arvore_final[i].peso, arvore_final[i].destino);
+    }
+
+    fclose(arquivo_saida);
+
     free(chefe);
     free(aresta_mais_barata);
     free(grafo.arestas);
+    free(arvore_final);
     return 0;
 }
