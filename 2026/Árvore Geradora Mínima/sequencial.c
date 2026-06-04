@@ -66,6 +66,13 @@ void unir(int verticeU, int verticeV, int chefe[]){
 
 
 int main(int argc, char **argv){
+    // Para medir o tempo
+    struct timeval inicio, fim;
+    double tempo_execucao;
+
+    // Inicia o cronômetro
+    gettimeofday(&inicio, NULL);
+
     // Verifica número de parâmetros
     if(argc != 2){
         printf("[ #<- ] Uso: %s <nome_arquivo>\n", argv[0]);
@@ -132,13 +139,6 @@ int main(int argc, char **argv){
     struct Aresta* arvore_final = (struct Aresta*) malloc((grafo.V - 1) * sizeof(struct Aresta));
     int conta_arestas_arvore = 0;
 
-    // Para medir o tempo
-    struct timeval inicio, fim;
-    double tempo_execucao;
-
-    // Inicia o cronômetro
-    gettimeofday(&inicio, NULL);
-
     // Enquanto não concluído
     while(num_arvore > 1){
         // Inicializa a aresta de menor peso para cada componente como -1 (Nenhuma)
@@ -191,13 +191,6 @@ int main(int argc, char **argv){
         }
     }
 
-    // Encerra o cronômetro
-    gettimeofday(&fim, NULL);
-    tempo_execucao = (fim.tv_sec - inicio.tv_sec) + (fim.tv_usec - inicio.tv_usec) / 1000000.0;
-
-    printf("Peso total: %lld\n", peso_total);
-    printf("Tempo de execucao sequencial: %f segundos\n", tempo_execucao);
-
     // Criação do arquivo de saída
     FILE *arquivo_saida = fopen("arvore_saida.txt", "w");
     if(arquivo_saida == NULL){
@@ -206,10 +199,17 @@ int main(int argc, char **argv){
     }
 
     for(int i = 0; i < conta_arestas_arvore; i++){
-        fprintf(arquivo_saida, "no %d -> %lld -> no %d\n", arvore_final[i].origem, arvore_final[i].peso, arvore_final[i].destino);
+        fprintf(arquivo_saida, "%d %d %lld\n", arvore_final[i].origem, arvore_final[i].destino, arvore_final[i].peso);
     }
 
     fclose(arquivo_saida);
+
+    // Encerra o cronômetro
+    gettimeofday(&fim, NULL);
+    tempo_execucao = (fim.tv_sec - inicio.tv_sec) + (fim.tv_usec - inicio.tv_usec) / 1000000.0;
+
+    printf("Peso total: %lld\n", peso_total);
+    printf("Tempo de execucao sequencial: %f segundos\n", tempo_execucao);
 
     free(chefe);
     free(aresta_mais_barata);
