@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-// #include <string.h>
 #include <sys/time.h>
 #include <mpi.h>
 
@@ -14,7 +13,7 @@
 struct Aresta {
     int origem;
     int destino;
-    long long int peso;
+    double peso;
 };
 
 /**
@@ -78,18 +77,19 @@ int main(int argc, char **argv){
     // Descobre o rank da máquina atual
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    // Pra enviar a struct de 16 bytes
+    MPI_Datatype MPI_ARESTA;
+    MPI_Type_contiguous(sizeof(struct Aresta), MPI_BYTE, &MPI_ARESTA);
+    MPI_Type_commit(&MPI_ARESTA);
+
     double tempo_inicio = MPI_Wtime();
 
     // Verifica número de parâmetros
-    if(argc != 2){
-        printf("[ #<- ] Uso: %s <nome_arquivo>\n", argv[0]);
-        return 1;
-    }
-
-     // Abre arquivo
-    FILE *arquivo = fopen(argv[1], "r");
-    if(arquivo == NULL){
-        perror("[ ERRO ] Erro ao abrir o arquivo\n");
+    if(argc != 3){
+        if(rank == 0){
+            printf("[ #<- ] Uso: %s <nome_arquivo> <quantidade_vertices>\n", argv[0]);
+        }
+        MPI_Finalize();
         return 1;
     }
 
@@ -99,55 +99,86 @@ int main(int argc, char **argv){
     // Variáveis controle pra distribuição de trabalho
     int fatia, inicio, fim, quantidade_respectiva;
 
-    // Leitura das duas primeiras linhas
-    int primeiraLinha = 0;
-    while(fgets(buffer, sizeof(buffer), arquivo)){
-        // Se for a primeira linha, pega os vértices
-        if(!primeiraLinha){
-            grafo.V = strtol(buffer, NULL, 10); // Armazena os vértices
-            primeiraLinha++;    // Para saber qual linha está
-            continue;
+    if(rank == 0){
+        grafo.V = atoi(argv[2]);
+
+        FILE *temp = fopen(argv[1], "rb");
+        if(temp != NULL){
+            fseek(temp, 0, SEEK_END);
+            long long tamanho_bytes = ftell(temp);
+            grafo.E = tamanho_bytes / sizeof(struct Aresta);
+            fclose(temp);
+        } else {
+            perror("[ ERRO ] Mestre nao encontrou o arquivo para medir o tamanho!\n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
         }
 
-        // Segunda linha pega as arestas
-        grafo.E = strtol(buffer, NULL, 10); // Armazena as arestas
-        if(rank == 0){
-            printf("Vertices: %d\n", grafo.V);
-            printf("Arestas: %d\n", grafo.E);
-        }
-        
-        fatia = grafo.E / size; // Pra saber quantas arestas cada máquina vai ter
-        inicio = rank * fatia;  // Rank é a posição da máquina multiplicado pela fatia pra saber qual intervalo começar
-        
-        // Se for a última máquina, pega as arestas até o fim
-        if(rank == size - 1){
-            fim = grafo.E;
-        // Senão o fim vai ser o ínicio respectivo + o limite dela
-        } else { 
-            fim = inicio + fatia;
-        }
+        printf("Vertices: %d\n", grafo.V);
+        printf("Arestas: %d\n", grafo.E);
 
-        quantidade_respectiva = fim - inicio;
+    } 
 
-        // Aloca apenas a quantidade de arestas dividida pela quantidade das máquinas + 1 por folga
-        grafo.arestas = (struct Aresta*) malloc(quantidade_respectiva * sizeof(struct Aresta)); // Aloca arestas
-        if(grafo.arestas == NULL){
-            perror("[ ERRO ] Falha ao alocar memoria para arestas.\n");
+    // Compartilha V e E 
+    MPI_Bcast(&grafo.V, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&grafo.E, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Calcula distribuição de trabalho
+    fatia = grafo.E / size;
+    inicio = rank * fatia;
+
+    if(rank == size - 1){
+        fim = grafo.E;
+    } else {
+        fim = inicio + fatia;
+    }
+    quantidade_respectiva = fim - inicio;
+
+    // ALocam espaço da sua fatia
+    grafo.arestas = (struct Aresta*) malloc(quantidade_respectiva * sizeof(struct Aresta));
+    if(grafo.arestas == NULL){
+        perror("[ ERRO ] Falha ao alocar memoria para arestas.\n");
+        return 1;
+    }
+
+    // Leitura e distribui~çao
+    if(rank == 0){
+        FILE *arquivo = fopen(argv[1], "rb");
+        if(arquivo == NULL){
+            perror("[ ERRO ] Erro ao abrir o arquivo\n");
             return 1;
         }
-        break;
+
+        // Lê a fatia e envia pro escravo
+        for(int p = 1; p < size; p++){
+            // Calcula o tamanho e a posição do escravo
+            int p_inicio = p * fatia;
+            int p_fim = (p == size - 1) ? grafo.E : p_inicio + fatia;
+            int p_qtd = p_fim - p_inicio;
+
+            // ALoca para a fatia dele
+            struct Aresta *temp = (struct Aresta*) malloc(p_qtd * sizeof(struct Aresta));
+
+            // Pula pra posição e preenche a fatia
+            long long offset = (long long)p_inicio * sizeof(struct Aresta);
+            fseek(arquivo, offset, SEEK_SET);
+            fread(temp, sizeof(struct Aresta), p_qtd, arquivo);
+
+            // Envia pro escravo
+            MPI_Send(temp, p_qtd, MPI_ARESTA, p, 0, MPI_COMM_WORLD);
+            free(temp);
+        }
+
+        // O mestre lê sua própria fatia
+        fseek(arquivo, 0, SEEK_SET);
+        fread(grafo.arestas, sizeof(struct Aresta), quantidade_respectiva, arquivo);
+        
+        fclose(arquivo);
+        printf("Lido e distribuido\n");
+    } else {
+        // Escravo fica esperando receber
+        MPI_Recv(grafo.arestas, quantidade_respectiva, MPI_ARESTA, 0, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
     }
 
-    // Para pular o ponteiro do arquivo na posição correta
-    for(int i = 0; i < inicio; i++){
-        fgets(buffer, sizeof(buffer), arquivo);
-    }
-
-    for(int i = 0; i < quantidade_respectiva; i++){
-        fscanf(arquivo, "%d %d %lld", &grafo.arestas[i].origem, &grafo.arestas[i].destino, &grafo.arestas[i].peso);
-    }
-
-    fclose(arquivo);
 
     int *chefe = (int*) malloc(grafo.V * sizeof(int));
     // Inicialmente todos é o chefe de si mesmo
@@ -160,7 +191,7 @@ int main(int argc, char **argv){
     // Inicialmente o número de árvore é o mesmo que o número de vértices
     int num_arvore = grafo.V;
 
-    long long int peso_total = 0;
+    double peso_total = 0;
     struct Aresta* arvore_final = (struct Aresta*) malloc((grafo.V - 1) * sizeof(struct Aresta));
     int conta_arestas_arvore = 0;
 
@@ -176,7 +207,7 @@ int main(int argc, char **argv){
         for(int v = 0; v < grafo.V; v++){
             aresta_mais_barata[v].origem = -1;
             aresta_mais_barata[v].destino = -1;
-            aresta_mais_barata[v].peso = 999999999999999LL; // Simulação do infinito
+            aresta_mais_barata[v].peso = 999999999999999.0; // Simulação do infinito
         }
 
         // Para cada aresta uv em E
@@ -197,7 +228,7 @@ int main(int argc, char **argv){
         }
 
         // Gather onde todos enviam as suas arestas mais baratas para o mestre
-        MPI_Gather(aresta_mais_barata, grafo.V * sizeof(struct Aresta), MPI_BYTE, todos_blocos, grafo.V * sizeof(struct Aresta), MPI_BYTE, 0, MPI_COMM_WORLD);
+        MPI_Gather(aresta_mais_barata, grafo.V, MPI_ARESTA, todos_blocos, grafo.V, MPI_ARESTA, 0, MPI_COMM_WORLD);
         
         // Se for o mestre
         if(rank == 0){
@@ -224,7 +255,7 @@ int main(int argc, char **argv){
         }
 
         // Retorna o feedback para as outras máquinas
-        MPI_Bcast(aresta_mais_barata, grafo.V * sizeof(struct Aresta), MPI_BYTE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(aresta_mais_barata, grafo.V, MPI_ARESTA, 0, MPI_COMM_WORLD);
     
         // Para cada componente
         for(int v = 0; v < grafo.V; v++){
@@ -255,13 +286,13 @@ int main(int argc, char **argv){
 
     // Deixar apenas o mestre imprimir e escrever no arquivo
     if(rank == 0){
-        printf("Peso total: %lld\n", peso_total);
+        printf("Peso total: %f\n", peso_total);
 
         // Criação do arquivo de saída
         FILE *arquivo_saida = fopen("arvore_saida.txt", "w");
         if(arquivo_saida != NULL){
             for(int i = 0; i < conta_arestas_arvore; i++){
-                fprintf(arquivo_saida, "%d %d %lld\n", arvore_final[i].origem, arvore_final[i].destino, arvore_final[i].peso);
+                fprintf(arquivo_saida, "%d %d %f\n", arvore_final[i].origem, arvore_final[i].destino, arvore_final[i].peso);
             }
 
             fclose(arquivo_saida);
