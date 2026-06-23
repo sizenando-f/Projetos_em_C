@@ -1,3 +1,5 @@
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +24,7 @@ struct Aresta {
  */
 struct Grafo {
     int V;
-    int E;
+    long long E;
 };
 
 /**
@@ -72,6 +74,12 @@ int main(int argc, char **argv){
     struct Grafo grafo;
     grafo.V = atoi(argv[2]); // Pega os vértices do terminal
 
+    if (grafo.V < 2) {
+        printf("[ ERRO ] Quantidade de vertices invalida.\n");
+        fclose(arquivo);
+        return 1;
+    }
+
     // Descobre as arestas dinamicamente analisando o tamanho físico do arquivo no HD
     // Altere o trecho de medição para:
     fseeko(arquivo, 0, SEEK_END);
@@ -79,7 +87,7 @@ int main(int argc, char **argv){
     grafo.E = tamanho_bytes / sizeof(struct Aresta);
     
     printf("   - Vertices: %d\n", grafo.V);
-    printf("   - Arestas : %d\n", grafo.E);
+    printf("   - Arestas : %lld\n", grafo.E);
 
     int *chefe = (int*) malloc(grafo.V * sizeof(int));
     // Inicialmente todos são chefes de si mesmos
@@ -116,6 +124,7 @@ int main(int argc, char **argv){
         // Retorna a cabeça de leitura para o primeiro byte do arquivo!
         rewind(arquivo);
         long long arestas_processadas = 0;
+        long long contador_blocos = 0;
 
         // --- INÍCIO DA LEITURA DE ALTA VELOCIDADE EM LOTES ---
         while(arestas_processadas < grafo.E){
@@ -145,7 +154,17 @@ int main(int argc, char **argv){
             }
             
             arestas_processadas += ler_agora;
+
+            contador_blocos++;
+            if (contador_blocos % 500 == 0) {
+                double porcentagem = ((double)arestas_processadas / grafo.E) * 100.0;
+                // \r faz o cursor voltar pro inicio da linha. fflush garante a exibição imediata
+                printf("\r   -> Sub-Redes: %d | Lendo Grafo: %.2f%%", num_arvore, porcentagem);
+                fflush(stdout); 
+            }
         }
+
+        printf("\n   [+] Iteracao concluida. Fundindo componentes...\n");
 
         // Para cada componente (Fase de União)
         for(int v = 0; v < grafo.V; v++){
