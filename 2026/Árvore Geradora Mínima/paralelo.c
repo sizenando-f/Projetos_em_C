@@ -1,3 +1,5 @@
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -24,7 +26,7 @@ struct Aresta {
  */
 struct Grafo {
     int V;
-    int E;
+    long long E;
     struct Aresta* arestas;
 };
 
@@ -93,7 +95,6 @@ int main(int argc, char **argv){
         return 1;
     }
 
-    char buffer[256]; // Prepara buffer pra receber linha do arquivo
     struct Grafo grafo;
 
     // Variáveis controle pra distribuição de trabalho
@@ -102,10 +103,15 @@ int main(int argc, char **argv){
     if(rank == 0){
         grafo.V = atoi(argv[2]);
 
+        if(grafo.V < 2){
+            printf("[ ERRO ] Quantidade de vertices invalida");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+
         FILE *temp = fopen(argv[1], "rb");
         if(temp != NULL){
-            fseek(temp, 0, SEEK_END);
-            long long tamanho_bytes = ftell(temp);
+            fseeko(temp, 0, SEEK_END);
+            off_t tamanho_bytes = ftello(temp);
             grafo.E = tamanho_bytes / sizeof(struct Aresta);
             fclose(temp);
         } else {
@@ -114,13 +120,13 @@ int main(int argc, char **argv){
         }
 
         printf("Vertices: %d\n", grafo.V);
-        printf("Arestas: %d\n", grafo.E);
+        printf("Arestas: %lld\n", grafo.E);
 
     } 
 
     // Compartilha V e E 
     MPI_Bcast(&grafo.V, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&grafo.E, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&grafo.E, 1, MPI_LONG_LONG_INT, 0, MPI_COMM_WORLD);
 
     // Calcula distribuição de trabalho
     fatia = grafo.E / size;
@@ -144,23 +150,23 @@ int main(int argc, char **argv){
     if(rank == 0){
         FILE *arquivo = fopen(argv[1], "rb");
         if(arquivo == NULL){
-            perror("[ ERRO ] Erro ao abrir o arquivo\n");
-            return 1;
+            perror("[ ERRO ] Erro ao abrir o arquivo original\n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
         }
 
         // Lê a fatia e envia pro escravo
         for(int p = 1; p < size; p++){
             // Calcula o tamanho e a posição do escravo
-            int p_inicio = p * fatia;
-            int p_fim = (p == size - 1) ? grafo.E : p_inicio + fatia;
-            int p_qtd = p_fim - p_inicio;
+            long long p_inicio = p * fatia;
+            long long p_fim = (p == size - 1) ? grafo.E : p_inicio + fatia;
+            long long p_qtd = p_fim - p_inicio;
 
             // ALoca para a fatia dele
             struct Aresta *temp = (struct Aresta*) malloc(p_qtd * sizeof(struct Aresta));
 
             // Pula pra posição e preenche a fatia
             long long offset = (long long)p_inicio * sizeof(struct Aresta);
-            fseek(arquivo, offset, SEEK_SET);
+            fseeko(arquivo, offset, SEEK_SET);
             fread(temp, sizeof(struct Aresta), p_qtd, arquivo);
 
             // Envia pro escravo
@@ -169,7 +175,7 @@ int main(int argc, char **argv){
         }
 
         // O mestre lê sua própria fatia
-        fseek(arquivo, 0, SEEK_SET);
+        fseeko(arquivo, 0, SEEK_SET);
         fread(grafo.arestas, sizeof(struct Aresta), quantidade_respectiva, arquivo);
         
         fclose(arquivo);
@@ -286,19 +292,18 @@ int main(int argc, char **argv){
 
     // Deixar apenas o mestre imprimir e escrever no arquivo
     if(rank == 0){
-        printf("Peso total: %f\n", peso_total);
+        printf("Peso total: %.12f\n", peso_total);
 
         // Criação do arquivo de saída
         FILE *arquivo_saida = fopen("arvore_saida.txt", "w");
         if(arquivo_saida != NULL){
             for(int i = 0; i < conta_arestas_arvore; i++){
-                fprintf(arquivo_saida, "%d %d %f\n", arvore_final[i].origem, arvore_final[i].destino, arvore_final[i].peso);
+                fprintf(arquivo_saida, "%d %d %.12f\n", arvore_final[i].origem, arvore_final[i].destino, arvore_final[i].peso);
             }
 
             fclose(arquivo_saida);
         } else {
             printf("[ ERRO ] Nao fo possivel criar o arquivo de saida.");
-            return 1;
         }
     }
 
